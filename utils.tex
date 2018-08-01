@@ -1,0 +1,242 @@
+\newcommand{\wbalTwo}[2][Wikimedia]{
+  This is the Wikibook about LaTeX
+  supported by {#1} and {#2}!}
+ 
+
+\newcommand{\dx}[1][ ]{\frac{\partial {#1}}{\partial x}}
+\newcommand{\dy}[1][ ]{\frac{\partial {#1}}{\partial y}}
+\newcommand{\dz}[1][ ]{\frac{\partial {#1}}{\partial z}}
+\newcommand{\dxi}[1][ ]{\frac{\partial {#1}}{\partial \xi}}
+\newcommand{\deta}[1][ ]{\frac{\partial {#1}}{\partial \eta}}
+\newcommand{\dzeta}[1][ ]{\frac{\partial {#1}}{\partial \zeta}}
+
+\newcommand{\dxk}[1][ ]{\frac{\partial {#1}}{\partial x_k}}
+
+
+%Deslocamentos
+
+\newcommand{\uvetor}{
+\begin{bmatrix}
+u_x \\ u_y \\ u_z
+\end{bmatrix}
+}
+
+%Deformacoes
+\newcommand{\exx}{\epsilon_{xx}}
+\newcommand{\eyy}{\epsilon_{yy}}
+\newcommand{\ezz}{\epsilon_{zz}}
+\newcommand{\exy}{\gamma_{xy}}
+\newcommand{\exz}{\gamma_{xz}}
+\newcommand{\eyx}{\gamma_{yx}}
+\newcommand{\eyz}{\gamma_{yz}}
+\newcommand{\ezx}{\gamma_{zx}}
+\newcommand{\ezy}{\gamma_{zy}}
+
+
+%Definicao das tensoes efetivas
+\newcommand{\sxx}{\sigma^\prime_{xx}}
+\newcommand{\syy}{\sigma^\prime_{yy}}
+\newcommand{\szz}{\sigma^\prime_{zz}}
+\newcommand{\sxy}{\sigma^\prime_{xy}}
+\newcommand{\sxz}{\sigma^\prime_{xz}}
+\newcommand{\syx}{\sigma^\prime_{yx}}
+\newcommand{\syz}{\sigma^\prime_{yz}}
+\newcommand{\szx}{\sigma^\prime_{zx}}
+\newcommand{\szy}{\sigma^\prime_{zy}}
+
+\newcommand{\evetor}{
+\begin{bmatrix}
+\exx
+\\
+\eyy
+\\
+\ezz
+\\
+\exy
+\\
+\exz
+\\
+\eyz
+\end{bmatrix}
+}
+
+
+% Definicao das tensoes totais
+\newcommand{\stxx}{\sigma_{xx}}
+\newcommand{\styy}{\sigma_{yy}}
+\newcommand{\stzz}{\sigma_{zz}}
+\newcommand{\stxy}{\sigma_{xy}}
+\newcommand{\stxz}{\sigma_{xz}}
+\newcommand{\styx}{\sigma_{yx}}
+\newcommand{\styz}{\sigma_{yz}}
+\newcommand{\stzx}{\sigma_{zx}}
+\newcommand{\stzy}{\sigma_{zy}}
+
+\newcommand{\stvetor}{
+\begin{bmatrix}
+\stxx
+\\
+\styy
+\\
+\stzz
+\\
+\stxy
+\\
+\stxz
+\\
+\styz
+\end{bmatrix}
+}
+
+\newcommand{\stensor}{
+\begin{bmatrix}
+\stxx & \stxy & \stxz \\
+\styx & \styy & \styz \\
+\stzx & \stzy & \stzz 
+\end{bmatrix}
+}
+
+\newcommand{\sstensor}{
+\begin{bmatrix}
+\dx[\stxx] + \dy[\stxy] + \dz[\stxz] \\
+\dx[\styx] + \dy[\styy] + \dz[\styz] \\
+\dx[\stzx] + \dy[\stzy] + \dz[\stzz] 
+\end{bmatrix}
+}
+
+\newcommand{\Dx}{
+\Delta x
+}
+\newcommand{\Dy}{
+\Delta y
+}
+
+\newcommand{\Dz}{
+\Delta z
+}
+
+
+%Matriz de Elasticidade
+\newcommand{\elasticinv}{
+\frac{1}{E}
+\begin{bmatrix}
+        1 & -\upsilon & -\upsilon &             0 &             0 &             0 \\ 
+-\upsilon &         1 & -\upsilon &             0 &             0 &             0 \\ 
+-\upsilon & -\upsilon &         1 &             0 &             0 &             0 \\ 
+        0 &         0 &         0 & 2(1+\upsilon) &             0 &             0 \\ 
+        0 &         0 &         0 &             0 & 2(1+\upsilon) &             0 \\ 
+        0 &         0 &         0 &             0 &             0 & 2(1+\upsilon)
+\end{bmatrix}
+}
+
+
+\newcommand{\elastic}{
+\frac{E}{(1+\upsilon)(1-2\upsilon)}
+\begin{bmatrix}
+1 - \upsilon &     \upsilon &     \upsilon &                     0 &                     0 &                     0 \\ 
+    \upsilon & 1 - \upsilon &     \upsilon &                     0 &                     0 &                     0 \\ 
+    \upsilon &     \upsilon & 1 - \upsilon &                     0 &                     0 &                     0 \\ 
+           0 &            0 &            0 & \frac{1-2\upsilon}{2} &                     0 &                     0 \\ 
+           0 &            0 &            0 &                     0 & \frac{1-2\upsilon}{2} &                     0 \\ 
+           0 &            0 &            0 &                     0 &                     0 & \frac{1-2\upsilon}{2} 
+\end{bmatrix}
+}
+
+
+% Operador S
+
+\newcommand{\sopwithoutb}[1][ ]{
+\dx[#1] &        0 &   0      \\ 
+      0 & \dy[#1]  &   0      \\ 
+      0 &        0 & \dz[#1]  \\ 
+\dy[#1] & \dx[#1]  &   0      \\ 
+\dz[#1] &        0 & \dx[#1]  \\ 
+      0 & \dz[#1]  & \dy[#1]
+}
+
+\newcommand{\sop}[1][ ]{
+\begin{bmatrix}
+\dx[#1] &        0 &   0      \\ 
+      0 & \dy[#1]  &   0      \\ 
+      0 &        0 & \dz[#1]  \\ 
+\dy[#1] & \dx[#1]  &   0      \\ 
+\dz[#1] &        0 & \dx[#1]  \\ 
+      0 & \dz[#1]  & \dy[#1]
+\end{bmatrix}
+}
+
+\newcommand{\sopt}[1][ ]{
+\begin{bmatrix}
+\dx[#1] &       0 &   0     & \dy[#1] & \dz[#1] &   0 \\
+      0 & \dy[#1] &   0     & \dx[#1] &       0 & \dz[#1] \\
+      0 &       0 & \dz[#1] &       0 & \dx[#1] & \dy[#1]
+\end{bmatrix}
+}
+
+% Integral em omega
+
+\newcommand{\omeint}[2][\Omega]{\iiint\limits_{#1} #2 \, d#1}
+\newcommand{\omeeint}[1]{\omeint[\Omega^e]{#1}}
+
+\newcommand{\phiix}{\varphi_i(\mathbf{x})}
+\newcommand{\phijx}{\varphi_j(\mathbf{x})}
+
+\newcommand{\aepp}[2]{a_e(\varphi_{#1}, \varphi_{#2})}
+
+\newcommand{\aepplocal}[2]{a_e(\varphi^e_{#1}, \varphi^e_{#2})}
+
+\newcommand{\aelinha}[1][i]{\aepp{#1}{1} & \aepp{#1}{2} & \cdots & \aepp{#1}{nn}}
+
+\newcommand{\aelocallinha}[1][i]{\aepplocal{#1}{1} & \aepplocal{#1}{2} & \cdots & \aepplocal{#1}{8}}
+
+\newcommand{\aemat}{
+\begin{bmatrix} 
+\aelinha[1] \\ 
+\aelinha[2] \\
+\vdots & \vdots & \ddots & \vdots \\
+\aelinha[nn]
+\end{bmatrix}}
+
+\newcommand{\aematelem}{
+\begin{bmatrix}
+\aelocallinha[1] \\
+\aelocallinha[2] \\
+\vdots & \vdots & \ddots & \vdots \\
+\aelocallinha[8] \\
+\end{bmatrix}
+}
+
+\newcommand{\libvetor}{
+ \begin{bmatrix}
+  u^{1}_x \\
+  u^{1}_y \\  
+  u^{1}_z \\
+
+  \vdots\\
+  u^{nn}_x \\
+  u^{nn}_y \\  
+  u^{nn}_z 
+ \end{bmatrix}
+}
+
+\newcommand{\ldint}[1][i]{(\mathbf{F}, \varphi_{#1})}
+
+
+%Matrizes Griffiths
+\newcommand{\der}{\begin{bmatrix}
+\dxi[N^1]   & \dxi[N^2] & \cdots & \dxi[N^8]      \\
+\deta[N^1]  & \deta[N^2] & \cdots & \deta[N^8]    \\
+\dzeta[N^1] & \dzeta[N^2] & \cdots & \dzeta[N^8]  \\
+\end{bmatrix}
+}
+
+\newcommand{\deriv}{\begin{bmatrix}
+\dx[N^1]   & \dx[N^2] & \cdots & \dx[N^8]    \\
+\dy[N^1]  &  \dy[N^2] & \cdots & \dy[N^8]    \\
+\dz[N^1]  &  \dz[N^2] & \cdots & \dz[N^8]    
+\end{bmatrix}
+}
+
+\newcommand{\entradaae}[2]{
+ (S^T N^{#1})_{x=p_k} D (S N^{#2})_{x=p_k} 
+}

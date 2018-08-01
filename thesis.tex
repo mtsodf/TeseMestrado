@@ -1,0 +1,64 @@
+\documentclass[dsc,pdftex]{coppe}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+
+\makelosymbols
+\makeloabbreviations
+\input{utils}
+
+\begin{document}
+  \title{Método Multiescala aplicado à Geomecânica}
+  \foreigntitle{geomechanics simulador}
+  \author{Mateus}{Oliveira de Figueiredo}
+  \advisor{Prof.}{Nelson}{Maculan Filho}{D.Sc.}
+  \coadvisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
+  \examiner{Prof.}{Examinador 1}{D.Sc.}
+  \examiner{Prof.}{Examinador 2}{Ph.D.}
+  \examiner{Prof.}{Examinador 3}{D.Sc.}
+  \department{PESC}
+  \date{12}{2018}
+  \keyword{Geomecânica}
+  \maketitle
+
+  \frontmatter
+  %\include{dedic}
+  %\include{thanks}
+  %\include{resumo}
+  %\include{abstract}
+  \tableofcontents
+  \listoffigures
+  \listoftables
+  \printlosymbols
+  \printloabbreviations
+
+  \mainmatter
+
+  \chapter{Introdução}
+
+  \input{chap01/modelagem.tex}
+
+  \chapter{Discretização} \label{ch:discretizacao}
+
+  \chapter{Simulação Geomecânica}
+
+  Nesse capítulo, ...
+
+  \input{chap04/sistemas.tex}
+
+  \chapter{Operadores Multiescala}\label{ch:multiescala}
+  \input{chap06/multiescala.tex}
+
+  \chapter{Implementação Computacional}\label{ch:implementacao}
+
+  \chapter{Experimentos Numéricos}
+
+  \chapter{Conclusão e Trabalhos Futuros}
+
+  \backmatter
+  \nocite{*}
+  \bibliographystyle{coppe-unsrt}
+  \bibliography{thesis}
+  \appendix
+  \include{appenA}
+\end{document}

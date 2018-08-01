@@ -1,0 +1,198 @@
+\chapter{Solução de Sistemas Lineares}
+
+Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos sistemas lineares gerados a partir da discretização apresentadas no capítulo \ref{ch:discretizacao}.
+
+
+Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos para solução de sistema lineares são necessários para que a resolução do problema seja possível. A seção \ref{sec:csr} apresenta uma discussão sobre as estruturas de dados para armazenamento das matrizes enquanto que a seção \ref{sec:cg} apresenta o método dos Gradientes Conjugados como solver linear.
+
+
+\section{Estruturas de Dados para Matrizes Esparças} \label{sec:csr}
+
+
+Visto que a quantidade de zeros da matrizes obtidas através da discretização com elementos finitos são a maior parte dos valores não é interessante guardar esses valores em uma matriz densa de duas dimensões. Idealmente, é necessário guardar apenas os valores que são diferentes de zero para economia de memória.
+
+Para exemplificar a quantidade de valores zeros existentes em uma matriz desse tipo, em uma malha estruturada hexaédrica cada nó está conectado com outros 27 (contando consigo mesmo) conforme mostrado na figura \ref{fig:grid2x2_elem3_vermelho}. Desse modo, como cada um dos elementos possui 3 graus de liberdade (x, y, z) cada nó contribui com três equações para o sistema linear e cada uma dessas equações possui $27\times3$ coeficientes não nulos.
+Portanto, a quantidade de não zeros da matriz é:
+
+\begin{equation}
+    nnz = 3 \times nn \times 81 = 243 \times nn
+\end{equation}
+
+Onde $nn$ é a quantidade de nós da malha e $nnz$ a quantidade de não zeros. Portanto, a quantidade de não zeros da matriz é $O(nn)$. Por outro lado, a quantidade de equações é $(3\times nn)^2 $ e portanto da ordem de $O(nn^2)$. Daí, a fração de não zeros de uma matriz é da ordem $O(1/nn)$.
+
+
+Uma ideia simples para guardar esse tipo de matriz consiste em guardar para cada elemento não zero seu valor, sua linha e sua coluna. Esse formato é chamado de \textit{coordinate format} \cite{solverlinear}. Nesse formato três vetores os seguintes vetores são necessários para guardar os valores:
+
+\begin{itemize}
+    \item JR: vetor que guarda a linha de cada entrada (Tamanho $nnz$)
+    \item JC: vetor que guarda a coluna de cada entrada (Tamanho $nnz$)
+    \item AA: vetor que guarda os valores das entrada (Tamanho $nnz$)
+\end{itemize}
+
+
+Assim a matriz
+
+\begin{equation}
+    \begin{bmatrix}
+        1 & 0 & 2 & 0\\ 
+        3 & 4 & 0 & 5\\ 
+        0 & 6 & 7 & 0\\ 
+        0 & 0 & 8 &9 
+    \end{bmatrix}
+\end{equation}
+
+Tem os seguintes vetores associados:
+
+\begin{center}
+    \begin{itemize}
+        \item JR = 1 1 2 2 2 3 3 4 4
+        \item JC = 1 3 1 2 4 2 3 3 4
+        \item AA = 1 2 3 4 5 6 7 8 9
+    \end{itemize}
+\end{center}
+
+É importante perceber que nesse formato, as entradas da matriz podem ser escritas em qualquer ordem. Porém, no exemplo acima, os elementos estão ordenados por linha e pode-se notar que o vetor JR apresenta uma série de valores repetidos. Para tirar proveito dessa repetição, existe outro formato chamado \textit{Compressed Row Format} (CSR) onde o vetor associado as linhas JR é substituido por um vetor IA que é um ponteiro para o vetor de colunas com o início de cada uma das linhas.
+
+No caso, para a matriz acima, tem-se:
+
+\begin{itemize}
+    \item A linha 1 é a primeira e, portanto, $IA(1) = 1$
+    \item A linha 2 começa a partir do elemento 3 do vetor AA e, portanto, $IA(2) = 3$
+    \item A linha 3 começa a partir do elemento 5 do vetor AA e, portanto, $IA(3) = 6$
+    \item A linha 4 começa a partir do elemento 7 do vetor AA e, portanto, $IA(4) = 8$
+\end{itemize}
+
+Assim, para saber os valores de determinada linha $i$ basta olhar os valores das posições $IA(i)$ até $IA(i+1)-1$ do vetor AA com exceção da última linha de acordo com o definido acima (visto que o valor n+1 não está nem definido no vetor). Para que essa afirmação seja válida para toda linha, é adicionada o valor $IA(5) = 10$. De maneira geral, $IA(n+1) = nnz+1$.
+
+
+Os valores dos vetores CSR são portanto:
+
+\begin{center}
+    \begin{itemize}
+        \item IA = 0 2 5 7 9
+        \item JA = 0 2 0 1 3 1 2 2 3
+        \item AA = 1 2 3 4 5 6 7 8 9
+    \end{itemize}
+\end{center}
+
+
+De acordo com \cite{solverlinear}, o formato CSR é provavelmente o mais comum mais popular para guardar matrizes esparças. No caso, a implementação nesse presente trabalho, como é mostrado no capítulo \ref{ch:implementacao}, é feito utilizando esse tipo de estrutura através da biblioteca PETSc \textcopyright.
+
+
+\section{Gradientes Conjugados} \label{sec:cg}
+
+Nessa seção, é apresentado o método dos gradientes conjugados que é utilizado para a solução dos sistemas lineares. Será considerado o seguinte sistema:
+
+\begin{equation} \label{eq:sistemalinear}
+    Ax = b
+\end{equation}
+
+onde $A$ é uma matriz simétrica positiva definida (SPD).
+
+
+Primeiramente, pode-se encontrar um problema de minimização equivalente a \ref{eq:sistemalinear} através da definição da forma quadrática
+
+\begin{equation} \label{eq:quadratica}
+    f(x) = \frac{1}{2}  x^T A x - b^T x + c
+\end{equation}
+
+Para encontrar os pontos extremos da função \ref{eq:quadratica} é necessário calcular os pontos em que o gradiente de $f$ é o vetor nulo. Portanto, é necessário calcular a derivada parcial de $f$ para cada uma das coordenadas. Para facilitar esse cálculo a equação \ref{eq:quadratica} é apresentada em notação indicial em \ref{eq:quadratica_ind}.
+
+
+\begin{equation} \label{eq:quadratica_ind}
+    f(x) = \frac{1}{2} x_i A_{ij} x_j - b_i x_i + c_i
+\end{equation}
+
+
+Aplicando a derivada parcial com relação a uma coordenada $x_k$.
+
+\begin{equation}
+    \dxk[f(x)] = \frac{1}{2}  \dxk[ (x_i A_{ij} x_j) ]- \dxk[b_i x_i]
+\end{equation}
+
+\begin{eqnarray}
+     \dxk[f(x)] & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- \dxk{b_i x_i}+ \dxk{c_i} \\
+                & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- b_k \\  
+                & = & \frac{1}{2} (\dxk[ x_i ]A_{ij} x_j  + x_i A_{ij} \dxk[x_j]) - b_k \\  
+                & = & \frac{1}{2}(A_{kj} x_j  + x_i A_{ik})  - b_k
+\end{eqnarray}
+
+
+Logo, retornando para a notação matricial
+
+
+\begin{equation}
+    \nabla f = \frac{1}{2} (Ax + A^T x) - b
+\end{equation}
+
+
+\begin{equation}
+    \nabla f = \frac{1}{2} (A + A^T) x - b
+\end{equation}
+
+Como $A$ é simétrica ($A^T = A$)
+
+\begin{equation} \label{eq:gradf}
+    \nabla f = A x - b
+\end{equation}
+
+Em um ponto extremo de  $ x_e$ de $f(x)$ tem-se $(\nabla f)|_{x=x_e} = 0 $
+
+\begin{equation}
+    Ax_e - b = 0 
+\end{equation}
+
+\begin{equation}
+    Ax_e = b
+\end{equation}
+
+Portanto, $f(x)$ possui um único ponto extremo $x_e = A^{-1}b$ que é justamente a solução do sistema linear \ref{eq:sistemalinear}. Resta mostrar que $x_e$ é um ponto de mínimo.
+Considerando $x = x_e + e$ com $e \neq 0 $
+
+
+\begin{eqnarray}
+     f(x_e + e) & = & \frac{1}{2} (x_e + e)^T A (x_e + e) - b^T(x_e + e) + c \\
+                & = & \frac{1}{2} (x_e^TAx_e + x_e^TAe + e^TAx_e + e^TAe )- b^T(x_e + e) + c \\
+                & = & \frac{1}{2} x_e^TAx_e -b^Tx_e + c + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te \\
+                & = & f(x_e) + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te \\
+                & = & f(x_e) + \frac{1}{2} ( (A^{-1}b)^TAe + e^TAA^{-1}b + e^TAe ) - b^Te \\
+                & = & f(x_e) + \frac{1}{2} ( b^TA^{-1}Ae + e^Tb + e^TAe ) - b^Te \\
+                & = & f(x_e) + \frac{1}{2} ( b^Te + e^Tb + e^TAe ) - b^Te \\
+                & = & f(x_e) + \frac{1}{2}  e^TAe  + b^Te - b^Te \\
+                & = & f(x_e) + \frac{1}{2}  e^TAe 
+\end{eqnarray}
+
+
+Como $A$ é positiva definida pela definição $e^TAe  > 0$, logo
+
+\begin{equation}
+    f(x_e + e) = f(x_e) + \frac{1}{2}  e^TAe > f(x_e)\rightarrow  f(x_e + e) > f(x_e) \forall e \neq 0
+\end{equation}
+
+
+Assim, $x_e$ é ponto de mínimo global de $x_e$. E o problema de encontra $x$ tal que $Ax = b$ é equivalente a \textit{minimizar} $f(x)$.
+
+Para encontrar o mínimo de $f(x)$ é possível utilizar o método dos gradientes conjugados. O método consiste em partir de um ponto $x_0$ e caminhar em direções conjugadas até que o mínimo local seja encontrado.
+
+Primeiramente, é possível encontrar o ponto de mínimo ao de caminhar a partir ponto inicial $x_0$ e uma direção $d_0$. Dessa forma, sendo $x_1 = x_0 + \alpha d_0$ para encontrar o ponto que minimiza o $f(x_1)$ deve-se ter $\frac{d f(x_1)}{d\alpha} = 0$.
+
+\begin{equation}
+    \frac{df(x_1)}{d \alpha} =  \nabla f(x_1)^T d_0 = 0
+\end{equation}
+
+Pela equação \ref{eq:gradf}, $\nabla f(x_1) = -r_1 $ então:
+
+
+\begin{align}
+     r_1^T r_0                         & =  0 \\
+     r_0^T r_1                         & =  0 \\
+     r_0^T (b - Ax_1)                  & =  0 \\
+     r_0^T (b - A(x_0 - \alpha d_0))   & =  0 \\
+     r_0^T (b - Ax_0  - \alpha A d_0)  & =  0 \\
+     r_0^T (r_0 - \alpha A d_0)        & =  0 \\
+     r_0^T r_0 - \alpha  r_0^T A d_0   & =  0 \\
+     \alpha  r_0^T A d_0               & =  r_0^T r_0 \\
+     \alpha                            & =  \frac{r_0^T r_0}{r_0^T Ad_0} 
+\end{align}
+                                                                           
+O método dos gradientes conjugados em andar em direções conjugadas a cada passo de tempo minimizando $f(x)$ naquela direção. A direção inicial escolhida é 
