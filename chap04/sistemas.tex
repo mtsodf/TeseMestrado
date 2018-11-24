@@ -34,10 +34,10 @@ Assim a matriz
 
 \begin{equation}
     \begin{bmatrix}
-        1 & 0 & 2 & 0\\ 
-        3 & 4 & 0 & 5\\ 
-        0 & 6 & 7 & 0\\ 
-        0 & 0 & 8 &9 
+        1 & 0 & 2 & 0\\
+        3 & 4 & 0 & 5\\
+        0 & 6 & 7 & 0\\
+        0 & 0 & 8 &9
     \end{bmatrix}
 \end{equation}
 
@@ -83,14 +83,14 @@ De acordo com \cite{solverlinear}, o formato CSR é provavelmente o mais comum m
 
 Nessa seção, é apresentado o método dos gradientes conjugados que é utilizado para a solução dos sistemas lineares. Será considerado o seguinte sistema:
 
-\begin{equation} \label{eq:sistemalinear}
+\begin{equation} \label{eq:sistemalinearcg}
     Ax = b
 \end{equation}
 
 onde $A$ é uma matriz simétrica positiva definida (SPD).
 
 
-Primeiramente, pode-se encontrar um problema de minimização equivalente a \ref{eq:sistemalinear} através da definição da forma quadrática
+Primeiramente, pode-se encontrar um problema de minimização equivalente a \ref{eq:sistemalinearcg} através da definição da forma quadrática
 
 \begin{equation} \label{eq:quadratica}
     f(x) = \frac{1}{2}  x^T A x - b^T x + c
@@ -112,8 +112,8 @@ Aplicando a derivada parcial com relação a uma coordenada $x_k$.
 
 \begin{eqnarray}
      \dxk[f(x)] & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- \dxk{b_i x_i}+ \dxk{c_i} \\
-                & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- b_k \\  
-                & = & \frac{1}{2} (\dxk[ x_i ]A_{ij} x_j  + x_i A_{ij} \dxk[x_j]) - b_k \\  
+                & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- b_k \\
+                & = & \frac{1}{2} (\dxk[ x_i ]A_{ij} x_j  + x_i A_{ij} \dxk[x_j]) - b_k \\
                 & = & \frac{1}{2}(A_{kj} x_j  + x_i A_{ik})  - b_k
 \end{eqnarray}
 
@@ -139,7 +139,7 @@ Como $A$ é simétrica ($A^T = A$)
 Em um ponto extremo de  $ x_e$ de $f(x)$ tem-se $(\nabla f)|_{x=x_e} = 0 $
 
 \begin{equation}
-    Ax_e - b = 0 
+    Ax_e - b = 0
 \end{equation}
 
 \begin{equation}
@@ -159,7 +159,7 @@ Considerando $x = x_e + e$ com $e \neq 0 $
                 & = & f(x_e) + \frac{1}{2} ( b^TA^{-1}Ae + e^Tb + e^TAe ) - b^Te \\
                 & = & f(x_e) + \frac{1}{2} ( b^Te + e^Tb + e^TAe ) - b^Te \\
                 & = & f(x_e) + \frac{1}{2}  e^TAe  + b^Te - b^Te \\
-                & = & f(x_e) + \frac{1}{2}  e^TAe 
+                & = & f(x_e) + \frac{1}{2}  e^TAe
 \end{eqnarray}
 
 
@@ -192,7 +192,7 @@ Pela equação \ref{eq:gradf}, $\nabla f(x_1) = -r_1 $ então:
      r_0^T (r_0 - \alpha A d_0)        & =  0 \\
      r_0^T r_0 - \alpha  r_0^T A d_0   & =  0 \\
      \alpha  r_0^T A d_0               & =  r_0^T r_0 \\
-     \alpha                            & =  \frac{r_0^T r_0}{r_0^T Ad_0} 
+     \alpha                            & =  \frac{r_0^T r_0}{r_0^T Ad_0}
 \end{align}
-                                                                           
-O método dos gradientes conjugados em andar em direções conjugadas a cada passo de tempo minimizando $f(x)$ naquela direção. A direção inicial escolhida é 
+
+O método dos gradientes conjugados em andar em direções conjugadas a cada passo de tempo minimizando $f(x)$ naquela direção. A direção inicial escolhida é

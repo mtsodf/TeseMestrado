@@ -18,7 +18,7 @@ Para representar a tensão em um ponto da rocha, é utilizado um tensor de tens�
     \begin{bmatrix}
     \stxx & \stxy & \stxz \\
     \styx & \styy & \styz \\
-    \stzx & \stzy & \stzz 
+    \stzx & \stzy & \stzz
     \end{bmatrix}
 \end{equation}
 
@@ -43,7 +43,7 @@ Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\s
 Para o cálculo da tensão exercida é um determinado plano, basta multiplicar o tensor de tensão por um vetor ortonormal ao plano desejado de maneira que:
 
 \begin{equation}
-T = 
+T =
 \end{equation}
 
 
@@ -62,7 +62,7 @@ Para a direção y, por exemplo, tem-se:
 
 \begin{multline}
    (\stxy - \stxy - \Delta \stxy) \Dy\Dz + (\styy - \styy - \Delta \styy)\Dx\Dz  +\\
-   + (\stzy - \stzy - \Delta\stzy) \Dx\Dy + f_y\Dx\Dy\Dz = 0 
+   + (\stzy - \stzy - \Delta\stzy) \Dx\Dy + f_y\Dx\Dy\Dz = 0
 \end{multline}
 
 \begin{equation}
@@ -78,15 +78,15 @@ Analogamente, para as outras direções, pode-se montar o seguinte sistema de eq
 \begin{equation}
 \label{eq:equilibrio1}
 \left\{\begin{matrix}
- \dx[\stxx] + \dy[\styx] + \dz[\stzx] - f_x & = & 0\\ 
- \dx[\stxy] + \dy[\styy] + \dz[\stzy] - f_y & = & 0\\ 
+ \dx[\stxx] + \dy[\styx] + \dz[\stzx] - f_x & = & 0\\
+ \dx[\stxy] + \dy[\styy] + \dz[\stzy] - f_y & = & 0\\
  \dx[\stxz] + \dy[\styz] + \dz[\stzz] - f_z & = & 0
 \end{matrix}\right.
 \end{equation}
 
 As tensões apresentadas nas equações \ref{eq:equilibrio1} são as atuam no bloco infinitesimal. Acontece que ao tratar de reservatórios de petróleo, estes possuem fluído no volume poroso da rocha (óleo ou água) e, portanto, parte da tensão será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
 
-Experimentalmente foi constado que a equação que rege a tensão efetiva na rocha ($\sigma^\prime$) é dada pela equação \ref{eq:tensaoefetiva} (veja \cite{ResGeomec} cap 02). 
+Experimentalmente foi constado que a equação que rege a tensão efetiva na rocha ($\sigma^\prime$) é dada pela equação \ref{eq:tensaoefetiva} (veja \cite{ResGeomec} cap 02).
 
 \begin{equation}
 \label{eq:tensaoefetiva}
@@ -110,7 +110,7 @@ Assim, as equações \ref{eq:equilibrio1} podem ser reescritas como \ref{eq:equi
 \end{matrix}\right.
 \end{equation}
 
-Ou ainda, escrevendo de forma matricial. 
+Ou ainda, escrevendo de forma matricial.
 
 \begin{equation}
 \label{eq:equilibrio_matriz}
@@ -198,7 +198,7 @@ O estudo de mecânica dos sólidos nos mostra que, na região elástica e materi
 }
 \end{equation}
 
-Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson. 
+Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson.
 
 Já as deformações se relacionam com os deslocamentos pela equação \ref{eq:defor_desloc}.
 
@@ -278,13 +278,13 @@ Assim, é possível rearrumar cada uma das equações da seguinte maneira:
 
 
 \begin{equation}
-\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} - \omeint{(S^TDSu^*)\phiix}              
+\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} - \omeint{(S^TDSu^*)\phiix}
 \end{equation}
 
-É possível remover $u^*$ da equação utilizando \label{eq:edp_geomec} chegando em uma equação dependendo apenas dos graus de liberdade $u^i_x$, $u^i_y$ e $u^i_z$.
+É possível remover $u^*$ da equação utilizando \ref{eq:edp_geomec} chegando em uma equação dependendo apenas dos graus de liberdade $u^i_x$, $u^i_y$ e $u^i_z$.
 
 \begin{equation}
-\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} + \omeint{\mathbf{F}\phiix} \quad \forall     
+\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} + \omeint{\mathbf{F}\phiix} \quad \forall
 \end{equation}
 
 \begin{equation}
@@ -297,14 +297,14 @@ Assim, é possível rearrumar cada uma das equações da seguinte maneira:
 
 
 
-Os próximos passos serão para transformar \ref{eq:garlekin} em uma forma mais simples para resolução. 
+Os próximos passos serão para transformar \ref{eq:garlekin} em uma forma mais simples para resolução.
 
 \begin{equation}
 \omeint{S^T\,D\,S\mathbf{u} \phiix} = \omeint{S^T\sigma \phiix}
 \end{equation}
 
 \begin{equation}
-\omeint{S^T\sigma \phiix} = \omeint{\sstensor \phiix} 
+\omeint{S^T\sigma \phiix} = \omeint{\sstensor \phiix}
 \end{equation}
 
 Definindo, $\sigma_x = (\sigma_{xx}, \sigma_{xy}, \sigma_{xz})$, $\sigma_y = (\sigma_{yx}, \sigma_{yy}, \sigma_{yz})$ e $\sigma_z = (\sigma_{zx}, \sigma_{zy}, \sigma_{zz})$.
@@ -345,7 +345,7 @@ Portanto, pode-se utilizar a seguinte equação em \ref{eq:grad}.
 }
 \end{equation}
 
-Na primeira parcela da integral pode ser utilizado o teorema do divergente. 
+Na primeira parcela da integral pode ser utilizado o teorema do divergente.
 
 
 
@@ -376,7 +376,7 @@ A equação do problema fica, portanto:
 \begin{equation}
 \omeint{
 \begin{bmatrix}
- \sigma_x \nabla \phiix\\  \sigma_y \nabla \phiix \\  \sigma_z \nabla \phiix 
+ \sigma_x \nabla \phiix\\  \sigma_y \nabla \phiix \\  \sigma_z \nabla \phiix
 \end{bmatrix}}
 = \omeint{\mathbf{F}\phiix}
 \end{equation}
@@ -385,7 +385,7 @@ A equação do problema fica, portanto:
 Substituindo os gradientes da equação pelo operador S e o valor das tensões $\sigma$ pela relação constitutiva.
 
 \begin{equation}
-\omeint{S^T \phiix D\,S\mathbf{u} } 
+\omeint{S^T \phiix D\,S\mathbf{u} }
 = \omeint{\mathbf{F}\phiix}
 \end{equation}
 
@@ -404,7 +404,7 @@ Ainda é possível substituir $\mathbf{u}$ pela discretização da equação \re
 }   =  \omeint{\mathbf{F}\phiix} \quad \forall \: i=1,...,nn
 \end{equation}
 
-O próximo passo, é dividir a integral para cada um dos elementos que o domínio foi dividido. 
+O próximo passo, é dividir a integral para cada um dos elementos que o domínio foi dividido.
 
 \begin{equation*}\small
 \sum_{j=1}^{nn} \sum\limits_e \omeeint{S^T \phiix D\,S  \phijx
@@ -418,7 +418,7 @@ O próximo passo, é dividir a integral para cada um dos elementos que o domíni
 Definindo,
 
 \begin{equation} \label{eq:ae_def}
- a_e(\phiix,\phijx) := \omeeint{S^T\phiix D S\phijx}  
+ a_e(\phiix,\phijx) := \omeeint{S^T\phiix D S\phijx}
 \end{equation}
 
 e
@@ -430,7 +430,7 @@ e
 Tem-se,
 
 \begin{equation}\small
-\sum\limits_e \sum_{j=1}^{nn} a_e(\phiix,\phijx)  * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}  
+\sum\limits_e \sum_{j=1}^{nn} a_e(\phiix,\phijx)  * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}
 =  \sum\limits_e \ldint \quad \forall \: i=1,...,nn
 \end{equation}
 
@@ -439,10 +439,10 @@ Pode-se transformar o somatório em $j$ pela multiplicação de uma matriz $3\ti
 
 \begin{equation}\small
 \sum\limits_e  \begin{bmatrix} \aelinha \end{bmatrix}  * \libvetor
-=  \sum\limits_e \ldint \quad 
+=  \sum\limits_e \ldint \quad
 \end{equation}
 \begin{equation*}
-  \forall \: i=1,...,nn   
+  \forall \: i=1,...,nn
 \end{equation*}
 
 
@@ -461,23 +461,23 @@ Como a equação é válida para todo $i=1,...,nn$, é possível juntar todas as
 É importante notar que essa equação apresenta um sistema linear onde as variáveis desconhecidas são os deslocamentos de cada nó. Sobre esse sistema, as seguintes propriedades são necessárias.
 
 \begin{itemize}
-    \item A matriz é simétrica. Pois, 
-    
+    \item A matriz é simétrica. Pois,
+
     \begin{eqnarray}
     a_e(\phiix,\phijx)^T & = & (\omeeint{S^T\phiix D S\phijx})^T \\
                          & = & \omeeint{(S\phijx)^T D^T (S^T\phiix)^T} \\
                          & = & \omeeint{(S^T\phijx) D S \phiix} \\
-                         & = & a_e(\phijx,\phiix) 
-    \end{eqnarray}    
-    
-    \item A matriz é esparça. Cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de hexaedros, cada função de forma é não nula em oito elementos apenas. 
-    
+                         & = & a_e(\phijx,\phiix)
+    \end{eqnarray}
+
+    \item A matriz é esparça. Cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de hexaedros, cada função de forma é não nula em oito elementos apenas.
+
     \item A matriz é positiva definida. {\color{red}TODO: adicionar argumento que a matriz é positiva definida.}
 \end{itemize}
 
 Com a forma do sistema linear montado, resta calcular as entradas da matriz e o vetor do lado direito.
 
-Para o cálculo da matriz, o somatório presente em \ref{eq:sistemalinear} sugere um loop em cada um dos elementos. A figura \ref{fig:elem_func_form_local} mostra um elemento com as funções de forma com numeração local. Nesse caso, apenas oito funções de forma tem valores diferentes de zero nesse domínio. 
+Para o cálculo da matriz, o somatório presente em \ref{eq:sistemalinear} sugere um loop em cada um dos elementos. A figura \ref{fig:elem_func_form_local} mostra um elemento com as funções de forma com numeração local. Nesse caso, apenas oito funções de forma tem valores diferentes de zero nesse domínio.
 
 \begin{figure}[!htbp]
 \label{fig:elem_func_form_local}
@@ -490,11 +490,11 @@ Para o cálculo da matriz, o somatório presente em \ref{eq:sistemalinear} suger
 Considere a numeração local da figura \ref{fig:elem_func_form_local}. Nesse caso, o sobrescrito $e$ nos indica que a numeração que está sendo utilizada é a local do elemento. Considerando, por exemplo, a malha $2\times2\times2$ apresentada em \ref{fig:grid2x2_elem3_vermelho}. O elemento 4 aparece em destaque com os nós pertencentes a ele em vermelho. Nesse caso, comparando com a figura \ref{fig:elem_func_form_local} pode-se associar as numerações da seguinte maneira:
 
 \begin{itemize}
-   \item $\varphi^4_1=\varphi_{17}$ em $\Omega^e$   
-   \item $\varphi^4_2=\varphi_{8}$ em $\Omega^e$  
+   \item $\varphi^4_1=\varphi_{17}$ em $\Omega^e$
+   \item $\varphi^4_2=\varphi_{8}$ em $\Omega^e$
    \item $\vdots$
-   \item $\varphi^4_7=\varphi_{14}$ em $\Omega^e$  
-   \item $\varphi^4_8=\varphi_{11}$ em $\Omega^e$ 
+   \item $\varphi^4_7=\varphi_{14}$ em $\Omega^e$
+   \item $\varphi^4_8=\varphi_{11}$ em $\Omega^e$
 \end{itemize}
 
 
@@ -555,7 +555,7 @@ Note que, essas funções satisfazem as duas propriedades apresentadas em \ref{e
 \begin{figure}[!htbp]
 \label{fig:elemento_base}
 \centering
-\includegraphics[width=6cm]{chap01/elemento_base.png} 
+\includegraphics[width=6cm]{chap01/elemento_base.png}
 \caption{Elemento base (Domínio $\Omega^\xi$)}
 \end{figure}
 
@@ -566,27 +566,27 @@ A associação de um ponto em $\Omega^\xi$ em um ponto em $\Omega^e$ é feito at
 
 \begin{equation}
 \label{eq:isoparametrico}
-\mathbf{x}(\xi, \eta, \zeta) = \sum_{A=1}^{8} N_A(\xi, \eta, \zeta) \mathbf{x^e_A} 
+\mathbf{x}(\xi, \eta, \zeta) = \sum_{A=1}^{8} N_A(\xi, \eta, \zeta) \mathbf{x^e_A}
 \end{equation}
 
 Assim, pode-se aplicar a mudança de variável na integral da equação \ref{eq:ae_def} para o domínio $\Omega^\xi$.
 
-\begin{equation} 
+\begin{equation}
  a_e(\phiix,\phijx) = \omeeint{S^T\phiix D S\phijx} = \omeint[\Omega^\xi]{S^T N^i D S N^j |J|}
 \end{equation}
 
 
-\begin{equation} 
+\begin{equation}
  a_e(\phiix,\phijx) = \int^1_ {-1}\int^1_ {-1}\int^1_ {-1}{S^T N^i D S N^j |J|} \text{d}\xi \text{d}\eta \text{d}\zeta
 \end{equation}
 
-onde $J$ representa a matriz jacobiana. 
+onde $J$ representa a matriz jacobiana.
 
 \begin{equation}
 J = \begin{bmatrix}
 \dxi[x]   &   \dxi[y] &   \dxi[z] \\
 \deta[x]  &  \deta[y] &  \deta[z] \\
-\dzeta[x] & \dzeta[y] & \dzeta[z] 
+\dzeta[x] & \dzeta[y] & \dzeta[z]
 \end{bmatrix}
 \label{eq:jacobiano}
 \end{equation}
@@ -609,15 +609,15 @@ O valor das derivadas do Jacobiano podem ser obtidas derivando a \ref{eq:isopara
 Pode-se perceber também que os somatórios podem ser transformados como a multiplicação de uma matriz linha por uma matriz coluna transformando, por exemplo, \ref{eq:dev_x_xi} em \ref{eq:dev_x_xi_matriz}.
 
 \begin{equation}\label{eq:dev_x_xi_matriz}
-\dxi[x] = 
+\dxi[x] =
 \begin{bmatrix}
  \dxi[N^1]   & \dxi[N^2] & \cdots & \dxi[N^8]
 \end{bmatrix}
 \begin{bmatrix}
-x^1    \\ 
-x^2    \\ 
-\vdots  \\ 
-x^8  
+x^1    \\
+x^2    \\
+\vdots  \\
+x^8
 \end{bmatrix}
 \end{equation}
 
@@ -627,10 +627,10 @@ Com isso, substituindo em \ref{eq:jacobiano} as equações analógas a \ref{eq:d
 \begin{equation}\label{eq:jacobiano_prod}.
 J = \der
 \begin{bmatrix}
-x^1 & y^1 & z^1 \\ 
-x^2 & y^2 & z^2 \\ 
-\vdots & \vdots  & \vdots  \\ 
-x^8 & y^8 & z^8 \\ 
+x^1 & y^1 & z^1 \\
+x^2 & y^2 & z^2 \\
+\vdots & \vdots  & \vdots  \\
+x^8 & y^8 & z^8 \\
 \end{bmatrix}
 \end{equation}
 
