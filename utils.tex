@@ -241,3 +241,12 @@ u_x \\ u_y \\ u_z
 \newcommand{\entradaae}[2]{
  (S^T N^{#1})_{x=p_k} D (S N^{#2})_{x=p_k} 
 }
+
+
+\newcommand{\preconadd}{
+    M^{-1}=M^{-1}_{h} + M^{-1}_{ms}
+}
+
+\newcommand{\preconmult}{
+    M^{-1}=M^{-1}_{h} + M^{-1}_{ms}(I-K_hM^{-1}_{h})
+}
