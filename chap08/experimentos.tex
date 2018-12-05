@@ -135,9 +135,9 @@ Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:p
 
 \subsection{Comparação com Multigrid}
 
-Nessa seção, são apresentadas comparações entre o pré-condicionador multiescala e o solver multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg descrito e implementado em \cite{OlSc2018} . Visto a dificuldade da configuração dos solver multigrid, pois esses exigem uma grande quantidade de parâmetros como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa sessenta diferentes configurações de solver multigrid e seleciona aquele mais eficiente para o problema proposto.
+Nessa seção, são apresentadas comparações entre o pré-condicionador multiescala e o solver multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg descrito e implementado em \cite{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa sessenta diferentes configurações de solver multigrid e seleciona aquele mais eficiente para o problema proposto.
 
-Os resultados para cada uma das matrizes utilizando mostrou que os solver selecionados para todos os casos possuía no máximo 15 níveis multigrid, e como relaxação utilizavam o "Block Gauss Seidel Sweep". Essa variação do Gauss Seidel é aplicada nos dois sentidos, atualizando primeiramente o valor  $x_1$  do vetor e depois uma iteração atualizando primeiro o valor  $x_n$. Outra escolha comum para todos os casos, foi a utilização do multigrid como pré-condicionador para o gradiente conjugado.
+Os resultados para cada uma das matrizes utilizando mostrou que os solver selecionados como parâmetros: no máximo 15 níveis multigrid, como relaxação utilizavam o "Block Gauss Seidel Sweep" e ciclos V. Sobre a relaxação, o Gauss Seidel Sweep é composta pela aplicação da versão é aplicada nos dois sentidos, atualizando primeiramente o valor  $x_1$  do vetor e depois uma iteração atualizando primeiro o valor  $x_n$. Outra escolha comum para todos os casos, foi a utilização do multigrid como pré-condicionador para o gradiente conjugado.
 
 
 A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
@@ -162,7 +162,7 @@ Na figura \ref{fig:reservatorio100x100_2} é apresentado agora a comparação da
 \end{figure}
 
 
-As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B. Nesse caso, o engrossamento de 20x20 é o que resolve o solver em menor tempo e conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
+As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B. Nesse caso, o engrossamento multiescala de 20x20 é o que resolve o solver em menor tempo, conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
 
 
 \begin{figure}[!htbp]
@@ -177,7 +177,7 @@ As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apr
 \label{fig:reservatorio320x320_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
 
@@ -208,22 +208,22 @@ A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} ap
 % \end{figure}
 
 \begin{figure}[!htbp]
-\label{fig:casoD_2}
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-\end{figure}
-
-% \begin{figure}[!htbp]
-% \label{fig:casoE_1}
-% \centering
-% \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
-% \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
-% \end{figure}
-
-\begin{figure}[!htbp]
-\label{fig:casoE_2}
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-\end{figure}
+    \label{fig:casoD_2}
+    \centering
+    \includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
+    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+    \end{figure}
+    
+    % \begin{figure}[!htbp]
+    % \label{fig:casoE_1}
+    % \centering
+    % \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
+    % \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+    % \end{figure}
+    
+    \begin{figure}[!htbp]
+    \label{fig:casoE_2}
+    \centering
+    \includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
+    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+    \end{figure}
