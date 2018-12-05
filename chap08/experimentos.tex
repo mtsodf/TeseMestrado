@@ -11,7 +11,7 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 \multicolumn{1}{|c|}{caso A}        & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
 \multicolumn{1}{|c|}{caso B}        & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
 \multicolumn{1}{|c|}{caso C}        & \multicolumn{1}{c|}{103}         & \multicolumn{1}{c|}{56}          & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso D}        & \multicolumn{1}{c|}{}            & \multicolumn{1}{c|}{}            & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
+\multicolumn{1}{|c|}{caso D}        & \multicolumn{1}{c|}{244}            & \multicolumn{1}{c|}{71}            & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
 \multicolumn{1}{|c|}{caso  E}       & \multicolumn{1}{c|}{582}         & \multicolumn{1}{c|}{336}         & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
 \multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    &  \\
 \multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    & 
@@ -177,11 +177,53 @@ As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apr
 \label{fig:reservatorio320x320_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_2.png}
-\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
 \end{figure}
 
 
-A seguir são apresentados resultados para os casos C, D e E.
+A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} apresentam os resultados para os casos C, D e E. Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32.
+
+
+% \begin{figure}[!htbp]
+% \label{fig:casoC_1}
+% \centering
+% \includegraphics[width=\textwidth]{chap08/figs/casoC_1.png}
+% \caption{Resultados para caso C. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+% \end{figure}
+
+\begin{figure}[!htbp]
+\label{fig:casoC_2}
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/casoC_2.png}
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso C. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\end{figure}
 
 
 
+% \begin{figure}[!htbp]
+% \label{fig:casoD_1}
+% \centering
+% \includegraphics[width=\textwidth]{chap08/figs/casoD_1.png}
+% \caption{Resultados para caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+% \end{figure}
+
+\begin{figure}[!htbp]
+\label{fig:casoD_2}
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\end{figure}
+
+% \begin{figure}[!htbp]
+% \label{fig:casoE_1}
+% \centering
+% \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
+% \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+% \end{figure}
+
+\begin{figure}[!htbp]
+\label{fig:casoE_2}
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\end{figure}
