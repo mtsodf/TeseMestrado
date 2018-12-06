@@ -1,4 +1,4 @@
-Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado em \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida para testar o bom funcionamento do método, comparações do método multiescala como pré-condicionador e resultados do método multiescala como solver linear.
+Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado em \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida, comparações do método multiescala como pré-condicionador e resultados do método multiescala como solver linear.
 
 
 
@@ -21,9 +21,9 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Os testes apresentados são incrementais de forma a testar que todas as opções estão funcionando corretamente.
+Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Nessa seção, três diferentes casos serão abordados para verificar a exatidão do método quando comparado com a solução analítica.
 
-Primeiro, são apresentados casos onde as condições de contorno são de Dirichlet Homogêneas. Esse teste é aplicado no domínio $ \Omega = [0, 2] \times [0, 2]$ com solução apresentada em \ref{eq:solucaoDirichletHomogeneo};
+Primeiro, é apresentado um caso onde as condições de contorno são de Dirichlet Homogêneas. Esse teste tem como domínio $ \Omega = [0, 2] \times [0, 2]$  e como solução a equação apresentada em \ref{eq:solucaoDirichletHomogeneo}.
 
 \begin{equation}\label{eq:solucaoDirichletHomogeneo}
 u = 
@@ -38,7 +38,9 @@ y(-y+2)sen(\pi x))
 \\ 
 x(-x+2)sen(\pi x))
 \end{bmatrix}
-\end{equation}É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
+\end{equation}
+
+É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema de elasticidade linear. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
 
 \begin{equation}\label{eq:ldDiricheletHomogeneo}
 f(x, y) = 
@@ -57,7 +59,7 @@ f(x, y) =
 \end{equation}
 
 
-Assim, o problema \ref{eq:problemaDirichlet}.
+Assim, o problema descrito em \ref{eq:problemaDirichlet} tem justamente a solução apresentada em \ref{eq:solucaoDirichletHomogeneo}.
 
 \begin{equation} \label{eq:problemaDirichlet}
 \begin{matrix}
@@ -70,27 +72,25 @@ u_y (x, y)  =  0, \text{em } \partial \Omega
 \end{matrix}
 \end{equation}
 
-A figura \ref{fig:DirichletHomogeneo} apresenta a comparação entre a solução de um grid fino contra a solução do grid grosso.  
+A figura \ref{fig:DirichletHomogeneo} apresenta a comparação entre a solução de um grid finoe de diferentes tamanhos de elemento grosso. 
+O grid fino é constituído de 160 x 160 elementos. Os elementos grossos utilizados tem tamanhos de  2x2, 4x4, 8x8, 16x16 e 32x32 células finas. 
+Pode-se observar que quanto maior o engrossamento da malha mais distante da solução analítica é encontrada, até chegar um ponto em que a solução
+fica totalmente distorcida. 
 
 \begin{figure}[!htbp]
 \label{fig:DirichletHomogeneo}
 \centering
 \includegraphics[width=6cm]{chap08/figs/DirichletHomogeneoTemp.png}
-\caption{Comparação entre solução do grid fino e do grid grosso. }
+\caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
 \end{figure}
 
-
-O segundo executado é utilizando a mesma solução anterior mas com domínio $\Omega = [0, 2] \times [0, 1]$, mas agora com condição de Neumann homogênea na fronteira $y=1$. Como a solução não mudou, o lado direito continua da mesma forma que o primeiro caso.
-
-A figura \ref{fig:NeumannHomogeneo} apresenta a solução do grid fino contra a solução do grid grosso.
 
 \begin{figure}[!htbp]
-\label{fig:NeumannHomogeneo}
-\centering
-\includegraphics[width=6cm]{chap08/figs/NeumannHomogeneoTemp.png}
-\caption{Comparação entre solução do grid fino e do grid grosso. }
+    \label{fig:graficoHomogeneo}
+    \centering
+    \includegraphics[width=6cm]{chap08/figs/result_analiticos.png}
+    \caption{Quantidade de iterações para resolver sistema com gradiente conjugado e ILU(0) e Norma relativa com a solução analítica.}
 \end{figure}
-
 
 
 \section{Método Multiescala como pré-condicionador}
@@ -99,11 +99,10 @@ A figura \ref{fig:NeumannHomogeneo} apresenta a solução do grid fino contra a 
 
 O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($M_{ms}$) em conjunto com o um pré-condicionador ($M_h$) no grid fino  de forma multiplicativa. Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequencia são eliminados pelo pré-condicionador multiescala. Esse acoplamento tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores utilização desse tipo de acoplamento pode trazer ganhos na redução do tempo de simulação do sistema. 
 
-Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:precondcasoAcomp} e \ref{tab:precondcasoBcomp} mostram a quantidade de iterações feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
+Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
 
 
-
-\begin{table}[]\label{tab:precondcasoAcomp}
+\begin{table}[]\label{table:precondcasoAcomp}
 \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -117,7 +116,7 @@ Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:p
 \end{table}
 
 
-\begin{table}[]\label{tab:precondcasoBcomp}
+\begin{table}[]\label{table:precondcasoBcomp}
 \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso B}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
