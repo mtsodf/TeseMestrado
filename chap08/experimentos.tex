@@ -1,5 +1,4 @@
-Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado em \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida para testar o bom funcionamento do método, comparações do método multiescala como pré-condicionador e resultados do método multiescala como solver linear.
-
+Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado no capítulo \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida para testar o bom funcionamento do método e comparações do método multiescala como pré-condicionador contra solver multigrid.
 
 
 \begin{table}[]
@@ -20,6 +19,18 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 
 \section{Soluções Analíticas}
+
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador da equação \ref{eq:edp_geomec}. Para isso, foi montado teste semelhante ao mostrado em \cite{irina}. O teste consiste em encontrar solução para o problema que possui solução analítica de acordo com a equação mostrada em \ref{eq:irinasol}
+
+
+\begin{equation} \label{eq:irinasol}
+  \begin{aligned}
+  u_x = 10^{-5} sen(\frac{\pi x}{L}) sen(\frac{\pi y}{W})  \\
+  u_y = 10^{-5} sen(\frac{\pi (L-x)}{L}) sen(\frac{\pi x}{W})
+  \end{aligned}
+\end{equation}
+
+
 
 Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Os testes apresentados são incrementais de forma a testar que todas as opções estão funcionando corretamente.
 
