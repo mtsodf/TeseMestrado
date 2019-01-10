@@ -34,7 +34,8 @@ Inicialmente, é necessário atestar que o código de elementos finitos está re
 
 Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Os testes apresentados são incrementais de forma a testar que todas as opções estão funcionando corretamente.
 
-Primeiro, são apresentados casos onde as condições de contorno são de Dirichlet Homogêneas. Esse teste é aplicado no domínio $ \Omega = [0, 2] \times [0, 2]$ com solução apresentada em \ref{eq:solucaoDirichletHomogeneo};
+
+Primeiro, é apresentado um caso onde as condições de contorno são de Dirichlet Homogêneas. Esse teste tem como domínio $ \Omega = [0, 2] \times [0, 2]$  e como solução a equação apresentada em \ref{eq:solucaoDirichletHomogeneo}.
 
 \begin{equation}\label{eq:solucaoDirichletHomogeneo}
 u = 
@@ -49,7 +50,9 @@ y(-y+2)sen(\pi x))
 \\ 
 x(-x+2)sen(\pi x))
 \end{bmatrix}
-\end{equation}É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
+\end{equation}
+
+É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema de elasticidade linear. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
 
 \begin{equation}\label{eq:ldDiricheletHomogeneo}
 f(x, y) = 
@@ -68,7 +71,7 @@ f(x, y) =
 \end{equation}
 
 
-Assim, o problema \ref{eq:problemaDirichlet}.
+Assim, o problema descrito em \ref{eq:problemaDirichlet} tem justamente a solução apresentada em \ref{eq:solucaoDirichletHomogeneo}.
 
 \begin{equation} \label{eq:problemaDirichlet}
 \begin{matrix}
@@ -81,27 +84,25 @@ u_y (x, y)  =  0, \text{em } \partial \Omega
 \end{matrix}
 \end{equation}
 
-A figura \ref{fig:DirichletHomogeneo} apresenta a comparação entre a solução de um grid fino contra a solução do grid grosso.  
+A figura \ref{fig:DirichletHomogeneo} apresenta a comparação entre a solução de um grid finoe de diferentes tamanhos de elemento grosso. 
+O grid fino é constituído de 160 x 160 elementos. Os elementos grossos utilizados tem tamanhos de  2x2, 4x4, 8x8, 16x16 e 32x32 células finas. 
+Pode-se observar que quanto maior o engrossamento da malha mais distante da solução analítica é encontrada, até chegar um ponto em que a solução
+fica totalmente distorcida. 
 
 \begin{figure}[!htbp]
 \label{fig:DirichletHomogeneo}
 \centering
 \includegraphics[width=6cm]{chap08/figs/DirichletHomogeneoTemp.png}
-\caption{Comparação entre solução do grid fino e do grid grosso. }
+\caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
 \end{figure}
 
-
-O segundo executado é utilizando a mesma solução anterior mas com domínio $\Omega = [0, 2] \times [0, 1]$, mas agora com condição de Neumann homogênea na fronteira $y=1$. Como a solução não mudou, o lado direito continua da mesma forma que o primeiro caso.
-
-A figura \ref{fig:NeumannHomogeneo} apresenta a solução do grid fino contra a solução do grid grosso.
 
 \begin{figure}[!htbp]
-\label{fig:NeumannHomogeneo}
-\centering
-\includegraphics[width=6cm]{chap08/figs/NeumannHomogeneoTemp.png}
-\caption{Comparação entre solução do grid fino e do grid grosso. }
+    \label{fig:graficoHomogeneo}
+    \centering
+    \includegraphics[width=6cm]{chap08/figs/result_analiticos.png}
+    \caption{Quantidade de iterações para resolver sistema com gradiente conjugado e ILU(0) e Norma relativa com a solução analítica.}
 \end{figure}
-
 
 
 \section{Método Multiescala como pré-condicionador}
@@ -110,11 +111,10 @@ A figura \ref{fig:NeumannHomogeneo} apresenta a solução do grid fino contra a 
 
 O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($M_{ms}$) em conjunto com o um pré-condicionador ($M_h$) no grid fino  de forma multiplicativa. Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequencia são eliminados pelo pré-condicionador multiescala. Esse acoplamento tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores utilização desse tipo de acoplamento pode trazer ganhos na redução do tempo de simulação do sistema. 
 
-Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:precondcasoAcomp} e \ref{tab:precondcasoBcomp} mostram a quantidade de iterações feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
+Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
 
 
-
-\begin{table}[]\label{tab:precondcasoAcomp}
+\begin{table}[]\label{table:precondcasoAcomp}
 \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -128,7 +128,7 @@ Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:p
 \end{table}
 
 
-\begin{table}[]\label{tab:precondcasoBcomp}
+\begin{table}[]\label{table:precondcasoBcomp}
 \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso B}
 \centering
 \begin{tabular}{|c|c|c|c|c|}
@@ -146,9 +146,9 @@ Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{tab:p
 
 \subsection{Comparação com Multigrid}
 
-Nessa seção, são apresentadas comparações entre o pré-condicionador multiescala e o solver multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg descrito e implementado em \cite{OlSc2018} . Visto a dificuldade da configuração dos solver multigrid, pois esses exigem uma grande quantidade de parâmetros como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa sessenta diferentes configurações de solver multigrid e seleciona aquele mais eficiente para o problema proposto.
+Nessa seção, são apresentadas comparações entre o pré-condicionador multiescala e o solver multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg descrito e implementado em \cite{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa sessenta diferentes configurações de solver multigrid e seleciona aquele mais eficiente para o problema proposto.
 
-Os resultados para cada uma das matrizes utilizando mostrou que os solver selecionados para todos os casos possuía no máximo 15 níveis multigrid, e como relaxação utilizavam o "Block Gauss Seidel Sweep". Essa variação do Gauss Seidel é aplicada nos dois sentidos, atualizando primeiramente o valor  $x_1$  do vetor e depois uma iteração atualizando primeiro o valor  $x_n$. Outra escolha comum para todos os casos, foi a utilização do multigrid como pré-condicionador para o gradiente conjugado.
+Os resultados para cada uma das matrizes utilizando mostrou que os solver selecionados como parâmetros: no máximo 15 níveis multigrid, como relaxação utilizavam o "Block Gauss Seidel Sweep" e ciclos V. Sobre a relaxação, o Gauss Seidel Sweep é composta pela aplicação da versão é aplicada nos dois sentidos, atualizando primeiramente o valor  $x_1$  do vetor e depois uma iteração atualizando primeiro o valor  $x_n$. Outra escolha comum para todos os casos, foi a utilização do multigrid como pré-condicionador para o gradiente conjugado.
 
 
 A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
@@ -173,7 +173,7 @@ Na figura \ref{fig:reservatorio100x100_2} é apresentado agora a comparação da
 \end{figure}
 
 
-As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B. Nesse caso, o engrossamento de 20x20 é o que resolve o solver em menor tempo e conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
+As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B. Nesse caso, o engrossamento multiescala de 20x20 é o que resolve o solver em menor tempo, conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
 
 
 \begin{figure}[!htbp]
@@ -188,7 +188,7 @@ As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apr
 \label{fig:reservatorio320x320_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
 
@@ -219,22 +219,22 @@ A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} ap
 % \end{figure}
 
 \begin{figure}[!htbp]
-\label{fig:casoD_2}
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-\end{figure}
-
-% \begin{figure}[!htbp]
-% \label{fig:casoE_1}
-% \centering
-% \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
-% \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
-% \end{figure}
-
-\begin{figure}[!htbp]
-\label{fig:casoE_2}
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-\end{figure}
+    \label{fig:casoD_2}
+    \centering
+    \includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
+    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+    \end{figure}
+    
+    % \begin{figure}[!htbp]
+    % \label{fig:casoE_1}
+    % \centering
+    % \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
+    % \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+    % \end{figure}
+    
+    \begin{figure}[!htbp]
+    \label{fig:casoE_2}
+    \centering
+    \includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
+    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+    \end{figure}
