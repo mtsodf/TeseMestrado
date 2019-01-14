@@ -20,7 +20,9 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador da equação \ref{eq:edp_geomec}. Para isso, foi montado teste semelhante ao mostrado em \cite{irina}. O teste consiste em encontrar solução para o problema que possui solução analítica de acordo com a equação mostrada em \ref{eq:irinasol}
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador da equação \ref{eq:edp_geomec}. 
+Para isso, foi montado teste semelhante ao mostrado em \cite{irina}, teste consiste em encontrar solução para o problema que possui solução analítica de acordo com a equação mostrada em \ref{eq:irinasol} 
+em um domínio $L \times W$.
 
 
 \begin{equation} \label{eq:irinasol}
@@ -30,9 +32,74 @@ Inicialmente, é necessário atestar que o código de elementos finitos está re
   \end{aligned}
 \end{equation}
 
+Dada essa solução, é possível calcular o operador do lado direito aplicando o operador e obtendo a função $f: R^2 \rightarrow R^2$ apresentada em \ref{eq:irinald}
+
+\begin{equation} \label{eq:irinald}
+f(x, y) = 
+\left[\begin{matrix}\frac{E \left(- 2 v + \pi^{2} y \left(v - 1\right) \left(y - 2\right) + 1\right) \sin{\left (\pi x \right )}}{\left(v + 1\right) \left(2 v - 1\right)} \\ \frac{\pi E \left(y - 1\right) \cos{\left (\pi x \right )}}{\left(v + 1\right) \left(2 v - 1\right)}\end{matrix}\right]
+\end{equation}
+
+Dessa forma, as equações que representam o problema resolvido são apresentadas em \ref{eq:irinaproblem}
+\begin{equation}\label{eq:irinaproblem}
+    \begin{aligned}
+        S^T C S u = f(x, y) \\
+        u(x,y) = [0, 0]^T, \text{ em } \Gamma \\
+        L = W = 10
+    \end{aligned}
+\end{equation}
+
+
+O erro entre a solução calculada pelo método dos elementos finitos pode então ser comparada
+com a solução analítica pode ser calculado conforme a equação 
+
+\begin{equation} \label{eq:erroAnalitico}
+    \epsilon_{inf} =\frac{|u_{fem} - u_{analitico}|}{|u_{analitico}|}
+\end{equation}
+
+onde $u_{analitico} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})] ^ T$ e $u_{fem}$ é a solucão obtida com o método dos elementos finitos. Esse erro é mostrado na \ref{fig:SecondOrderTest} onde no eixo x 
+está plotado no eixo x o logaritmo do tamanho de cada elemento e no eixo y o logaritmo do erro analítico também mostra uma reta de coeficiente angular $2$ para comparação com um decaimento
+quadrático do erro em função do tamanho de cada elemento da malha.
+
+\begin{figure}[!htbp]
+    \label{fig:SecondOrderTest}
+    \centering
+    \includegraphics[width=7cm]{chap08/figs/SecondErrorTest.png}
+    \caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
+\end{figure}
+    
+Um segundo caso com resultado analítico é a condição de cisalhamento puro (Simple Shear). 
+Nesse caso, o problema é definido na forma apresentada em \ref{eq:simpleshear}. A solução
+é dada por $u(x,y) = [0, y]^T$. Portanto, dado que o a solução é um polinomio do primeiro grau,
+essa pode ser representada pelo espaço gerado pelas funções de base bilineares e, então,
+os erros de truncamento nesse caso não existem ficando apenas com erros de arredondamento.
+
+\begin{equation}\label{eq:simpleshear}
+    \begin{aligned}
+        S^T C S u = 0 \\
+        u(x,y) = [10^{-6}, 0]^T, \text{ em } {x, y \in \Gamma | y \neq 1} \\
+        u(x,y) = [10^{-6}y, 0]^T, \text{ em } {x, y \in \Gamma | x = 0 \text{ ou } x = 1} \\
+        u(x,y) = [0, 0]^T, \text{ em } y=0
+    \end{aligned}
+\end{equation}
+
+A variação do erro com o tamanho da malha é apresentado na figura \ref{fig:SecondErrorTestSimpleShear} e pode-se observar que
+nesse caso o erro relativo menor que $10^{-12}$ que é bem menor que do caso anterior por conta do erro de truncamento ser zero e também
+não decai com o tamanho da malha.
+
+\begin{figure}[!htbp]
+    \label{fig:SecondErrorTestSimpleShear}
+    \centering
+    \includegraphics[width=7cm]{chap08/figs/SecondErrorTestSimpleShear.png}
+    \caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
+\end{figure}
+
+Atestado o bom funcionamento do método dos elementos finitos para solução de problemas com a solução
+analítica conhecida, será aplicado agora o método multiescala para verificar o seu correto funcionamento.
+
 
 
 Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Os testes apresentados são incrementais de forma a testar que todas as opções estão funcionando corretamente.
+
 
 
 Primeiro, é apresentado um caso onde as condições de contorno são de Dirichlet Homogêneas. Esse teste tem como domínio $ \Omega = [0, 2] \times [0, 2]$  e como solução a equação apresentada em \ref{eq:solucaoDirichletHomogeneo}.
@@ -53,6 +120,7 @@ x(-x+2)sen(\pi x))
 \end{equation}
 
 É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema de elasticidade linear. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
+
 
 \begin{equation}\label{eq:ldDiricheletHomogeneo}
 f(x, y) = 
@@ -109,39 +177,48 @@ fica totalmente distorcida.
 
 \subsection{Comparação entre pré-condicionadores aditivos e multiplicativos}
 
-O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($M_{ms}$) em conjunto com o um pré-condicionador ($M_h$) no grid fino  de forma multiplicativa. Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequencia são eliminados pelo pré-condicionador multiescala. Esse acoplamento tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores utilização desse tipo de acoplamento pode trazer ganhos na redução do tempo de simulação do sistema. 
+O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($M_{ms}$) em conjunto com o um pré-condicionador ($M_h$) no grid fino de forma multiplicativa. 
+Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequencia são eliminados pelo pré-condicionador multiescala. 
+O acoplamento multiplicativo tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores
+e, portanto, o número de iterações tem que ser reduzido o suficiente para compensar todas essas operações. Um alternativa é aplicação
+dos pré-condicionadores de forma aditiva, pois nesse caso não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador
+aditivo é que caso os dois pré-condicionadores sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente
+com o gradiente conjugado para a solução dos sistemas lineares.
 
-Foram utilizados o caso A e caso B para essa comparação. As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
 
+Assim, os casoA e casoB foram utilizados para a comparação do número de iterações entre os dois pré-condicionadores junto 
+com o método Bicgstab dado que o pré-condicionador multiplicativo não necessariamente é simétrico. Nesses testes o pré-condicionador $M_h$ utilizado foi o ILU(0).
+
+As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
 
 \begin{table}[]\label{table:precondcasoAcomp}
-\caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A}
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Precondicionador\\ Elemento Grosso\end{tabular}} & \multicolumn{2}{c|}{$\preconmult$} & \multicolumn{2}{c|}{$\preconadd$} \\ \cline{2-5} 
-                                                                                             & Iterações      & Resíduo           & Iterações      & Resíduo          \\ \hline
-2x2                                                                                        & 6              & 2.000986e-07      & 9              & 9.330103e-07     \\ \hline
-5x5                                                                                          & 11             & 7.823222e-07      & 15             & 5.421610e-07     \\ \hline
-10x10                                                                                          & 20             & 6.668921e-07      & 24             & 8.444513e-07     \\ \hline
-\end{tabular}
+    \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento do nível grosso.}
+    \begin{tabular}{c|c|l|c|l|}
+
+    \cline{2-5}
+                                          & \multicolumn{4}{c|}{Pré-condicionador}                                                        \\ \cline{2-5} 
+                                          & \multicolumn{2}{c|}{$\preconmult$}               & \multicolumn{2}{c|}{$\preconadd$}                \\ \hline
+    \multicolumn{1}{|c|}{Elemento Grosso} & Iterações & \multicolumn{1}{c|}{Resíduo}      & Iterações & \multicolumn{1}{c|}{Resíduo}      \\ \hline
+    \multicolumn{1}{|c|}{2x2}             & 7         & \multicolumn{1}{c|}{1.038308e-11} & 9         & \multicolumn{1}{c|}{8.186640e-12} \\ \hline
+    \multicolumn{1}{|c|}{5x5}             & 16        & 1.720391e-11                      & 17        & 2.063517e-11                      \\ \hline
+    \multicolumn{1}{|c|}{10x10}           & 25        & 1.872316e-11                      & 28        & 5.663356e-12                      \\ \hline
+    \multicolumn{1}{|c|}{20x20}           & 38        & 1.643261e-11                      & 38        & 2.842643e-11                      \\ \hline
+    \end{tabular}
 \end{table}
 
 
 \begin{table}[]\label{table:precondcasoBcomp}
-\caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso B}
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Precondicionador\\ Elemento grosso\end{tabular}} & \multicolumn{2}{c|}{$\preconmult$} & \multicolumn{2}{c|}{$\preconadd$} \\ \cline{2-5} 
-                                                                                             & Iterações      & Resíduo           & Iterações      & Resíduo          \\ \hline
-32x32                                                                                        & 66             & 9.892304e-07      & 72             & 9.232924e-07     \\ \hline
-64x64                                                                                        & 115            & 8.366432e-07      & 115            & 8.845719e-07     \\ \hline
-80x80                                                                                        & 126            & 8.811373e-07      & 124            & 9.607785e-07     \\ \hline
-\end{tabular}
+    \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso B utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento do nível grosso.}
+    \begin{tabular}{c|c|l|c|l|}
+    \cline{2-5}
+                                          & \multicolumn{4}{c|}{Pré-condicionador}                                                        \\ \cline{2-5} 
+                                          & \multicolumn{2}{c|}{$\preconmult$}               & \multicolumn{2}{c|}{$\preconadd$}                \\ \hline
+    \multicolumn{1}{|c|}{Elemento Grosso} & Iterações & \multicolumn{1}{c|}{Resíduo}      & Iterações & \multicolumn{1}{c|}{Resíduo}      \\ \hline
+    \multicolumn{1}{|c|}{32x32}           & 86        & \multicolumn{1}{c|}{4.352864e-11} & 80        & \multicolumn{1}{c|}{4.187004e-11} \\ \hline
+    \multicolumn{1}{|c|}{64x64}           & 126       & 4.645286e-11                      & 119       & 2.214093e-11                      \\ \hline
+    \multicolumn{1}{|c|}{80x80}           & 133       & 4.939883e-11                      & 135       & 3.432757e-11                      \\ \hline
+    \end{tabular}
 \end{table}
-
-
 
 
 \subsection{Comparação com Multigrid}
