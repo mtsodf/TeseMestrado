@@ -69,15 +69,15 @@ quadrático do erro em função do tamanho de cada elemento da malha.
     
 Um segundo caso com resultado analítico é a condição de cisalhamento puro (Simple Shear). 
 Nesse caso, o problema é definido na forma apresentada em \ref{eq:simpleshear}. A solução
-é dada por $u(x,y) = [0, y]^T$. Portanto, dado que o a solução é um polinomio do primeiro grau,
+é dada por $u(x,y) = [y, 0]^T$. Portanto, dado que o a solução é um polinomio do primeiro grau,
 essa pode ser representada pelo espaço gerado pelas funções de base bilineares e, então,
 os erros de truncamento nesse caso não existem ficando apenas com erros de arredondamento.
 
 \begin{equation}\label{eq:simpleshear}
     \begin{aligned}
         S^T C S u = 0 \\
-        u(x,y) = [10^{-6}, 0]^T, \text{ em } {x, y \in \Gamma | y \neq 1} \\
-        u(x,y) = [10^{-6}y, 0]^T, \text{ em } {x, y \in \Gamma | x = 0 \text{ ou } x = 1} \\
+        u(x,y) = [10^{-6}, 0]^T, \text{ em } \{x, y \in \Gamma | y \neq 1\} \\
+        u(x,y) = [10^{-6}y, 0]^T, \text{ em } \{x, y \in \Gamma | x = 0 \text{ ou } x = 1\} \\
         u(x,y) = [0, 0]^T, \text{ em } y=0
     \end{aligned}
 \end{equation}
@@ -189,7 +189,11 @@ com o gradiente conjugado para a solução dos sistemas lineares.
 Assim, os casoA e casoB foram utilizados para a comparação do número de iterações entre os dois pré-condicionadores junto 
 com o método Bicgstab dado que o pré-condicionador multiplicativo não necessariamente é simétrico. Nesses testes o pré-condicionador $M_h$ utilizado foi o ILU(0).
 
-As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos feita pelos pré-condicionadores aplicados a solução do sistema desses dois reservatórios. 
+As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos feita pelos pré-condicionadores aplicados a solução do sistema. 
+
+É importante notar que a quantidade de iterações é bem próxima, mostrando que a quantidade
+nos problemas apresentados é melhor utilizar o pré-condicionador aditivo em relação ao pré-condicionador multiplicativo. Dessa forma, os próximos
+testes serão feito utilizando com o solver o Gradiente Conjugado.
 
 \begin{table}[]\label{table:precondcasoAcomp}
     \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento do nível grosso.}
@@ -223,17 +227,24 @@ As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a
 
 \subsection{Comparação com Multigrid}
 
-Nessa seção, são apresentadas comparações entre o pré-condicionador multiescala e o solver multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg descrito e implementado em \cite{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa sessenta diferentes configurações de solver multigrid e seleciona aquele mais eficiente para o problema proposto.
+Nessa seção, são apresentadas comparações entre o método multiescala e o método multigrid. Para esse comparação foi utilizado o solver multigrid Pyamg, que é um solver multigrid  descrito e implementado em \cite{OlSc2018}. 
+Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script solver\_diagnotics.py disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa diferentes configurações de solver multigrid para uma dada matriz e seleciona aquele mais eficiente para o problema proposto.
 
-Os resultados para cada uma das matrizes utilizando mostrou que os solver selecionados como parâmetros: no máximo 15 níveis multigrid, como relaxação utilizavam o "Block Gauss Seidel Sweep" e ciclos V. Sobre a relaxação, o Gauss Seidel Sweep é composta pela aplicação da versão é aplicada nos dois sentidos, atualizando primeiramente o valor  $x_1$  do vetor e depois uma iteração atualizando primeiro o valor  $x_n$. Outra escolha comum para todos os casos, foi a utilização do multigrid como pré-condicionador para o gradiente conjugado.
+Os resultados para cada uma das matrizes mostrou um solver comum a todas as matrizes que possuia os seguintes parâmetros:
 
+\begin{itemize}
+    \item máximo de quinze níveis multigrid
+    \item relaxação "Block Gauss Seidel Sweep" 
+    \item ciclos V
+    \item multigrid como pré-condicionador para o Gradiente Conjugado
+\end{itemize}
 
 A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
 
 \begin{figure}[!htbp]
 \label{fig:reservatorio100x100_1}
 \centering
-\includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.png}
+\includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.eps}
 \caption{Resultados para caso A. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
