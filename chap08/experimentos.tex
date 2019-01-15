@@ -244,13 +244,13 @@ A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do siste
 \begin{figure}[!htbp]
 \label{fig:reservatorio100x100_1}
 \centering
-\includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.eps}
+\includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.png}
 \caption{Resultados para caso A. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
-Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre pois a solução do problema grosso se torna cada vez mais distante da solução  original quanto mais a malha perde resolução. Porém, quanto mais grossa a malha, mais rapidamente o sistema linear é resolvido, portanto, existe uma solução de compromisso entre o engrossamento da malha e a quantidade de iterações que serão necessárias para resolver o sistema linear. No caso A, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 8x8 elementos finos. 
+Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre pois a solução do problema grosso se torna cada vez mais distante da solução  original. Entretanto, quanto mais grossa a malha, mais fácil o sistema linear grosso e, portanto, existe uma solução de compromisso entre o engrossamento da malha e a quantidade de iterações que serão necessárias para resolver o sistema linear. No caso A, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 8x8 elementos finos. 
 
-Na figura \ref{fig:reservatorio100x100_2} é apresentado agora a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. Pode-se notar que apesar da redução de iterações dos método multiescala e do método multigrid, os pré-condicionadores ILU(0) e ILU(1) são mais eficientes na resolução do sistema. 
+Na figura \ref{fig:reservatorio100x100_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. Pode-se notar que apesar da redução de iterações dos método multiescala e do método multigrid, os pré-condicionadores ILU(0) e ILU(1) são mais eficientes na resolução do sistema. 
 
 
 \begin{figure}[!htbp]
