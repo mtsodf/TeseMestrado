@@ -239,18 +239,26 @@ Os resultados para cada uma das matrizes mostrou um solver comum a todas as matr
     \item multigrid como pré-condicionador para o Gradiente Conjugado
 \end{itemize}
 
-A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
+A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado para o caso A. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
 
 \begin{figure}[!htbp]
 \label{fig:reservatorio100x100_1}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.png}
-\caption{Resultados para caso A. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
+\caption{Resultados para caso A. À esquerda Histórico do resíduo relativo ao longo das iterações. 
+Ao centro, tempo do solver em segundos. À direita o tempo do solver por iteração. }
 \end{figure}
 
-Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre pois a solução do problema grosso se torna cada vez mais distante da solução  original. Entretanto, quanto mais grossa a malha, mais fácil o sistema linear grosso e, portanto, existe uma solução de compromisso entre o engrossamento da malha e a quantidade de iterações que serão necessárias para resolver o sistema linear. No caso A, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 8x8 elementos finos. 
+Um primeiro ponto a se observar no gráfico da esquerda é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. 
+Isso ocorre pois a solução do problema grosso se torna cada vez mais distante da solução da malha fina fazendo com que o pré-condicionador funcione pior. 
+Entretanto, quanto mais grossa a malha, mais fácil a solução sistema linear grosso e, portanto, existe uma solução de compromisso 
+entre o engrossamento da malha e o tempo de execução. É importante lembrar também que sempre é necessário pagar o custo da multiplicação pelo
+operador de prolongamento e de restrição que independe do nível de engrossamento, por conta disso, o tempo da iteração do engrossamento 16x16
+é semelhante ao 20x20. No caso A, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 16x16 elementos finos. 
 
-Na figura \ref{fig:reservatorio100x100_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. Pode-se notar que apesar da redução de iterações dos método multiescala e do método multigrid, os pré-condicionadores ILU(0) e ILU(1) são mais eficientes na resolução do sistema. 
+Na figura \ref{fig:reservatorio100x100_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado 
+utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. 
+ode-se notar que apesar da redução de iterações dos método multiescala e do método multigrid, os pré-condicionadores ILU(0) e ILU(1) são mais eficientes na resolução do sistema. 
 
 
 \begin{figure}[!htbp]
@@ -261,7 +269,10 @@ Na figura \ref{fig:reservatorio100x100_2} é apresentado a comparação da solu�
 \end{figure}
 
 
-As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B. Nesse caso, o engrossamento multiescala de 20x20 é o que resolve o solver em menor tempo, conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
+As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apresentam os mesmos resultados para o caso B.
+Nesse caso, o engrossamento multiescala de 20x20 é o que resolve o solver em menor tempo, conseguindo inclusive superar o tempo de solução com o solver pré-condicionador ILU(1).
+O tempo de solução com MS+ILU(1) tem uma melhora de 11,4\% em relação ao tempo do ILU(0). Quando comparado MS+ILU(1) contra ILU(1) o tempo de execução é 45,7\% tempo menor.
+Além disso, o Pyamg não conseguiu convergir para a solução do problema, parando a execução quando o resíduo atingiu a casa dos $10^{-3}$
 
 
 \begin{figure}[!htbp]
@@ -280,22 +291,15 @@ As figuras \ref{fig:reservatorio320x320_1} e \ref{fig:reservatorio320x320_2} apr
 \end{figure}
 
 
+A seguir são apresentados resultados para o corte dos modelos D e E respectivamente nas figuras \ref{fig:casoD_2} e \ref{fig:casoE_2}. 
+São apresentadas apenas a comparação entre os pré-condicionadores multiescala, Pyamg, ILU(0) e ILU(1). 
+
+
+
+
+
 A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} apresentam os resultados para os casos C, D e E. Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32.
 
-
-% \begin{figure}[!htbp]
-% \label{fig:casoC_1}
-% \centering
-% \includegraphics[width=\textwidth]{chap08/figs/casoC_1.png}
-% \caption{Resultados para caso C. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
-% \end{figure}
-
-\begin{figure}[!htbp]
-\label{fig:casoC_2}
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/casoC_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso C. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-\end{figure}
 
 
 
