@@ -47,10 +47,10 @@ está plotado no eixo x o logaritmo do tamanho de cada elemento e no eixo y o lo
 quadrático do erro em função do tamanho de cada elemento da malha.
 
 \begin{figure}[!htbp]
+    \caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
     \label{fig:SecondOrderTest}
     \centering
     \includegraphics[width=7cm]{chap08/figs/SecondErrorTest.png}
-    \caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
 \end{figure}
     
 Um segundo caso com resultado analítico é a condição de cisalhamento puro (Simple Shear). 
@@ -84,13 +84,12 @@ analítica conhecida, será aplicado agora o método multiescala para verificar 
 
 \section{Modelos de simulação utilizados}
 
-Os resultados das próximas seções serão apresentados em relação aos modelos apresentados na tabela \ref{tab:descricaoModelos}. 
+Os resultados das próximas seções serão apresentados em relação aos modelos apresentados na Tabela \ref{tab:descricaoModelos}. 
 A tabela apresenta o tamanho dos grid dos modelos e se são baseados em casos reais ou não.
 
 
 \begin{table}[]
-    \label{tab:descricaoModelos}
-    \caption{Tabela com os casos que serão apresentados os resultados}
+    \caption{Tabela com os casos que serão apresentados os resultados.}\label{tab:descricaoModelos}
     \centering
     \begin{tabular}{ccccl}
     \cline{1-4}
@@ -161,20 +160,20 @@ São apresentados também figuras dos casos D e E que tiveram as escalas omitida
 \end{figure}
 
 \begin{figure}[!htbp]
+    \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso D }
     \label{fig:casoEgrid}
     \centering
     \includegraphics[height=4cm]{interrogacao.png}
-    \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso D }
 \end{figure}
 
 
 As condições de contorno utilizadas são representadas na figura \ref{fig:CondicoesContorno}. 
 
 \begin{figure}[!htbp]
+    \caption{Esquema das condições de contorno das simulações. Borda inferior com deslocamentos nulos, bordas laterais com deslocamentos em y permitidos e borda superior livre.}
     \label{fig:CondicoesContorno}
     \centering
     \includegraphics[height=4cm]{chap08/figs/CondicoesContorno.png}
-    \caption{Esquema das condições de contorno das simulações. Borda inferior com deslocamentos nulos, bordas laterais com deslocamentos em y permitidos e borda superior livre.}
 \end{figure}
 
 
@@ -199,8 +198,9 @@ As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a
 nos problemas apresentados é melhor utilizar o pré-condicionador aditivo em relação ao pré-condicionador multiplicativo. Dessa forma, os próximos
 testes serão feito utilizando com o solver o Gradiente Conjugado.
 
-\begin{table}[]\label{table:precondcasoAcomp}
+\begin{table}[]
     \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento do nível grosso.}
+    \label{table:precondcasoAcomp}
     \begin{tabular}{c|c|l|c|l|}
 
     \cline{2-5}
@@ -215,8 +215,9 @@ testes serão feito utilizando com o solver o Gradiente Conjugado.
 \end{table}
 
 
-\begin{table}[]\label{table:precondcasoBcomp}
+\begin{table}[]
     \caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso B utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento do nível grosso.}
+    \label{table:precondcasoBcomp}
     \begin{tabular}{c|c|l|c|l|}
     \cline{2-5}
                                           & \multicolumn{4}{c|}{Pré-condicionador}                                                        \\ \cline{2-5} 
@@ -246,11 +247,11 @@ Os resultados para cada uma das matrizes mostrou um solver comum a todas as matr
 A figura \ref{fig:reservatorio100x100_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado para o caso A. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
 
 \begin{figure}[!htbp]
+\caption{Resultados para caso A. À esquerda Histórico do resíduo relativo ao longo das iterações. 
+Ao centro, tempo do solver em segundos. À direita o tempo do solver por iteração. }
 \label{fig:reservatorio100x100_1}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_1.png}
-\caption{Resultados para caso A. À esquerda Histórico do resíduo relativo ao longo das iterações. 
-Ao centro, tempo do solver em segundos. À direita o tempo do solver por iteração. }
 \end{figure}
 
 Um primeiro ponto a se observar no gráfico da esquerda é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. 
@@ -268,10 +269,10 @@ ode-se notar que apesar da redução de iterações dos método multiescala e do
 
 
 \begin{figure}[!htbp]
+\caption{Resultados para caso A. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \label{fig:reservatorio100x100_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio100x100_2.png}
-\caption{Resultados para caso A. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
 
@@ -282,18 +283,18 @@ Além disso, o Pyamg não conseguiu convergir para a solução do problema, para
 
 
 \begin{figure}[!htbp]
+\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \label{fig:reservatorio320x320_1}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_1.png}
-\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
 
 \begin{figure}[!htbp]
+\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \label{fig:reservatorio320x320_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_2.png}
-\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
 \end{figure}
 
 
@@ -313,18 +314,18 @@ Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que ob
 % \end{figure}
 
 \begin{figure}[!htbp]
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
 \label{fig:casoD_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
 \end{figure}
 
     
 \begin{figure}[!htbp]
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
 \label{fig:casoE_2}
 \centering
 \includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
-\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
 \end{figure}
 
 
@@ -339,4 +340,4 @@ grande e precise ser resolvido com métodos iterativos, como por exemplo para so
 com centenas de milhões de elementos como o mostrado em \cite{geomecrio}.
 
 
-A avaliação foi feita da seguinte maneira: foi avaliada a quantidade de iterações para resolver o sistema linear com tolerância de $10{-6}$ utilizando o pré-condicionador multiescala com solver do espaço grosso um gradiente conjugado com tolerância variando de $10^-10$  a $10^{-1}$. 
+A avaliação foi feita da seguinte maneira: foi avaliada a quantidade de iterações para resolver o sistema linear com tolerância de $10{-6}$ utilizando o pré-condicionador multiescala com solver do espaço grosso um gradiente conjugado com tolerância variando de $10^{-10}$  a $10^{-1}$. 
