@@ -167,6 +167,17 @@ São apresentados também figuras dos casos D e E que tiveram as escalas omitida
     \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso D }
 \end{figure}
 
+
+As condições de contorno utilizadas são representadas na figura \ref{fig:CondicoesContorno}. 
+
+\begin{figure}[!htbp]
+    \label{fig:CondicoesContorno}
+    \centering
+    \includegraphics[height=4cm]{chap08/figs/CondicoesContorno.png}
+    \caption{Esquema das condições de contorno das simulações. Borda inferior com deslocamentos nulos, bordas laterais com deslocamentos em y permitidos e borda superior livre.}
+\end{figure}
+
+
 \section{Método Multiescala como pré-condicionador}
 
 \subsection{Comparação entre pré-condicionadores aditivos e multiplicativos}
@@ -320,9 +331,12 @@ Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que ob
 \subsection{Acurácia da solução grossa}
 
 Nos resultados mostrados nas seções anteriores, era utilizado um solver direto para resolver 
-o sistema grosso. Em casos que o grid foi suficiemente reduzido esse tempo de solucão é desprezível,
+o sistema grosso. Em casos que a malha foi suficientemente reduzida esse tempo de solução é desprezível,
 porém, para casos o fator de engrossamento é pequeno resolver exatamente o nível grosso aumenta
 o tempo de execução (por exemplo, o caso ILU(1) + MS(4,4) em \ref{fig:reservatorio100x100_1}). 
 Além disso, caso modelos muito refinados sejam utilizados o espaço grosseiro pode continuar
 grande e precise ser resolvido com métodos iterativos, como por exemplo para soluções de casos
-com centenas de milhões de elementos como o mostrado em 
+com centenas de milhões de elementos como o mostrado em \cite{geomecrio}.
+
+
+A avaliação foi feita da seguinte maneira: foi avaliada a quantidade de iterações para resolver o sistema linear com tolerância de $10{-6}$ utilizando o pré-condicionador multiescala com solver do espaço grosso um gradiente conjugado com tolerância variando de $10^-10$  a $10^{-1}$. 
