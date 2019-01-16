@@ -1,21 +1,7 @@
-Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado no capítulo \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida para testar o bom funcionamento do método e comparações do método multiescala como pré-condicionador contra solver multigrid.
+Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado no capítulo \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida,
+comparacão entre pré-condicionador aditivo contra multiplicativo, comparações do método multiescala como pré-condicionador contra solver multigrid,
+ estudo do número de iterações do solver linear com variação da tolerância do solver grosso.
 
-
-\begin{table}[]
-\caption{Tabela com os casos que serão apresentados os resultados}
-\centering
-\begin{tabular}{ccccl}
-\cline{1-4}
-\multicolumn{1}{|c|}{\textbf{Nome}} & \multicolumn{1}{c|}{\textbf{Nx}} & \multicolumn{1}{c|}{\textbf{Ny}} & \multicolumn{1}{c|}{\textbf{Caso Real}} &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso A}        & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso B}        & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso C}        & \multicolumn{1}{c|}{103}         & \multicolumn{1}{c|}{56}          & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso D}        & \multicolumn{1}{c|}{244}            & \multicolumn{1}{c|}{71}            & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
-\multicolumn{1}{|c|}{caso  E}       & \multicolumn{1}{c|}{582}         & \multicolumn{1}{c|}{336}         & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
-\multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    &  \\
-\multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    & 
-\end{tabular}
-\end{table}
 
 
 \section{Soluções Analíticas}
@@ -50,13 +36,13 @@ Dessa forma, as equações que representam o problema resolvido são apresentada
 
 
 O erro entre a solução calculada pelo método dos elementos finitos pode então ser comparada
-com a solução analítica pode ser calculado conforme a equação 
+com a solução analítica pode ser calculado conforme a equação \ref{eq:erroAnalitico}.
 
 \begin{equation} \label{eq:erroAnalitico}
     \epsilon_{inf} =\frac{|u_{fem} - u_{analitico}|}{|u_{analitico}|}
 \end{equation}
 
-onde $u_{analitico} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})] ^ T$ e $u_{fem}$ é a solucão obtida com o método dos elementos finitos. Esse erro é mostrado na \ref{fig:SecondOrderTest} onde no eixo x 
+onde $u_{analitico} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})]^T$ e $u_{fem}$ é a solucão obtida com o método dos elementos finitos. Esse erro é mostrado na \ref{fig:SecondOrderTest} onde no eixo x 
 está plotado no eixo x o logaritmo do tamanho de cada elemento e no eixo y o logaritmo do erro analítico também mostra uma reta de coeficiente angular $2$ para comparação com um decaimento
 quadrático do erro em função do tamanho de cada elemento da malha.
 
@@ -96,97 +82,104 @@ não decai com o tamanho da malha.
 Atestado o bom funcionamento do método dos elementos finitos para solução de problemas com a solução
 analítica conhecida, será aplicado agora o método multiescala para verificar o seu correto funcionamento.
 
+\section{Modelos de simulação utilizados}
+
+Os resultados das próximas seções serão apresentados em relação aos modelos apresentados na tabela \ref{tab:descricaoModelos}. 
+A tabela apresenta o tamanho dos grid dos modelos e se são baseados em casos reais ou não.
 
 
-Para atestar o bom resultado do método, é importante comparar com soluções que são conhecidas analiticamente. Os testes apresentados são incrementais de forma a testar que todas as opções estão funcionando corretamente.
-
-
-
-Primeiro, é apresentado um caso onde as condições de contorno são de Dirichlet Homogêneas. Esse teste tem como domínio $ \Omega = [0, 2] \times [0, 2]$  e como solução a equação apresentada em \ref{eq:solucaoDirichletHomogeneo}.
-
-\begin{equation}\label{eq:solucaoDirichletHomogeneo}
-u = 
-\begin{bmatrix}
-u_x
-\\ 
-u_y
-\end{bmatrix}
-=
-\begin{bmatrix}
-y(-y+2)sen(\pi x))
-\\ 
-x(-x+2)sen(\pi x))
-\end{bmatrix}
-\end{equation}
-
-É importante notar que os valores da solução na fronteira do domínio são zero. Pode-se calcular o lado direito referente dessa solução aplicando o operador do problema de elasticidade linear. Fazendo isso, o lado direito encontrado é o mostrado em \ref{eq:ldDiricheletHomogeneo}.
-
-
-\begin{equation}\label{eq:ldDiricheletHomogeneo}
-f(x, y) = 
-\left[\begin{matrix}
-\begin{split}
-\frac{\pi E v x}{v^{2} - 1} \cos{\left (\pi y \right )} - \frac{\pi E v}{v^{2} - 1} \left(- x + 2\right) \cos{\left (\pi y \right )} + \frac{\pi^{2} E y}{v^{2} - 1} \left(- y + 2\right) \sin{\left (\pi x \right )} 
-\\
-+
-\frac{E}{2 v + 2} \left(- \pi x \cos{\left (\pi y \right )} + \pi \left(- x + 2\right) \cos{\left (\pi y \right )} - 2 \sin{\left (\pi x \right )}\right)
-\end{split}
-\\
-
-\frac{\pi E v y}{v^{2} - 1} \cos{\left (\pi x \right )} - \frac{\pi E v}{v^{2} - 1} \left(- y + 2\right) \cos{\left (\pi x \right )} 
-\\
-+ \frac{\pi^{2} E x}{v^{2} - 1} \left(- x + 2\right) \sin{\left (\pi y \right )} + \frac{E}{2 v + 2} \left(- \pi y \cos{\left (\pi x \right )} + \pi \left(- y + 2\right) \cos{\left (\pi x \right )} - 2 \sin{\left (\pi y \right )}\right)\end{matrix}\right]
-\end{equation}
-
-
-Assim, o problema descrito em \ref{eq:problemaDirichlet} tem justamente a solução apresentada em \ref{eq:solucaoDirichletHomogeneo}.
-
-\begin{equation} \label{eq:problemaDirichlet}
-\begin{matrix}
-\nabla \cdot  (C_{dr} : \nabla ^s u) = f(x,y)
-\\ 
-u_x (x, y)  =  0, \text{em } \partial \Omega
-\\ 
-u_y (x, y)  =  0, \text{em } \partial \Omega
-
-\end{matrix}
-\end{equation}
-
-A figura \ref{fig:DirichletHomogeneo} apresenta a comparação entre a solução de um grid finoe de diferentes tamanhos de elemento grosso. 
-O grid fino é constituído de 160 x 160 elementos. Os elementos grossos utilizados tem tamanhos de  2x2, 4x4, 8x8, 16x16 e 32x32 células finas. 
-Pode-se observar que quanto maior o engrossamento da malha mais distante da solução analítica é encontrada, até chegar um ponto em que a solução
-fica totalmente distorcida. 
-
-\begin{figure}[!htbp]
-\label{fig:DirichletHomogeneo}
-\centering
-\includegraphics[width=6cm]{chap08/figs/DirichletHomogeneoTemp.png}
-\caption{Comparação entre solução do grid fino e de diferentes grids grossos.}
-\end{figure}
-
-
-\begin{figure}[!htbp]
-    \label{fig:graficoHomogeneo}
+\begin{table}[]
+    \label{tab:descricaoModelos}
+    \caption{Tabela com os casos que serão apresentados os resultados}
     \centering
-    \includegraphics[width=6cm]{chap08/figs/result_analiticos.png}
-    \caption{Quantidade de iterações para resolver sistema com gradiente conjugado e ILU(0) e Norma relativa com a solução analítica.}
+    \begin{tabular}{ccccl}
+    \cline{1-4}
+    \multicolumn{1}{|c|}{\textbf{Nome}} & \multicolumn{1}{c|}{\textbf{Nx}} & \multicolumn{1}{c|}{\textbf{Ny}} & \multicolumn{1}{c|}{\textbf{Caso Real}} &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{caso A}        & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{caso B}        & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{caso C}        & \multicolumn{1}{c|}{103}         & \multicolumn{1}{c|}{56}          & \multicolumn{1}{c|}{}                   &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{caso D}        & \multicolumn{1}{c|}{244}         & \multicolumn{1}{c|}{71}          & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{caso E}        & \multicolumn{1}{c|}{582}         & \multicolumn{1}{c|}{336}         & \multicolumn{1}{c|}{Sim}                &  \\ \cline{1-4}
+    \multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    &  \\
+    \multicolumn{1}{l}{}                & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}             & \multicolumn{1}{l}{}                    & 
+    \end{tabular}
+\end{table}
+
+
+Os casos A e B são baseados nos casos sintéticos apresentados em \cite{casteletto} e \cite{irina}, nesses casos foram utilizados
+uma compressibilidade vertical uniaxial $c_M$ desenvolvida em \cite{correlacaoE} apresentada na equação \ref{eq:correlacaoCm}
+
+\begin{equation} \label{eq:correlacaoCm}
+    c_M = 0.01241 |\sigma_y^\prime|^{-1.1342}
+\end{equation}
+
+onde $c_M$ e $\sigma_y^\prime$ são expressas em [bar$^{-1}$] e [bar] e  $\sigma_y^\prime$ representa a tensão vertical efetiva.
+Considerando um gradiente de pressão de 0.1 bar/m e coeficiente de biot igual a um a tensão efetiva total pode ser calculada de acordo com \ref{eq:correlacaoTensao}.
+
+
+
+
+\begin{equation} \label{eq:correlacaoTensao}
+\sigma_y^\prime = \sigma_y + p = -0.12218|y| + 0.1 |y|
+\end{equation}
+
+E o módulo de Young pode ser calculado em função apenas da profundidade equação substituindo os valores de \ref{eq:correlacaoCm} e \ref{eq:correlacaoTensao} em \ref{eq:correlacaoYoung}.
+
+\begin{equation} \label{eq:correlacaoYoung}
+    E = \frac{(1-2\poisson)(1+\poisson)}{(1-\poisson)c_M}
+\end{equation}
+
+O grid utilizado é apresentado \ref{fig:gridBase10x10}, esse grid teve cada uma das células divididas em com 10 cortes verticais e 
+10 cortes horizontais igualmente espassados para gerar um o caso A e de forma análoga dividida em 32 cortes horizontais e 
+32 cortes verticais para gerar o caso B.
+
+\begin{figure}[!htbp]
+    \label{fig:gridBase10x10}
+    \centering
+    \includegraphics[height=4cm]{interrogacao.png}
+    \caption{Grid base utilizado para construção dos casos A e B.}
 \end{figure}
 
+o caso C é um caso de reservatório sintético com grid de geometria mais próxima aos reservatórios reais, além disso, diferentemente dos casos A e B os valores
+de poisson não são constantes ao longo do domínio. A figura \ref{fig:casoCgrid} apresenta o grid e os valores do módulo de Young e módulo de Poisson.
+São apresentados também figuras dos casos D e E que tiveram as escalas omitidas por se tratarem de modelos de campos reais.
+
+
+\begin{figure}[!htbp]
+    \label{fig:casoCgrid}
+    \centering
+    \includegraphics[height=4cm]{interrogacao.png}
+    \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso C }
+\end{figure}
+
+
+\begin{figure}[!htbp]
+    \label{fig:casoDgrid}
+    \centering
+    \includegraphics[height=4cm]{interrogacao.png}
+    \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso D }
+\end{figure}
+
+\begin{figure}[!htbp]
+    \label{fig:casoEgrid}
+    \centering
+    \includegraphics[height=4cm]{interrogacao.png}
+    \caption{Propriedades (módulo de Young e coeficiente de poisson) para caso D }
+\end{figure}
 
 \section{Método Multiescala como pré-condicionador}
 
 \subsection{Comparação entre pré-condicionadores aditivos e multiplicativos}
-
 O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($M_{ms}$) em conjunto com o um pré-condicionador ($M_h$) no grid fino de forma multiplicativa. 
 Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequencia são eliminados pelo pré-condicionador multiescala. 
 O acoplamento multiplicativo tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores
 e, portanto, o número de iterações tem que ser reduzido o suficiente para compensar todas essas operações. Um alternativa é aplicação
-dos pré-condicionadores de forma aditiva, pois nesse caso não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador
+dos pré-condicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador
 aditivo é que caso os dois pré-condicionadores sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente
 com o gradiente conjugado para a solução dos sistemas lineares.
 
 
-Assim, os casoA e casoB foram utilizados para a comparação do número de iterações entre os dois pré-condicionadores junto 
+Os testes as seguir mostram o número de iterações do bicgstab utilizando pré-condicionadores multiplicativos e aditivos do caso A e caso B utilizados para comparação
 com o método Bicgstab dado que o pré-condicionador multiplicativo não necessariamente é simétrico. Nesses testes o pré-condicionador $M_h$ utilizado foi o ILU(0).
 
 As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos feita pelos pré-condicionadores aplicados a solução do sistema. 
@@ -256,6 +249,8 @@ entre o engrossamento da malha e o tempo de execução. É importante lembrar ta
 operador de prolongamento e de restrição que independe do nível de engrossamento, por conta disso, o tempo da iteração do engrossamento 16x16
 é semelhante ao 20x20. No caso A, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 16x16 elementos finos. 
 
+
+
 Na figura \ref{fig:reservatorio100x100_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado 
 utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. 
 ode-se notar que apesar da redução de iterações dos método multiescala e do método multigrid, os pré-condicionadores ILU(0) e ILU(1) são mais eficientes na resolução do sistema. 
@@ -295,12 +290,8 @@ A seguir são apresentados resultados para o corte dos modelos D e E respectivam
 São apresentadas apenas a comparação entre os pré-condicionadores multiescala, Pyamg, ILU(0) e ILU(1). 
 
 
-
-
-
-A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} apresentam os resultados para os casos C, D e E. Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32.
-
-
+A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} apresentam os resultados para os casos C, D e E. 
+Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32.
 
 
 % \begin{figure}[!htbp]
@@ -311,22 +302,27 @@ A seguir, as figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} ap
 % \end{figure}
 
 \begin{figure}[!htbp]
-    \label{fig:casoD_2}
-    \centering
-    \includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
-    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-    \end{figure}
+\label{fig:casoD_2}
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/casoD_2.png}
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\end{figure}
+
     
-    % \begin{figure}[!htbp]
-    % \label{fig:casoE_1}
-    % \centering
-    % \includegraphics[width=\textwidth]{chap08/figs/casoE_1.png}
-    % \caption{Resultados para caso E. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações em função do fator de engrossamento da malha e tempo do solver por iteração. }
-    % \end{figure}
-    
-    \begin{figure}[!htbp]
-    \label{fig:casoE_2}
-    \centering
-    \includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
-    \caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
-    \end{figure}
+\begin{figure}[!htbp]
+\label{fig:casoE_2}
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/casoE_2.png}
+\caption{Comparação entre multiescala, multigrid e pré-condicionador ILU para o caso D. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos e tempo do solver por iteração. }
+\end{figure}
+
+
+\subsection{Acurácia da solução grossa}
+
+Nos resultados mostrados nas seções anteriores, era utilizado um solver direto para resolver 
+o sistema grosso. Em casos que o grid foi suficiemente reduzido esse tempo de solucão é desprezível,
+porém, para casos o fator de engrossamento é pequeno resolver exatamente o nível grosso aumenta
+o tempo de execução (por exemplo, o caso ILU(1) + MS(4,4) em \ref{fig:reservatorio100x100_1}). 
+Além disso, caso modelos muito refinados sejam utilizados o espaço grosseiro pode continuar
+grande e precise ser resolvido com métodos iterativos, como por exemplo para soluções de casos
+com centenas de milhões de elementos como o mostrado em 
