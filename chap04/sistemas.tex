@@ -6,7 +6,7 @@ Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos s
 Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos para solução de sistema lineares são necessários para que a resolução do problema seja possível. A seção \ref{sec:csr} apresenta uma discussão sobre as estruturas de dados para armazenamento das matrizes enquanto que a seção \ref{sec:cg} apresenta o método dos Gradientes Conjugados como solver linear.
 
 
-\section{Estruturas de Dados para Matrizes Esparças} \label{sec:csr}
+\section{Estruturas de Dados para Matrizes Esparsas} \label{sec:csr}
 
 
 Visto que a quantidade de zeros da matrizes obtidas através da discretização com elementos finitos são a maior parte dos valores não é interessante guardar esses valores em uma matriz densa de duas dimensões. Idealmente, é necessário guardar apenas os valores que são diferentes de zero para economia de memória.

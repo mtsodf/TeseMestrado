@@ -26,10 +26,10 @@ O primeiro subscrito do tensor representa a face que a tensão está sendo aplic
 
 
 \begin{figure}[!htbp]
-\label{fig:tensoesx}
 \centering
 \includegraphics[width=5cm]{chap01/tensor.png}
 \caption{Tensões $\sigma_{x.}$ representadas graficamente.}
+\label{fig:tensoesx}
 \end{figure}
 
 Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores.
@@ -52,10 +52,10 @@ T =
 Para um certo elemento de volume $\Delta x\Delta y \Delta z$, representado na figura \ref{fig:equilibrio}, pode-se escrever o equilíbrio nas direções x, y e z.
 
 \begin{figure}[!htbp]
-\label{fig:equilibrio}
 \centering
 \includegraphics[width=6cm]{chap01/equilibrio.png}
 \caption{Tensões na direção y ($\sigma_{.y}$) representadas graficamente.  Fonte: \cite{CompGeomec}}
+\label{fig:equilibrio}
 \end{figure}
 
 Para a direção y, por exemplo, tem-se:
@@ -181,10 +181,10 @@ Vários tipos de leis constitutivas podem ser utilizadas para representar essa r
 
 
 \begin{figure}[!htbp]
-\label{fig:stress_strain}
 \centering
 \includegraphics[width=7cm]{chap01/stress_strain.PNG}
 \caption{Teste de laboratório tensão-deformação para uma rocha bem cimentada. Fonte: \cite{ResGeomec}}
+\label{fig:stress_strain}
 \end{figure}
 
 
@@ -234,10 +234,10 @@ O domínio do problema será dividido em uma quantidade finita de elementos. Os 
 
 
 \begin{figure}[!htbp]
-\label{fig:elemento}
 \centering
 \includegraphics[width=5cm]{chap01/elemento_original.png}
 \caption{Elementos de divisão do domínio.}
+\label{fig:elemento}
 \end{figure}
 
 Para esse tipo de elemento a quantidade de vértices é oito. Para o problema, cada vértice terá 3 graus de liberdade, pois cada um deles pode se mover em três direções (x, y, z). Assim, o campo vetorial $u$ será aproximado pelos valores no nós e fora deles por uma interpolação dos valores dos nós como a equação \ref{eq:udiscret}.
@@ -480,10 +480,10 @@ Com a forma do sistema linear montado, resta calcular as entradas da matriz e o 
 Para o cálculo da matriz, o somatório presente em \ref{eq:sistemalinear} sugere um loop em cada um dos elementos. A figura \ref{fig:elem_func_form_local} mostra um elemento com as funções de forma com numeração local. Nesse caso, apenas oito funções de forma tem valores diferentes de zero nesse domínio.
 
 \begin{figure}[!htbp]
-\label{fig:elem_func_form_local}
 \centering
 \includegraphics[width=6cm]{chap01/elemento_original_func_forma.png}
 \caption{Funções de forma (numeração local).}
+\label{fig:elem_func_form_local}
 \end{figure}
 
 
@@ -500,10 +500,10 @@ Considere a numeração local da figura \ref{fig:elem_func_form_local}. Nesse ca
 
 
 \begin{figure}[!htbp]
-\label{fig:grid2x2_elem3_vermelho}
 \centering
 \includegraphics[width=6cm]{chap01/grid2x2_elem3_vermelho.png}
 \caption{Numeração dos nós em malha $2\times2\times2$. Com elemento 4 destacado em vermelho.}
+\label{fig:grid2x2_elem3_vermelho}
 \end{figure}
 
 
