@@ -157,6 +157,8 @@ u_x \\ u_y \\ u_z
       0 & \dz[#1]  & \dy[#1]
 }
 
+\newcommand{\sopnabla}{\nabla_S}
+
 \newcommand{\sop}[1][ ]{
 \begin{bmatrix}
 \dx[#1] &        0 &   0      \\ 
@@ -165,6 +167,15 @@ u_x \\ u_y \\ u_z
 \dy[#1] & \dx[#1]  &   0      \\ 
 \dz[#1] &        0 & \dx[#1]  \\ 
       0 & \dz[#1]  & \dy[#1]
+\end{bmatrix}
+}
+
+\newcommand{\soptwod}[1][ ]{
+\begin{bmatrix}
+\dx[#1] &        0   \\ 
+      0 & \dy[#1]    \\ 
+      0 &        0   \\ 
+\dy[#1] & \dx[#1]    \\ 
 \end{bmatrix}
 }
 
@@ -254,9 +265,16 @@ u_x \\ u_y \\ u_z
 }
 
 \newcommand{\freedomfine}{n_u^h}
+\newcommand{\essentialfine}{n_{\bar{u}}^h}
+
 \newcommand{\freedomcoarse}{n_u^H}
 
 \newcommand{\numelementsxfine}{N^h_x}
 \newcommand{\numelementsyfine}{N^h_y}
 \newcommand{\numelementsxcoarse}{N^H_x}
 \newcommand{\numelementsycoarse}{N^H_y}
+
+
+\newcommand{\basefunctionfine}{\mathbf{N}_i^h}
+
+\newcommand{\basefunctionfineessential}{\mathbf{N}_{i+\freedomfine}^h}

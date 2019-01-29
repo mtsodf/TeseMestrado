@@ -2,7 +2,7 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito na Equação \eqref{eq:edp_geomec}. 
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. \suge{Corrigindo uma sugestão que fiz anteriormente e estava errada. No caso de equações não é necessário colocar a palavra Equação, apenas o comando \Verb+eqref+. Para Tabelas, Figuras, Algoritmos e similares, deve-se colocar a palavra em maiúscula mesmo} {\color{red}{em \eqref{eq:edp_geomec}}}.
 Para isso, foi montado teste semelhante ao mostrado em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada na Equação \eqref{eq:irinasol} em um domínio  $L \times W$.
 
 
@@ -117,7 +117,7 @@ Assim, o módulo de Young pode ser calculado em função apenas da profundidade 
     E = \frac{(1-2\poisson)(1+\poisson)}{(1-\poisson)c_M}
 \end{equation}
 
-O grid utilizado é apresentado na Figura\ref{fig:gridBase10x10} com as dimensões baseadas no exemplo mostrado em \cite{casteletto}. Esse grid teve cada uma das células divididas em com 10 cortes verticais e 10 cortes horizontais igualmente espaçados para gerar o caso A e de forma análoga dividida em 32 cortes horizontais e 32 cortes verticais para gerar o caso B. A localização do reservatório aparece na figura em vermelho \suge{referenciar a figura, só que não tem vermelho nela}. Foi considerada também a depleção de 100 bar de pressão no reservatório.
+O grid utilizado é apresentado na Figura\ref{fig:gridBase10x10} com as dimensões baseadas no exemplo mostrado em \cite{casteletto}. Esse grid teve cada uma das células divididas em com 10 cortes verticais e 10 cortes horizontais igualmente espaçados para gerar o caso A e de forma análoga dividida em 32 cortes horizontais e 32 cortes verticais para gerar o caso B. A localização do reservatório aparece na Figura \ref{fig:gridBase10x10} em vermelho. Foi considerada também a depleção de 100 bar de pressão no reservatório.
 
 \begin{figure}[!htbp]
     \centering

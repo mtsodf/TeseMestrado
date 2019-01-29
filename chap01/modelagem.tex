@@ -32,18 +32,14 @@ O primeiro subscrito do tensor representa a face que a tensão está sendo aplic
 \label{fig:tensoesx}
 \end{figure}
 
-Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores.
+Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores. Dessa forma, pode-se considerar a tensão como o vetor apresentado \label{eq:tensor6} essa notação é chamada de notação de Voigt e é a bastante utilizada nas implementações de elementos finitos, por exemplo, nas formulações apresentadas por \cite{hughes} e \cite{jacob}.
+
+
 \begin{equation}
-\label{eq:tensor6}
 \sigma^T = \begin{bmatrix}
 \stxx & \styy & \stzz & \stxy & \stxz & \styz
 \end{bmatrix}
-\end{equation}
-
-Para o cálculo da tensão exercida é um determinado plano, basta multiplicar o tensor de tensão por um vetor ortonormal ao plano desejado de maneira que:
-
-\begin{equation}
-T =
+\label{eq:tensor6}
 \end{equation}
 
 
@@ -86,11 +82,11 @@ Analogamente, para as outras direções, pode-se montar o seguinte sistema de eq
 
 As tensões apresentadas nas equações \ref{eq:equilibrio1} são as atuam no bloco infinitesimal. Acontece que ao tratar de reservatórios de petróleo, estes possuem fluído no volume poroso da rocha (óleo ou água) e, portanto, parte da tensão será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
 
-Experimentalmente foi constado que a equação que rege a tensão efetiva na rocha ($\sigma^\prime$) é dada pela equação \ref{eq:tensaoefetiva} (veja \cite{ResGeomec} cap 02).
+Experimentalmente foi constado por Biot em que a equação que rege a tensão efetiva na rocha ($\sigma^{\prime\prime}$) é dada pela equação \ref{eq:tensaoefetiva} (veja \cite{ResGeomec} cap 02).
 
 \begin{equation}
 \label{eq:tensaoefetiva}
-    \sigma^\prime = \sigma - \alpha P_p
+    \sigma^{\prime\prime} = \sigma - \alpha P_p
 \end{equation}
 
 Onde $\alpha$ é o coeficiente de biot e $P_p$ a pressão de poros. O coeficiente de biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha, portanto, $\alpha \in [0,1]$.
@@ -120,7 +116,7 @@ Ou ainda, escrevendo de forma matricial.
 Onde $f^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$.
 
 
-Por motivos de implementação mais eficiente (uso de menos memória), é interessante reescrever as equações utilizando a notação do tensor de tensões apenas com seis elementos como na equação \ref{eq:tensor6}. Portanto, considerando os seguintes operadores e vetores.
+Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a equação acima pode ser escrita na notação de Voigt que considerando as definições abaixo:
 
 \begin{equation}
 \begin{matrix}
@@ -154,21 +150,21 @@ f_{z}
 ;
 &
 
-P = \begin{bmatrix} P_p \\ P_p \\ P_p \\0 \\ 0 \\ 0\end{bmatrix}
+m = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \\ 0 \\ 0\end{bmatrix}
 
 &
 ;
 
 &
-S = \sop
+\sopnabla = \sop
 \end{matrix}
 \end{equation}
 
-A equação \ref{eq:equilibrio_matriz} pode ser reescrita como \ref{eq:equilibrio_final}. Essa equação será discretizada na próxima sessão através do método dos elementos finitos.
+A equação \ref{eq:equilibrio_matriz} pode ser reescrita como \ref{eq:equilibrio_final}.
 
 \begin{equation}
 \label{eq:equilibrio_final}
-S^T\sigma^\prime + S^T\alpha P - f = 0
+\sopnabla^T\sigma^\prime + \sopnabla^T\alpha m  P_p - f = 0
 \end{equation}
 
 
@@ -188,68 +184,136 @@ Vários tipos de leis constitutivas podem ser utilizadas para representar essa r
 \end{figure}
 
 
-O estudo de mecânica dos sólidos nos mostra que, na região elástica e materiais isotrópicos, é possível escrever uma relação entre as deformações e tensões nos elementos de forma simples. Essa relação é denominada de Lei de Hooke Generalizada e é apresentada na equação \ref{eq:hooke}.
+O estudo de mecânica dos sólidos nos mostra que, na região elástica e materiais isotrópicos, é possível escrever uma relação entre as deformações e tensões nos elementos de forma simples. Essa relação é denominada de Lei de Hooke Generalizada e é apresentada na Equação \eqref{eq:hooke}. E a Equação \eqref{eq:elasticMatrix} apresenta a matriz de elasticidade.
 
 
 \begin{equation}{
 \label{eq:hooke}
 \fontsize{4}{4}\selectfont
-\stvetor = \elastic \evetor
+\sigma ^{\prime\prime}= D \epsilon
 }
 \end{equation}
 
-Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson.
 
-Já as deformações se relacionam com os deslocamentos pela equação \ref{eq:defor_desloc}.
+
+Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson. Já as deformações se relacionam com os deslocamentos pela equação \eqref{eq:defor_desloc}.
 
 \begin{equation}
 \label{eq:defor_desloc}
-\evetor = \sop \uvetor
+\epsilon = \sopnabla u
 \end{equation}
 
-\begin{equation}
-\label{eq:defor_desloc2}
-\evetor = S \uvetor
-\end{equation}
 
-A EDP da equação \ref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos substituindo as equações \ref{eq:hooke} e \ref{eq:defor_desloc2}.
+A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos substituindo as equações \eqref{eq:hooke} e \eqref{eq:defor_desloc}.
 
 \begin{equation}
 \label{eq:edp_geomec}
-S^TDS u + S^T\alpha P - f = 0
+\sopnabla^TD \sopnabla u + \sopnabla^T\alpha m P_p - f = 0
 \end{equation}
 
-Onde $D$ é a matriz de elasticidade da Lei de Hooke. Essa forma será a utilizada junto dos métodos do elementos finitos para construção do simulador.
+Onde $D$ é a matriz de elasticidade da Lei de Hooke. Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar
+de três dimensões para duas dimensões existem duas abordagens possíveis de stress plano ou deformação plana. Que são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
 
-
-
-\section{Modelagem pelo Método dos elementos finitos}
-
-Em posse da equação \ref{eq:edp_geomec}, é necessário um método de solução de EDP's. O método utilizado no simulador em questão é dos elementos finitos. O método do elementos finitos é bastante utilizado em problemas de elasticidade. {\color{red}TODO: Achar referencia sobre tópicos de elementos finitos.}
-
-
-\subsection{Divisão do domínio}
-
-O domínio do problema será dividido em uma quantidade finita de elementos. Os elementos considerados na formulação serão elementos hexaédricos. Outros tipos de elementos podem ser considerados mas o simulador em questão utiliza apenas elementos desse formato. Dessa maneira, os elementos tem a forma mostrada na figura \ref{fig:elemento}.
-
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=5cm]{chap01/elemento_original.png}
-\caption{Elementos de divisão do domínio.}
-\label{fig:elemento}
-\end{figure}
-
-Para esse tipo de elemento a quantidade de vértices é oito. Para o problema, cada vértice terá 3 graus de liberdade, pois cada um deles pode se mover em três direções (x, y, z). Assim, o campo vetorial $u$ será aproximado pelos valores no nós e fora deles por uma interpolação dos valores dos nós como a equação \ref{eq:udiscret}.
-
-
-\begin{equation}\label{eq:udiscret}
-u(\mathbf{x}) = \sum_{i=1}^{nn} \varphi_i(\mathbf{x}) * \begin{bmatrix}
-u^i_x \\ u^i_y \\ u^i_z
+\begin{equation} \label{eq:elasticplanestress}
+D_{stress} = \frac{E}{1-\upsilon^2}
+\begin{bmatrix}
+1  & \upsilon & 0 \\ 
+\upsilon & 1 &  0 \\ 
+0 & 0 & \frac{1-\upsilon}{2}
 \end{bmatrix}
 \end{equation}
 
-Onde $u^i_x$, $u^i_y$ e $u^i_z$ são os graus de liberdade do nó i. As funções $\varphi_i(\mathbf{x})$ são tais que o valor no nó correspondente é igual a 1 e descresce para 0 nos nós adjacentes. A forma dessas funções serão definidas mais a frente, pois elas são definidas em um sistema diferente do (x,y,z).
+\begin{equation} \label{eq:elasticplanestrain}
+D_{def} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
+\begin{bmatrix}
+ 1-\upsilon & \upsilon    &  0 \\ 
+ \upsilon   &  1-\upsilon &  0 \\ 
+ 0& 0 & \frac{1-2\upsilon}{2}
+\end{bmatrix}
+\end{equation}
+
+De acordo com \cite{jacob}, a condição de deformação plana é melhor aplicada quando o elemento é grosso em relação ao plano xy que é o caso dos reservatórios de petróleo.  Dessa forma, artigos como \cite{planeStrainProblems}, \cite{casteletto} e \cite{irina} utilizam a hipótese de deformação plana que será a mesma utilizada nesse trabalho.
+
+Os operadores e vetores devem então ser redefinidos para os mostrados em \eqref{eq:vetores2d}.
+
+\begin{equation}
+\label{eq:vetores2d}
+\begin{matrix}
+\sigma^\prime = \begin{bmatrix}
+\sxx
+\\
+\syy
+\\
+\sxy
+\end{bmatrix}
+&
+
+;
+
+&
+
+f = \begin{bmatrix}
+f_{x}
+\\
+f_{y}
+\end{bmatrix}
+&
+;
+&
+
+m = \begin{bmatrix} 1 \\ 1 \\ 0\end{bmatrix}
+
+&
+;
+
+&
+\sopnabla = \soptwod
+
+&
+;
+
+&
+
+u = \begin{bmatrix}
+u_x
+\\ 
+u_y
+\end{bmatrix}
+
+\end{matrix}
+\end{equation}
+
+Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. 
+
+\section{Modelagem pelo Método dos elementos finitos}
+
+Em posse da Equação \eqref{eq:edp_geomec}, é necessário um método de solução numérica para se resolver. O método utilizado nesse trabalho é o método dos Elementos Finitos. O método dos Elementos finitos é bastante difundido em análises estruturais mas também pode ser utilizado em outros tipos de EDP's como fluxo de calor. 
+
+\subsection{Formulação Fraca}
+
+O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca da equação \eqref{eq:edptwod}
+
+\subsection{Divisão do domínio}
+
+O domínio do problema será dividido em uma quantidade finita de elementos, o conjunto desses elementos será chamado de $\Tau^h$.  A partição do domínio será realizada em elementos quadriláteros apesar de outras tipos de elementos estarem disponíveis (por exemplo, elementos triangulares). A figura \ref{fig:elemento} mostra como serão os elementos que dividirão o domínio.
+
+%TODO trocar por figura em que os elementos não sejam 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=5cm]{chap01/elemento_original.png}
+\caption{Exemplo de domínio dividido em quadriláteros.}
+\label{fig:elemento}
+\end{figure}
+
+A notação utilizada aqui é a mesma que em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}. Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\freedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \forall i=1,2,...,\freedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
+
+
+\begin{equation}\label{eq:udiscret}
+u(\mathbf{x}) = \sum_{i=1}^{\freedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h
+\end{equation}
+
+
+Onde $u^i_x$, $u^i_y$ e $u^i_z$ são os graus de liberdade do nó i. As funções $\varphi_i(\mathbf{x})$ são tais que o valor no nó correspondente é igual a 1 e decresce para 0 nos nós adjacentes. A forma dessas funções serão definidas mais a frente, pois elas são definidas em um sistema diferente do (x,y,z).
 
 
 Considerando $u^*$ como a solução exata para a EDP \ref{eq:edp_geomec} é necessário encontrar a função $u$ da forma de \ref{eq:udiscret} que aproxime da melhor maneira possível $u^*$ de acordo com alguma métrica. Uma maneira de fazer isso é minimizar a norma do resíduo $r = u-u^*$. Para essa minimização, o resíduo  deve ser ortogonal a cada uma das funções $\varphi_i$ e as equações apresentadas em \ref{eq:normalizacao} são válidas.
