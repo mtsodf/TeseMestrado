@@ -337,20 +337,26 @@ onde
 
 Por enquanto, as funções $N^h_i$ em uma abordagem clássica de elementos finitos, serão da forma $[N^h_{ix} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{iy}]^T$  para um grau de liberdade y, dessa forma, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. De acordo com \cite{jacob} essa é a forma mais usual, porém, é possível utilizar outras opções. De fato, a funções de forma que serão utilizadas no método multiescala que serão apresentadas em \ref{ch:multiescala} não vão obedecer esse padrão . A forma exata da definição será apresentada mais a frente pois elas serão definidas em um sistema diferente do (x,y). Agora as funções $N^h_{ix}$ e $N^h_{iy}$ são tais que os valores tem valor igual a um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice. Um exemplo dessas funções é apresentado na Figura \ref{fig:shapefunctions}
 
-%TODO adicionar exemplo das funções geradas com python
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=5cm]{interrogacao.png}
-\caption{Gráficos com funções de forma.}
-\label{fig:shapefunctions}
+\begin{figure}[h]
+\center
+\subfigure[ Numeração global dos nós em malha $3\times3$. Marcados de vermelho o nó 6 e seus adjacentes. ]{\includegraphics[width=0.45\textwidth]{chap01/figs/grid3x3ver.png}}\label{fig:grid3x3ver}
+\qquad
+\subfigure[ Numeração das funções de forma $N_i^h$. Azul as funções de forma relativa à condição de contorno de Dirichlet ]{\includegraphics[width=0.45\textwidth]{chap01/figs/grid3x3_Ni.png}}
+
+\caption{Numeração dos nós e das funções de base. Para numeração das funções de base foi considerada a borda inferior com condição de Dirichlet nas direções x e y. }
 \end{figure}
+
 
 \begin{figure}[h]
 \center
-\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_000.png}}
+\subfigure[ ${\basefunctionfine[9x]}$ ou ${\basefunctionfine[10y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_016.png}}
 \qquad
-\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_002.png}}
-\caption{Gráficos do logaritmo do erro \eqref{eq:erroAnalitico} em função do logaritmo do tamanho $\Delta x$ dos elementos do grid.}
+\subfigure[ ${\basefunctionfine[13x]}$ ou ${\basefunctionfine[14y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_020.png}}
+
+\subfigure[ ${\basefunctionfine[27x]}$ ou ${\basefunctionfine[28y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_002.png}}
+\qquad
+\subfigure[ ${\basefunctionfine[31x]}$ ou ${\basefunctionfine[32y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_006.png}}
+\caption{Gráficos das funções de forma para um grid 3x3. Foi considerada condição de Dirichlet na fronteira abaixo }\label{fig:shapefunctions}
 \end{figure}
     
 
@@ -426,13 +432,6 @@ onde as entradas de $K$ são definidas por  $K_{i,j} = \omeint{\kij{i}{j}}$. A s
 
 Ainda sobre a esparsidade da matriz de rigidez, em um grid com quadriláteros cada função de base de um nó (a menos de nós de fronteira) tem conexão com nove outros nós, contando com ele mesmo, como mostra a Figura \ref{fig:grid3x3ver} o nó 6 tem conexões com os nós [1,2,3,5,6, 7,9,10,11]. Assim, cada nó tem duas linhas correspondentes na matriz de rigidez, e cada linha possui $2 \times 9 = 18$ valores não nulos, portanto, cada nó tem $2 \times 18 = 36$ não zeros associados na matriz, o que leva a uma aproximação de $\text{nnz}_K = 36 \qtdnos$ . Como será mostrado no Capítulo \ref{ch:sistemas}, a matriz terá que utilizar alguma estrutura de matriz esparsa pois caso fosse alocada densa a quantidade de valores alocados seria aproximadamente $(2 \times \qtdnos)^2$ que tem ordem quadrática com o número de nós e limitaria precocemente o tamanho dos modelos simulados. 
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=6cm]{chap01/figs/grid3x3ver.png}
-\caption{Numeração global dos nós em malha $2\times2$. Marcados de vermelho o nó 6 e seus adjacentes.}
-\label{fig:grid3x3ver}
-\end{figure}
-
 
 Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em \eqref{eq:entradamatriz} a montagem da matriz não é feita dessa forma. A integrais que aparecem no domínio $\Omega$ serão dividas em cada um dos elementos conforme \eqref{eq:matrizrigidezporelemento}. 
 
@@ -492,70 +491,29 @@ A matriz de rigidez do elemento pode ser escrita como:
 \end{equation}
 
 
+Dessa forma, a montagem da matriz de rigidez pode ser feito calculando a matriz do elemento e acumulando esses valores em suas posições correspondentes na matriz global. Abaixo é apresentado  o algoritmo para montagem da matriz de rigidez global.
+
+\vspace{1cm}
+
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+        \begin{algorithmic}
+        \STATE Inicialize $\mathbf{K}$ com zeros
+        \FORALL{elemento $E \in \tau^h$}
+        \STATE Calcule a matriz de rigidez do elemento $K^e$
+        \FORALL{Grau de liberdade i em E}
+        \FORALL{Grau de liberdade j em E}
+        \STATE Acumule em $\mathbf{K}$ o valor  $K^e[i,j]$ na posição correspondente 
+        \ENDFOR
+        \ENDFOR
+        \ENDFOR
+        \end{algorithmic}
+    }%
+}
+
+\vspace{1cm}
 
 
-Dessa forma, a montagem da matriz de rigidez pode ser feito calculando a matriz do elemento e acumulando esses valores em suas posições correspondentes na matriz global. Abaixo é apresentado utilizando o algoritmo para montagem da matriz de rigidez global.
-
-%TODO adicionar algoritmo de elementos
-\begin{algorithmic}
-\STATE Para cada elemento $e \in \tau^h$
-
-\end{algorithmic}
-
-
-\begin{equation}
-    <f(x), g(x)> = \int^b_af(x)g(x) dx
-\end{equation}
-
-Como apresentado em \cite{CompGeomec} mais detalhadamente, o método de garlekin minimiza o módulo do resíduo na norma da energia. De forma que, o produto interno utilizado é o apresentado na equação \ref{eq:proint_energia}.
-
-
-\begin{equation}
-\label{eq:proint_energia}
-<u-u^*, \varphi_i> = \omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix} \quad \text{para $i$=1,2,3, ..., nn}
-\end{equation}
-
-Assim, é possível rearrumar cada uma das equações da seguinte maneira:
-
-
-\begin{equation}
-\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} - \omeint{(S^TDSu^*)\phiix}
-\end{equation}
-
-É possível remover $u^*$ da equação utilizando \ref{eq:edp_geomec} chegando em uma equação dependendo apenas dos graus de liberdade $u^i_x$, $u^i_y$ e $u^i_z$.
-
-\begin{equation}
-\omeint{(S^T\,D\,S(\mathbf{u - u^*})) \phiix}  =  \omeint{(S^TDSu)\phiix} + \omeint{\mathbf{F}\phiix} \quad \forall
-\end{equation}
-
-\begin{equation}
-\omeint{(S^TDSu)\phiix} + \omeint{\mathbf{F}\phiix} = 0
-\end{equation}
-
-\begin{equation} \label{eq:garlekin}
-\omeint{(S^TDSu)\phiix} = - \omeint{\mathbf{F}\phiix}
-\end{equation}
-
-
-
-Os próximos passos serão para transformar \ref{eq:garlekin} em uma forma mais simples para resolução.
-
-\begin{equation}
-\omeint{S^T\,D\,S\mathbf{u} \phiix} = \omeint{S^T\sigma \phiix}
-\end{equation}
-
-\begin{equation}
-\omeint{S^T\sigma \phiix} = \omeint{\sstensor \phiix}
-\end{equation}
-
-Definindo, $\sigma_x = (\sigma_{xx}, \sigma_{xy}, \sigma_{xz})$, $\sigma_y = (\sigma_{yx}, \sigma_{yy}, \sigma_{yz})$ e $\sigma_z = (\sigma_{zx}, \sigma_{zy}, \sigma_{zz})$.
-
-\begin{equation}\label{eq:grad}
-\omeint{\sstensor \phiix} = \omeint{
-\begin{bmatrix}
-\nabla \sigma_x \phiix\\ \nabla \sigma_y \phiix \\ \nabla \sigma_z \phiix
-\end{bmatrix}}
-\end{equation}
 
 Mas a propriedade do divergente apresentada em \ref{eq:intpartes} é válida para $f:\mathbb{R}^n \rightarrow \mathbb{R}^n$ e $g:\mathbb{R}^n \rightarrow \mathbb{R}$.
 
