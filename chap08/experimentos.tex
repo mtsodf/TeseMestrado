@@ -2,8 +2,7 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. \suge{Corrigindo uma sugestão que fiz anteriormente e estava errada. No caso de equações não é necessário colocar a palavra Equação, apenas o comando \Verb+eqref+. Para Tabelas, Figuras, Algoritmos e similares, deve-se colocar a palavra em maiúscula mesmo} {\color{red}{em \eqref{eq:edp_geomec}}}.
-Para isso, foi montado teste semelhante ao mostrado em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada na Equação \eqref{eq:irinasol} em um domínio  $L \times W$.
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}.Para isso, foi montado teste semelhante ao mostrado em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada na Equação \eqref{eq:irinasol} em um domínio  $L \times W$.
 
 
 \begin{equation} \label{eq:irinasol}
@@ -44,7 +43,7 @@ onde $u_{ref} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})]^T$ e 
 \subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap08/figs/SecondErrorTest.png}\label{fig:SecondErrorTest}}
 \qquad
 \subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap08/figs/SecondErrorTestSimpleShear.png}    \label{fig:SecondErrorTestSimpleShear}}
-\caption{Gráficos do logaritmo do erro (\eqref{eq:erroAnalitico}) em função do \suge{frase incompleta}}
+\caption{Gráficos do logaritmo do erro \eqref{eq:erroAnalitico} em função do logaritmo do tamanho $\Delta x$ dos elementos do grid.}
 \end{figure}
     
     
@@ -84,23 +83,24 @@ Atestado o bom funcionamento do método dos elementos finitos, os resultados das
     \end{tabular}
 \end{table}
 
-\suge{apenas para comparar vou colocar a mesma tabela usando recurso do pacote booktabs, prefiro esta estética, mas o trabalho é seu, escolha a que melhor lhe pareça}
 
-\begin{table}[htb]
-    \caption{Tabela com os casos que serão apresentados os resultados. }\label{tab:descricaoModelos_lmc}
-    \centering
-    \begin{tabular}{@{}cccc@{}}
-    \toprule
-    \textbf{Nome}&\textbf{Nx}&\textbf{Ny}&\textbf{Caso Real}\\
-    \midrule
-    caso A &100 &100 & Não\\
-    caso B &320 &320 & Não\\
-    caso C &103 &56 & Não\\
-    caso D &244 &71 & Sim\\
-   caso E & 582 &336 & Sim\\
-    \bottomrule
-    \end{tabular}
-    \end{table}
+% TODO modificar tabelas para esse o padrão abaixo 
+
+% \begin{table}[htb]
+%     \caption{Tabela com os casos que serão apresentados os resultados. }\label{tab:descricaoModelos_lmc}
+%     \centering
+%     \begin{tabular}{@{}cccc@{}}
+%     \toprule
+%     \textbf{Nome}&\textbf{Nx}&\textbf{Ny}&\textbf{Caso Real}\\
+%     \midrule
+%     caso A &100 &100 & Não\\
+%     caso B &320 &320 & Não\\
+%     caso C &103 &56 & Não\\
+%     caso D &244 &71 & Sim\\
+%   caso E & 582 &336 & Sim\\
+%     \bottomrule
+%     \end{tabular}
+% \end{table}
     
 
 \begin{equation} \label{eq:correlacaoCm}
@@ -117,7 +117,7 @@ Assim, o módulo de Young pode ser calculado em função apenas da profundidade 
     E = \frac{(1-2\poisson)(1+\poisson)}{(1-\poisson)c_M}
 \end{equation}
 
-O grid utilizado é apresentado na Figura\ref{fig:gridBase10x10} com as dimensões baseadas no exemplo mostrado em \cite{casteletto}. Esse grid teve cada uma das células divididas em com 10 cortes verticais e 10 cortes horizontais igualmente espaçados para gerar o caso A e de forma análoga dividida em 32 cortes horizontais e 32 cortes verticais para gerar o caso B. A localização do reservatório aparece na Figura \ref{fig:gridBase10x10} em vermelho. Foi considerada também a depleção de 100 bar de pressão no reservatório.
+O grid utilizado é apresentado na Figura \ref{fig:gridBase10x10} com as dimensões baseadas no exemplo mostrado em \cite{casteletto}. Esse grid teve cada uma das células divididas em com 10 cortes verticais e 10 cortes horizontais igualmente espaçados para gerar o caso A e de forma análoga dividida em 32 cortes horizontais e 32 cortes verticais para gerar o caso B. A localização do reservatório aparece na Figura \ref{fig:gridBase10x10} em vermelho. Foi considerada também a depleção de 100 bar de pressão no reservatório.
 
 \begin{figure}[!htbp]
     \centering
@@ -329,7 +329,7 @@ Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o n�
 \end{tabular}
 \end{table}
 
-
+%TODO fazer normalizado pelos não zeros da matriz
 \begin{table}[]
 \centering
 \caption{Tabela com comparação entre número de não zeros das multiplicações matriz vetor de cada ciclo multigrid.} \label{tab:comparacaoMsxMgProlongamento}

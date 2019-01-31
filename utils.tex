@@ -174,7 +174,6 @@ u_x \\ u_y \\ u_z
 \begin{bmatrix}
 \dx[#1] &        0   \\ 
       0 & \dy[#1]    \\ 
-      0 &        0   \\ 
 \dy[#1] & \dx[#1]    \\ 
 \end{bmatrix}
 }
@@ -189,7 +188,7 @@ u_x \\ u_y \\ u_z
 
 % Integral em omega
 
-\newcommand{\omeint}[2][\Omega]{\iiint\limits_{#1} #2 \, d#1}
+\newcommand{\omeint}[2][\Omega]{\int\limits_{#1} #2 \, d#1}
 \newcommand{\omeeint}[1]{\omeint[\Omega^e]{#1}}
 
 \newcommand{\phiix}{\varphi_i(\mathbf{x})}
@@ -233,6 +232,8 @@ u_x \\ u_y \\ u_z
  \end{bmatrix}
 }
 
+
+
 \newcommand{\ldint}[1][i]{(\mathbf{F}, \varphi_{#1})}
 
 
@@ -275,6 +276,29 @@ u_x \\ u_y \\ u_z
 \newcommand{\numelementsycoarse}{N^H_y}
 
 
-\newcommand{\basefunctionfine}{\mathbf{N}_i^h}
+\newcommand{\basefunctionfine}[1][i]{\mathbf{N}_{#1}^h}
+\newcommand{\basefunctionelem}[1][i]{\mathbf{N}_{#1}^e}
+
 
 \newcommand{\basefunctionfineessential}{\mathbf{N}_{i+\freedomfine}^h}
+
+
+\newcommand{\sobolev}{H^1(\Omega)}
+
+\newcommand{\trial}{\mathcal{V}(\Omega)}
+
+\newcommand{\trialaprox}{\mathcal{V}^h}
+
+\newcommand{\trialdef}{\{  \mathbf{w} | \mathbf{w} \in \sobolev , \mathbf{w} = 0 \text{ em } \Gamma_u \}}
+
+\newcommand{\test}{\mathcal{S}(\Omega)}
+
+\newcommand{\testaprox}{\mathcal{S}^h}
+
+\newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev , \mathbf{u} = \bar{u} \text{ em } \Gamma_u \}}
+
+\newcommand{\qtdnos}{n_{\text{nós}}}
+
+\newcommand{\kij}[2]{(\sopnabla \basefunctionfine[#1])^T D \sopnabla \basefunctionfine[#2]}
+
+\newcommand{\kije}[2]{(\sopnabla \basefunctionelem[#1])^T D \sopnabla \basefunctionelem[#2]}

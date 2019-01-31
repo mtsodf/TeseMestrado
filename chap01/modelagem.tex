@@ -224,7 +224,7 @@ D_{stress} = \frac{E}{1-\upsilon^2}
 \end{equation}
 
 \begin{equation} \label{eq:elasticplanestrain}
-D_{def} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
+D_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \begin{bmatrix}
  1-\upsilon & \upsilon    &  0 \\ 
  \upsilon   &  1-\upsilon &  0 \\ 
@@ -285,13 +285,25 @@ u_y
 
 Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. 
 
-\section{Modelagem pelo Método dos elementos finitos}
+\section{Modelagem pelo Método dos Elementos Finitos}
 
 Em posse da Equação \eqref{eq:edp_geomec}, é necessário um método de solução numérica para se resolver. O método utilizado nesse trabalho é o método dos Elementos Finitos. O método dos Elementos finitos é bastante difundido em análises estruturais mas também pode ser utilizado em outros tipos de EDP's como fluxo de calor. 
 
+
+
 \subsection{Formulação Fraca}
 
-O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca da equação \eqref{eq:edptwod}
+O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca da equação \eqref{eq:edp_geomec}. As referências \cite{jacob} e \cite{hughes} mostram a dedução para chegar em  \eqref{eq:weakform}.
+
+\begin{equation}\label{eq:weakform}
+\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w} \bar{\mathbf{t}} d\Gamma = 0 \quad \forall \mathbf{w} \in \trial 
+\end{equation}
+
+
+Com conjunto de teste $\trial = \trialdef$ e conjunto de avaliação igual a $\test = \testdef$.
+
+
+
 
 \subsection{Divisão do domínio}
 
@@ -300,37 +312,202 @@ O domínio do problema será dividido em uma quantidade finita de elementos, o c
 %TODO trocar por figura em que os elementos não sejam 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=5cm]{chap01/elemento_original.png}
+\includegraphics[width=5cm]{interrogacao.png}
 \caption{Exemplo de domínio dividido em quadriláteros.}
 \label{fig:elemento}
 \end{figure}
 
-A notação utilizada aqui é a mesma que em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}. Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\freedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \forall i=1,2,...,\freedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
+A notação utilizada aqui é a mesma que em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}. Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\freedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=1,2,...,\freedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=\freedomfine+1,2,...,\freedomfine + \essentialfine$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
 
 
 \begin{equation}\label{eq:udiscret}
-u(\mathbf{x}) = \sum_{i=1}^{\freedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h
+\mathbf{u}(\mathbf{x}) = \sum_{i=1}^{\freedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h = \mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h
+\end{equation}
+
+onde 
+
+\begin{eqnarray*}
+\mathbf{N^h} = [N^h_1, N^h_2, ..., N^h_{\freedomfine} ] \\
+\mathbf{\bar{N}^h}  =[N^h_{\freedomfine + 1}, N^h_{\freedomfine + 2}, ..., N^h_{\freedomfine + \essentialfine}] \\
+\mathbf{d} = [d_1^h, d_2^h, ... , d_{\freedomfine}^h]^T \\
+\bar{\mathbf{d}} = [\bar{d}_1^h, \bar{d}_2^h, ... , \bar{d}_{\essentialfine}^h]^T
+\end{eqnarray*}
+
+
+
+Por enquanto, as funções $N^h_i$ em uma abordagem clássica de elementos finitos, serão da forma $[N^h_{ix} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{iy}]^T$  para um grau de liberdade y, dessa forma, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. De acordo com \cite{jacob} essa é a forma mais usual, porém, é possível utilizar outras opções. De fato, a funções de forma que serão utilizadas no método multiescala que serão apresentadas em \ref{ch:multiescala} não vão obedecer esse padrão . A forma exata da definição será apresentada mais a frente pois elas serão definidas em um sistema diferente do (x,y). Agora as funções $N^h_{ix}$ e $N^h_{iy}$ são tais que os valores tem valor igual a um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice. Um exemplo dessas funções é apresentado na Figura \ref{fig:shapefunctions}
+
+%TODO adicionar exemplo das funções geradas com python
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=5cm]{interrogacao.png}
+\caption{Gráficos com funções de forma.}
+\label{fig:shapefunctions}
+\end{figure}
+
+\begin{figure}[h]
+\center
+\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_000.png}}
+\qquad
+\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_002.png}}
+\caption{Gráficos do logaritmo do erro \eqref{eq:erroAnalitico} em função do logaritmo do tamanho $\Delta x$ dos elementos do grid.}
+\end{figure}
+    
+
+
+\subsection{Construção do sistema linear}
+
+Dado a forma fraca definida em \eqref{eq:weakform} e as funções de forma $N_i^h$ para $i = 1, 2, 3, ..., \freedomfine + \essentialfine$ pode-se encontrar uma solução aproximada pelo método de Galerkin. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada nos conjuntos  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \freedomfine  \}$ e $\mathbf{u}$ da forma aproximada mostrada na \eqref{eq:udiscret} pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}.
+
+
+\begin{equation}\label{eq:weakformaprox}
+\omeint{ (\sopnabla \mathbf{w}^h)^T D \sopnabla  \mathbf{u}^h}  =  \int_{\Gamma_\sigma} \mathbf{w}^h \bar{\mathbf{t}} d\Gamma \quad \forall \mathbf{w}^h \in \trialaprox
 \end{equation}
 
 
-Onde $u^i_x$, $u^i_y$ e $u^i_z$ são os graus de liberdade do nó i. As funções $\varphi_i(\mathbf{x})$ são tais que o valor no nó correspondente é igual a 1 e decresce para 0 nos nós adjacentes. A forma dessas funções serão definidas mais a frente, pois elas são definidas em um sistema diferente do (x,y,z).
+Assim, se substituirmos $\mathbf{w}$ por cada uma das funções $N_i^h$ para $i = 1, 2, 3, ..., \freedomfine$ em \eqref{eq:weakformaprox} pode-se obter um conjunto de equações que formam um sistema linear. Seguem abaixo os cálculos substituindo $\mathbf{w}$ por $\basefunctionfine$ e $\mathbf{u}^h$ por \eqref{eq:udiscret}.
 
 
-Considerando $u^*$ como a solução exata para a EDP \ref{eq:edp_geomec} é necessário encontrar a função $u$ da forma de \ref{eq:udiscret} que aproxime da melhor maneira possível $u^*$ de acordo com alguma métrica. Uma maneira de fazer isso é minimizar a norma do resíduo $r = u-u^*$. Para essa minimização, o resíduo  deve ser ortogonal a cada uma das funções $\varphi_i$ e as equações apresentadas em \ref{eq:normalizacao} são válidas.
-
-
-\begin{equation}\label{eq:normalizacao}
-<u-u^*, \varphi_i> = 0   \quad  \text{para $i$=1,2,3, ..., nn}
+\begin{equation}
+\omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla (\mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h )} = \int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}} d\Gamma 
 \end{equation}
 
-A definição da norma que será utilizada aqui é de extrema importância, note que, caso a norma canônica for utilizada, nada pode ser feito com relação a equação \ref{eq:normalizacao} pois, nos problemas práticos, geralmente não se conhece $u^*$.
+\begin{equation}\label{eq:umaequacaosistema}
+\omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla \mathbf{N^h} \mathbf{d}^h }  = \int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}}  d\Gamma - \omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla  \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h} 
+\end{equation}
+
+Definindo, 
+
+\begin{equation}\label{eq:entradamatriz}
+    K_{i,j} = \omeint{(\sopnabla \basefunctionfine)^T D \sopnabla \basefunctionfine[j]}
+\end{equation}
+
+
+A primeira parcela do lado esquerdo pode ser reescrita como:
+
+\begin{equation}
+     (\sopnabla \basefunctionfine)^T D \sopnabla \mathbf{N^h} = [K_{i,1}\quad  K_{i,2} \quad ... \quad K_{i,\freedomfine}] 
+\end{equation}
+
+E definindo o lado direito de \eqref{eq:umaequacaosistema} como $f_i$, pode-se reescrever a equação como:
+
+\begin{equation} \label{eq:umaequacaosistemafim}
+K_{i,:} \mathbf{d}^h = f_i \quad \forall \quad i=1,..., \freedomfine
+\end{equation}
+
+E finalmente substituindo todos os valores possíveis de $i$ encontrasse o sistema linear \eqref{eq:sistemalinear}.
+
+\begin{equation}
+    \mathbf{K} \mathbf{d} = \mathbf{f}
+\end{equation}
+
+
+
+onde as entradas de $K$ são definidas por  $K_{i,j} = \omeint{\kij{i}{j}}$. A solução do sistema são tem como resultado os valores de cada um dos graus de liberdade do problema e com isso, encontrar a aproximação dos deslocamentos \eqref{eq:udiscret}. Sobre a matriz $\mathbf{K}$ satisfaz as seguintes propriedades:
+
+
+\begin{itemize}
+    \item A matriz é simétrica. Pois,
+
+    \begin{eqnarray}
+    K_{i,j} & = & (K_{i,j})^T \\
+            & = & \omeint{((\sopnabla \basefunctionfine)^T D \sopnabla \basefunctionfine[j])^T} \\
+            & = & \omeint{ ( \sopnabla \basefunctionfine[j])^T D^T  ((\sopnabla \basefunctionfine)^T)^T}\\
+            & = & \omeint{ ( \sopnabla \basefunctionfine[j])^T D  (\sopnabla \basefunctionfine)} \\
+            & = & K_{j,i}
+    \end{eqnarray}
+
+
+    \item A matriz é esparsa. Pois cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de quadriláteros, cada função de forma é não nula em quatro elementos apenas.
+
+    \item A matriz é positiva definida. A prova desse fato é encontrada em \cite{hughes}, que mostra que esse propriedade depende da relação constitutiva ser também positiva definida.
+\end{itemize}
+
+
+Ainda sobre a esparsidade da matriz de rigidez, em um grid com quadriláteros cada função de base de um nó (a menos de nós de fronteira) tem conexão com nove outros nós, contando com ele mesmo, como mostra a Figura \ref{fig:grid3x3ver} o nó 6 tem conexões com os nós [1,2,3,5,6, 7,9,10,11]. Assim, cada nó tem duas linhas correspondentes na matriz de rigidez, e cada linha possui $2 \times 9 = 18$ valores não nulos, portanto, cada nó tem $2 \times 18 = 36$ não zeros associados na matriz, o que leva a uma aproximação de $\text{nnz}_K = 36 \qtdnos$ . Como será mostrado no Capítulo \ref{ch:sistemas}, a matriz terá que utilizar alguma estrutura de matriz esparsa pois caso fosse alocada densa a quantidade de valores alocados seria aproximadamente $(2 \times \qtdnos)^2$ que tem ordem quadrática com o número de nós e limitaria precocemente o tamanho dos modelos simulados. 
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=6cm]{chap01/figs/grid3x3ver.png}
+\caption{Numeração global dos nós em malha $2\times2$. Marcados de vermelho o nó 6 e seus adjacentes.}
+\label{fig:grid3x3ver}
+\end{figure}
+
+
+Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em \eqref{eq:entradamatriz} a montagem da matriz não é feita dessa forma. A integrais que aparecem no domínio $\Omega$ serão dividas em cada um dos elementos conforme \eqref{eq:matrizrigidezporelemento}. 
+
+\begin{equation}
+\mathbf{K}  = \omeint{
+\begin{bmatrix}
+\kij{1}{1} & \kij{1}{2}  & \hdots & \kij{1}{\freedomfine} \\ 
+\kij{2}{1} & \kij{2}{2}  & \hdots & \kij{2}{\freedomfine} \\ 
+\vdots &  & \ddots & \vdots\\ 
+\kij{\freedomfine}{1} & \kij{\freedomfine}{2}  & \hdots & \kij{\freedomfine}{\freedomfine} 
+\end{bmatrix}
+}
+\end{equation}
+
+\begin{equation}\label{eq:matrizrigidezporelemento}
+\mathbf{K}  = \sum_{e \in \tau^h} \omeeint{
+\begin{bmatrix}
+\kij{1}{1} & \kij{1}{2}  & \hdots & \kij{1}{\freedomfine} \\ 
+\kij{2}{1} & \kij{2}{2}  & \hdots & \kij{2}{\freedomfine} \\ 
+\vdots     &             & \ddots & \vdots\\ 
+\kij{\freedomfine}{1} & \kij{\freedomfine}{2}  & \hdots & \kij{\freedomfine}{\freedomfine} 
+\end{bmatrix}
+}
+\end{equation}
+
+
+Cada parcela da somatório dos elementos em \eqref{eq:matrizrigidezporelemento} é uma integral no domínio $\Omega^e$ de algum elemento e portanto apenas 8 funções de forma são não zero nesse conjunto. Dessa forma apenas $8\times8=64$ valores são diferentes de zero em cada uma das matrizes. Assim, esse valores podem ser condensados em uma matriz menor $8\times8$ com uma numeração local do elemento conforme mostrado em \eqref{eq:matrizelementoraw}.
+
+\begin{equation}\label{eq:matrizelementoraw}
+    K^e = 
+\omeeint{
+\begin{bmatrix}
+\kije{1}{1} & \kije{1}{2}  & \hdots & \kije{1}{8}  \\ 
+\kije{2}{1} & \kije{2}{2}  & \hdots & \kije{2}{8}  \\ 
+\vdots      &              & \ddots & \vdots       \\ 
+\kije{8}{1} & \kije{8}{2}  & \hdots & \kije{8}{8} 
+\end{bmatrix}
+}
+\end{equation}
+
+Que pode ser transformada em \eqref{eq:matrizelementosemiraw}.
+
+\begin{equation}\label{eq:matrizelementosemiraw}
+    K^e =\omeeint{ (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8] ]) ^T D (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8]])}
+\end{equation}
+
+Definindo, 
+
+\begin{equation}
+    B^e = \sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8] ]
+\end{equation}
+
+A matriz de rigidez do elemento pode ser escrita como:
+
+\begin{equation} \label{eq:}
+    K^e = \omeeint{(B^e)^T D^e B^e}
+\end{equation}
+
+
+
+
+Dessa forma, a montagem da matriz de rigidez pode ser feito calculando a matriz do elemento e acumulando esses valores em suas posições correspondentes na matriz global. Abaixo é apresentado utilizando o algoritmo para montagem da matriz de rigidez global.
+
+%TODO adicionar algoritmo de elementos
+\begin{algorithmic}
+\STATE Para cada elemento $e \in \tau^h$
+
+\end{algorithmic}
+
 
 \begin{equation}
     <f(x), g(x)> = \int^b_af(x)g(x) dx
 \end{equation}
 
 Como apresentado em \cite{CompGeomec} mais detalhadamente, o método de garlekin minimiza o módulo do resíduo na norma da energia. De forma que, o produto interno utilizado é o apresentado na equação \ref{eq:proint_energia}.
-
 
 
 \begin{equation}
@@ -534,7 +711,7 @@ Como a equação é válida para todo $i=1,...,nn$, é possível juntar todas as
                          & = & a_e(\phijx,\phiix)
     \end{eqnarray}
 
-    \item A matriz é esparça. Cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de hexaedros, cada função de forma é não nula em oito elementos apenas.
+    \item A matriz é esparsa. Cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de hexaedros, cada função de forma é não nula em oito elementos apenas.
 
     \item A matriz é positiva definida. {\color{red}TODO: adicionar argumento que a matriz é positiva definida.}
 \end{itemize}
@@ -562,13 +739,6 @@ Considere a numeração local da figura \ref{fig:elem_func_form_local}. Nesse ca
 \end{itemize}
 
 
-
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=6cm]{chap01/grid2x2_elem3_vermelho.png}
-\caption{Numeração dos nós em malha $2\times2\times2$. Com elemento 4 destacado em vermelho.}
-\label{fig:grid2x2_elem3_vermelho}
-\end{figure}
 
 
 Além disso, definindo $\mathbf{x^e_i} = (x^e_i, y^e_i, z^e_i)$ como as coordenadas do nó $i$ do elemento $e$ e $\Omega^e$ o domínio do elemento $e$.
@@ -648,9 +818,8 @@ onde $J$ representa a matriz jacobiana.
 
 \begin{equation}
 J = \begin{bmatrix}
-\dxi[x]   &   \dxi[y] &   \dxi[z] \\
-\deta[x]  &  \deta[y] &  \deta[z] \\
-\dzeta[x] & \dzeta[y] & \dzeta[z]
+\dxi[x]   &  \deta[x]  \\
+  \dxi[y] &  \deta[y] 
 \end{bmatrix}
 \label{eq:jacobiano}
 \end{equation}
@@ -664,10 +833,6 @@ O valor das derivadas do Jacobiano podem ser obtidas derivando a \ref{eq:isopara
 \begin{equation}
 \deta[x] = \sum^8_{A=1} \deta[N_A] x^e_A
 \end{equation}
-\begin{equation}
-\dzeta[x] = \sum^8_{A=1} \dzeta[N_A] x^e_A
-\end{equation}
-
 
 
 Pode-se perceber também que os somatórios podem ser transformados como a multiplicação de uma matriz linha por uma matriz coluna transformando, por exemplo, \ref{eq:dev_x_xi} em \ref{eq:dev_x_xi_matriz}.
