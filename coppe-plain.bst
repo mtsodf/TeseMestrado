@@ -1,6 +1,6 @@
 %
-% This is file `coppe-unsrt.bst',
-% A modification of `unsrtnat.bst' for use with natbib package 
+% This is file `coppe-plain.bst',
+% A modification of `plainnat.bst' for use with natbib package 
 %
 % Numbered BibTeX style for using with CoppeTeX package.
 % It is Natbib compatible.
@@ -21,8 +21,8 @@
 % version 3 along with this package (see COPYING file).
 % If not, see <http://www.gnu.org/licenses/>.
 %
-% $URL: https://svn.code.sf.net/p/coppetex/code/tags/coppetex-2.2.1/coppe-unsrt.bst $
-% $Id: coppe-unsrt.bst 276 2011-02-05 00:14:45Z helano $
+% $URL: https://svn.code.sf.net/p/coppetex/code/tags/coppetex-2.2.1/coppe-plain.bst $
+% $Id: coppe-plain.bst 276 2011-02-05 00:14:45Z helano $
 %
 % Author(s): Vicente H. F. Batista
 %
@@ -440,6 +440,24 @@ FUNCTION {n.dashify}
   while$
 }
 
+FUNCTION {format.year}
+{ year duplicate$ empty$
+    { "empty year in " cite$ * warning$
+       pop$ "" }
+    'skip$
+  if$
+  extra.label *
+}
+
+FUNCTION {format.month}
+{
+  month duplicate$ empty$
+    { pop$ "" }
+    'skip$
+  if$
+  extra.label *
+}
+
 FUNCTION {format.date}
 { year duplicate$ empty$
     { "empty year in " cite$ * warning$
@@ -573,6 +591,10 @@ FUNCTION {format.vol.num.pages}
         'skip$
       if$
     }
+  if$
+  month empty$
+    'skip$
+    { " (" * month * ")" * }
   if$
   pages empty$
     'skip$
@@ -738,7 +760,7 @@ FUNCTION {article}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.title "title" output.check
   end.quote.title
   crossref missing$
@@ -747,7 +769,6 @@ FUNCTION {article}
         { format.vol.num.pages output }
         { format.vol.num.eid output }
       if$
-      format.date "year" output.check
     }
     { format.article.crossref output.nonnull
       eid empty$
@@ -778,7 +799,7 @@ FUNCTION {book}
       if$
     }
   if$
-  new.block
+  format.year "year" output.check
   format.btitle "title" output.check
   crossref missing$
     { format.bvolume output
@@ -792,7 +813,6 @@ FUNCTION {book}
       format.book.crossref output.nonnull
     }
   if$
-  format.date "year" output.check
   format.isbn output
   format.doi output
   format.url output
@@ -801,18 +821,17 @@ FUNCTION {book}
   note output
   fin.entry
 }
-% TODO:
+
 FUNCTION {booklet}
 { output.bibitem
   format.authors output
   author format.key output
-  new.block
+  format.year "year" output.check
   format.intitle "title" output.check
   end.quote.title
   howpublished address new.block.checkb
   howpublished output
   address output
-  format.date output
   format.isbn output
   format.doi output
   format.url output
@@ -835,7 +854,7 @@ FUNCTION {inbook}
       if$
     }
   if$
-  new.block
+  format.year "year" output.check
   format.intitle "title" output.check
   end.quote.title
   crossref missing$
@@ -851,7 +870,7 @@ FUNCTION {inbook}
       format.book.crossref output.nonnull
     }
   if$
-  format.date "year" output.check
+  format.month output
   format.isbn output
   format.doi output
   format.url output
@@ -865,7 +884,7 @@ FUNCTION {incollection}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.intitle "title" output.check
   end.quote.title
   crossref missing$
@@ -875,8 +894,8 @@ FUNCTION {incollection}
       format.edition output
       publisher "publisher" output.check
       format.chapter.pages output
-      address "address" output.check
-      format.date "year" output.check
+      address output
+      format.month output
     }
     { format.incoll.inproc.crossref output.nonnull
       format.chapter.pages output
@@ -900,7 +919,7 @@ FUNCTION {inproceedings}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.intitle "title" output.check
   end.quote.title
   crossref missing$
@@ -912,10 +931,10 @@ FUNCTION {inproceedings}
         { organization publisher new.sentence.checkb
           organization output
           publisher output
-          format.date "year" output.check
+          format.month "month" output.check
         }
         { address output.nonnull
-          format.date "year" output.check
+          format.month "month" output.check
           new.sentence
           organization output
           publisher output
@@ -941,13 +960,13 @@ FUNCTION {manual}
 { output.bibitem
   format.authors output
   author format.key output
-  new.block
+  format.year output
   format.btitle "title" output.check
   format.edition output
   organization address new.block.checkb
   organization output
   address output
-  format.date output
+  format.month output
   format.url output
   format.access output
   new.block
@@ -959,13 +978,13 @@ FUNCTION {mastersthesis}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.btitle "title" output.check
   new.block
   "Tese de Mestrado" format.thesis.type output.nonnull
   school "school" output.check
   address output
-  format.date "year" output.check
+  format.month output
   format.url output
   format.access output
   new.block
@@ -977,12 +996,13 @@ FUNCTION {misc}
 { output.bibitem
   format.authors output
   author format.key output
+  format.year output
   title howpublished new.block.checkb
   format.intitle output
   end.quote.title
   howpublished new.block.checka
   howpublished output
-  format.date output
+  format.month output
   format.issn output
   format.url output
   format.access output
@@ -996,13 +1016,13 @@ FUNCTION {phdthesis}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.btitle "title" output.check
   new.block
   "Tese de Doutorado" format.thesis.type output.nonnull
   school "school" output.check
   address output
-  format.date "year" output.check
+  format.month output
   format.url output
   format.access output
   new.block
@@ -1014,12 +1034,12 @@ FUNCTION {proceedings}
 { output.bibitem
   format.editors output
   editor format.key output
-  new.block
+  format.year "year" output.check
   format.btitle "title" output.check
   format.bvolume output
   format.number.series output
   address output
-  format.date "year" output.check
+  format.month "month" output.check
   new.sentence
   organization output
   publisher output
@@ -1036,13 +1056,13 @@ FUNCTION {techreport}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year "year" output.check
   format.btitle "title" output.check
   new.block
   format.tr.number output.nonnull
   institution "institution" output.check
   address output
-  format.date "year" output.check
+  format.month output
   format.url output
   format.access output
   new.block
@@ -1054,11 +1074,11 @@ FUNCTION {unpublished}
 { output.bibitem
   format.authors "author" output.check
   author format.key output
-  new.block
+  format.year output
   format.title "title" output.check
   end.quote.title
   note "note" output.check
-  format.date output
+  format.month output
   format.url output
   format.access output
   fin.entry
@@ -1214,16 +1234,109 @@ FUNCTION {calc.label}
   'label :=
 }
 
-INTEGERS { seq.num }
+FUNCTION {sort.format.names}
+{ 's :=
+  #1 'nameptr :=
+  ""
+  s num.names$ 'numnames :=
+  numnames 'namesleft :=
+    { namesleft #0 > }
+    {
+      s nameptr "{vv{ } }{ll{ }}{  ff{ }}{  jj{ }}" format.name$ 't :=
+      nameptr #1 >
+        {
+          "   "  *
+          namesleft #1 = t "others" = and
+            { "zzzzz" * }
+            { numnames #2 > nameptr #2 = and
+                { "zz" * year field.or.null * "   " * }
+                'skip$
+              if$
+              t sortify *
+            }
+          if$
+        }
+        { t sortify * }
+      if$
+      nameptr #1 + 'nameptr :=
+      namesleft #1 - 'namesleft :=
+    }
+  while$
+}
 
-FUNCTION {init.seq}
-{ #0 'seq.num :=}
+FUNCTION {sort.format.title}
+{ 't :=
+  "A " #2
+    "An " #3
+      "The " #4 t chop.word
+    chop.word
+  chop.word
+  sortify
+  #1 global.max$ substring$
+}
 
-EXECUTE {init.seq}
+FUNCTION {author.sort}
+{ author empty$
+    { key empty$
+        { "to sort, need author or key in " cite$ * warning$
+          ""
+        }
+        { key sortify }
+      if$
+    }
+    { author sort.format.names }
+  if$
+}
 
-FUNCTION {int.to.fix}
-{ "000000000" swap$ int.to.str$ *
-  #-1 #10 substring$
+FUNCTION {author.editor.sort}
+{ author empty$
+    { editor empty$
+        { key empty$
+            { "to sort, need author, editor, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { editor sort.format.names }
+      if$
+    }
+    { author sort.format.names }
+  if$
+}
+
+FUNCTION {author.organization.sort}
+{ author empty$
+    { organization empty$
+        { key empty$
+            { "to sort, need author, organization, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { "The " #4 organization chop.word sortify }
+      if$
+    }
+    { author sort.format.names }
+  if$
+}
+
+FUNCTION {editor.organization.sort}
+{ editor empty$
+    { organization empty$
+        { key empty$
+            { "to sort, need editor, organization, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { "The " #4 organization chop.word sortify }
+      if$
+    }
+    { editor sort.format.names }
+  if$
 }
 
 
@@ -1232,8 +1345,25 @@ FUNCTION {presort}
   label sortify
   "    "
   *
-  seq.num #1 + 'seq.num :=
-  seq.num  int.to.fix
+  type$ "book" =
+  type$ "inbook" =
+  or
+    'author.editor.sort
+    { type$ "proceedings" =
+        'editor.organization.sort
+        { type$ "manual" =
+            'author.organization.sort
+            'author.sort
+          if$
+        }
+      if$
+    }
+  if$
+  "    "
+  *
+  cite$
+  *
+  #1 entry.max$ substring$
   'sort.label :=
   sort.label *
   #1 entry.max$ substring$

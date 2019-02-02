@@ -30,7 +30,7 @@
 %% Author(s): Vicente Helano,
 %%            George Ainsworth
 %% 
-%% \CheckSum{1309}
+%% \CheckSum{1416}
 %% \CharacterTable
 %%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
 %%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
@@ -48,35 +48,28 @@
 %%   Right brace   \}     Tilde         \~}
 %%
 \def\filename{coppe.dtx}
-\def\fileversion{v2.0}
-\def\filedate{2007/03/01}
+\def\fileversion{v2.2}
+\def\filedate{2011/02/08}
 \NeedsTeXFormat{LaTeX2e}[1995/12/01]
 \ProvidesClass{coppe}[\filedate\ \fileversion\ COPPE Dissertations and Thesis]
 \LoadClass[12pt,a4paper,oneside]{book}
-\RequirePackage{lastpage}
-\RequirePackage{hyperref}
-\RequirePackage[english,brazil]{babel}
+\RequirePackage[sort&compress]{natbib}
 \RequirePackage{hyphenat}
+\RequirePackage{lastpage}
+\RequirePackage[english,brazil]{babel}
 \RequirePackage{ifthen}
 \RequirePackage{graphicx}
+\RequirePackage{setspace}
 \RequirePackage{tabularx}
 \RequirePackage{eqparbox}
+\RequirePackage{ltxcmds}
 \RequirePackage[a4paper,bindingoffset=0.0cm,vcentering=true,%
 top=2.5cm,bottom=2.5cm,left=3.0cm,right=3.0cm]{geometry}
 \def\CoppeTeX{{\rm C\kern-.05em{\sc o\kern-.025em p\kern-.025em
-p\kern-.025em e}}\kern-.08em\TeX}
-\renewcommand\baselinestretch{1.5}
-\let\@adname\@empty
-\let\@adsurn\@empty
-\let\@coadname\@empty
-\let\@coadsurn\@empty
-\newcounter{minexaminers}
-\newboolean{isdraft}
+p\kern-.025em e}}\kern-.08em
+T\kern-.1667em\lower.5ex\hbox{E}\kern-.125emX\spacefactor1000}
 \newboolean{maledoc}
 \setboolean{maledoc}{false}
-\setboolean{isdraft}{false}
-\newboolean{needbb}
-\setboolean{needbb}{false}
 \DeclareOption{msc}{%
   \newcommand{\@degree}{M.Sc.}
   \newcommand{\@degreename}{Mestrado}
@@ -84,7 +77,6 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \newcommand{\foreign@degname}{Master}
   \newcommand\local@doctype{Disserta{\c c}{\~ a}o}
   \newcommand\foreign@doctype{Dissertation}
-  \setcounter{minexaminers}{2}
 }
 \DeclareOption{dscexam}{%
   \newcommand{\@degree}{D.Sc.}
@@ -94,7 +86,6 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \setboolean{maledoc}{true}
   \newcommand\local@doctype{Exame de Qualifica{\c c}{\~ a}o}
   \newcommand\foreign@doctype{Qualifying Exam}
-  \setcounter{minexaminers}{1}
 }
 \DeclareOption{dsc}{%
   \newcommand{\@degree}{D.Sc.}
@@ -103,27 +94,15 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \newcommand{\foreign@degname}{Doctor}
   \newcommand\local@doctype{Tese}
   \newcommand\foreign@doctype{Thesis}
-  \setcounter{minexaminers}{2}
 }
-\DeclareOption{draft}{%
-  \setboolean{isdraft}{true}
-  \ClassWarning{coppe}{draft mode is ON}%
+\DeclareOption{numbers}{%
+  \PassOptionsToPackage{numbers}{natbib}
 }
-\DeclareOption{dvips}{%
-  \PassOptionsToPackage{dvips}{hyperref,graphicx}
-}
-\DeclareOption{dvipdfm}{%
-  \PassOptionsToPackage{dvipdfm}{hyperref,graphicx}
-  \setboolean{needbb}{true}
-}
-\DeclareOption{pdftex}{%
-  \PassOptionsToPackage{pdftex}{hyperref,graphicx}
-  \PassOptionsToPackage{plainpages=false,pdfpagelabels}{hyperref}
+\onehalfspacing
+\DeclareOption{doublespacing}{%
+  \doublespacing
 }
 \ProcessOptions\relax
-\newcommand\university[1]{%
-  \renewcommand\local@universityname{#1}
-}
 \newcommand\department[1]{%
   \ifthenelse{\equal{#1}{PEB}}
     {\global\def\local@deptname{Engenharia Biom{\' e}dica}
@@ -139,7 +118,7 @@ p\kern-.025em e}}\kern-.08em\TeX}
      \global\def\foreign@deptname{Mechanical Engineering}}{}
   \ifthenelse{\equal{#1}{PEMM}}
     {\global\def\local@deptname{Engenharia Metal{\' u}rgica e de Materiais}
-\global\def\foreign@deptname{Metallurgical and Materials Science Engineering}}{}
+\global\def\foreign@deptname{Metallurgical and Materials Engineering}}{}
   \ifthenelse{\equal{#1}{PEN}}
     {\global\def\local@deptname{Engenharia Nuclear}
      \global\def\foreign@deptname{Nuclear Engineering}}{}
@@ -168,23 +147,21 @@ p\kern-.025em e}}\kern-.08em\TeX}
 \newcommand\foreigntitle[1]{%
   \global\def\foreign@title{#1}%
 }
+\newcount\@advisor\@advisor0
 \newcommand\advisor[4]{%
-  \global\def\@adtitle{#1}%
-  \global\def\@adname{#2}%
-  \global\def\@adsurn{#3}%
-  \global\def\@addegree{#4}%
-}
-\newcommand\coadvisor[4]{%
-  \global\def\@coadtitle{#1}%
-  \global\def\@coadname{#2}%
-  \global\def\@coadsurn{#3}%
-  \global\def\@coaddegree{#4}%
-  \renewcommand\local@advisorstring{Orientadores}%
-  \renewcommand\foreign@advisorstring{Advisors}%
+  \global\@namedef{CoppeAdvisorTitle:\expandafter\the\@advisor}{#1}
+  \global\@namedef{CoppeAdvisorName:\expandafter\the\@advisor}{#2}
+  \global\@namedef{CoppeAdvisorSurname:\expandafter\the\@advisor}{#3}
+  \global\@namedef{CoppeAdvisorDegree:\expandafter\the\@advisor}{#4}
+  \global\advance\@advisor by 1
+  \ifnum\@advisor>1
+    \renewcommand\local@advisorstring{Orientadores}
+    \renewcommand\foreign@advisorstring{Advisors}
+  \fi
 }
 \newcount\@examiner\@examiner0
 \newcommand\examiner[3]{%
-  \global\@namedef{S:\expandafter\the\@examiner}{#1\ #2, #3}
+  \global\@namedef{CoppeExaminer:\expandafter\the\@examiner}{#1\ #2, #3}
   \global\advance\@examiner by 1
 }
 \renewcommand\author[2]{%
@@ -196,19 +173,14 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \year=#2
 }
 \newcommand\local@monthname{\ifcase\month\or
-  Janeiro\or Fevereiro\or Março\or Abril\or Maio\or Junho\or
+  Janeiro\or Fevereiro\or Mar{\c c}o\or Abril\or Maio\or Junho\or
   Julho\or Agosto\or Setembro\or Outubro\or Novembro\or Dezembro\fi}
 \newcommand\foreign@monthname{\ifcase\month\or
   January\or February\or March\or April\or May\or June\or
   July\or August\or September\or October\or November\or December\fi}
-\newcommand\place[3]{%
-  \renewcommand\local@cityname{#1}
-  \renewcommand\local@statename{#2}
-  \renewcommand\local@countryname{#3}
-}
 \newcounter{keywords}
 \newcommand\keyword[1]{%
-  \global\@namedef{K:\expandafter\the\c@keywords}{#1}
+  \global\@namedef{CoppeKeyword:\expandafter\the\c@keywords}{#1}
   \global\addtocounter{keywords}{1}
 }
 \renewcommand\frontmatter{%
@@ -223,8 +195,7 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \ifthenelse{\boolean{maledoc}}{}{\makecatalog}%
 }
 \renewcommand\mainmatter{%
-  \immediate\write\@auxout{%
-    \string\newlabel{front:pageno}{{}{\Roman{page}}{}{page.\roman{page}}{}}}
+  \coppe@mainBegin
   \cleardoublepage
   \@mainmattertrue
   \pagestyle{plain}
@@ -236,34 +207,48 @@ p\kern-.025em e}}\kern-.08em\TeX}
     \clearpage
   \fi}
 \renewcommand\maketitle{%
-\pagenumbering{alph}
-\config@hypersetup
+  \pagenumbering{alph}
+  \ltx@ifpackageloaded{hyperref}{\coppe@hypersetup}{}%
   \begin{titlepage}
   \begin{flushleft}
+  \vspace*{1.5mm}
   \setlength\baselineskip{0pt}
   \setlength\parskip{1mm}
-  \makebox[20mm][c]{%
-    \ifthenelse{\boolean{needbb}}{%
-      \includegraphics[bb = -1 -1 48 64]{minerva}}{%
-      \includegraphics{minerva}}}\par
-  \makebox[20mm][c]{{\fontfamily{phv}\textbf{\small COPPE/UFRJ}}}
+  \makebox[20mm][c]{\hspace{4.8cm}\includegraphics{coppe-logo}}
   \end{flushleft}
+  \vspace{1.05cm}
   \begin{center}
   \nohyphens{\MakeUppercase\local@title}\par
-  \vspace*{28mm}
+  \vspace*{3cm}
   \nohyphens{\@authname\ \@authsurn}\par
   \end{center}
-  \vspace*{16mm}
+  \vspace*{2.1cm}
   \begin{flushright}
-  \begin{minipage}{80mm}
+  \begin{minipage}{8.45cm}
   \frontcover@maintext
   \end{minipage}\par
   \vspace*{7.5mm}
-  \begin{tabularx}{80mm}[b]{@{}l@{ }X@{}}
-    \local@advisorstring: & \nohyphens{\@adname\ \@adsurn}\\
-    \ifthenelse{\equal{\@coadname}{\@empty}}{}{%
-      & \nohyphens{\@coadname\ \@coadsurn}\\}
-  \end{tabularx}\par
+  \nohyphens{%
+  \begin{tabularx}{8.45cm}[b]{@{}l@{ }>{\raggedright\arraybackslash}X@{}}
+    \local@advisorstring: &
+    \count1=0
+    \toks@={}
+    \@whilenum \count1<\@advisor \do{%
+    \ifcase\count1 % same as \ifnum0=\count1
+      \toks@=\expandafter{\csname CoppeAdvisorName:\the\count1%
+        \expandafter\endcsname\expandafter\space%
+        \csname CoppeAdvisorSurname:\the\count1\endcsname\\}
+    \else
+      \toks@=\expandafter\expandafter\expandafter{%
+        \expandafter\the\expandafter\toks@%
+        \expandafter&\expandafter\space%
+        \csname CoppeAdvisorName:\the\count1\expandafter\endcsname%
+        \expandafter\space\csname CoppeAdvisorSurname:\the\count1\endcsname\\
+      }%
+    \fi
+    \advance\count1 by 1}
+    \the\toks@
+  \end{tabularx}}\par
   \end{flushright}
   \vspace*{\fill}
   \begin{center}
@@ -285,27 +270,18 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \noindent\local@approvedname:\par
      \begin{center}
   \begin{flushright}
-        \vskip16\p@ \baselineskip12pt
-        \eqparbox{signture@list}{\hrulefill}\\
-        \eqparbox{signture@list}{\protect%\centering%
-          \ \ \ \@adtitle\ \@adname\ \@adsurn, \@addegree\ \ \ }\\
-        \ifthenelse{\equal{\@coadname}{\@empty}}{}{%
-        \vskip26\p@ \baselineskip12pt
-        \eqparbox{signture@list}{\hrulefill}\\
-        \eqparbox{signture@list}{\protect%\centering%
-          \ \ \ \@coadtitle\ \@coadname\ \@coadsurn, \@coaddegree\ \ \ }\\}
         \count1=0
         \@whilenum \count1<\@examiner \do {
             \vskip26\p@ \baselineskip12pt
-        \eqparbox{signture@list}{\hrulefill}\\
-        \eqparbox{signture@list}{\protect%\centering%
-            \ \ \ \csname S:\the\count1 \endcsname\ \ \ }\\
+        \eqmakebox[signture@list][c]{\hrulefill}\\
+        \eqmakebox[signture@list][c]{%
+            \ \ \ \protect\csname CoppeExaminer:\the\count1 \endcsname\ \ \ }\\
             \advance\count1 by 1}
   \end{flushright}
      \end{center}
   \vspace*{\fill}
   \frontpage@bottomtext}
-\newcommand\config@hypersetup{%
+\newcommand\coppe@hypersetup{%
 \begingroup
   % changes to \toks@ and \count@ are kept local;
   % it's not necessary for them, but it is usually the case
@@ -316,15 +292,15 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \@whilenum\count@<\value{keywords}\do{%
     % * a keyword separator is not necessary,
     %    if there is just one keyword
-    % * \csname K:\the\count@\endcsname must be expanded
+    % * \csname CoppeKeyword:\the\count@\endcsname must be expanded
     %    at least once, to get rid of the loop depended \count@
     \ifcase\count@ % same as \ifnum0=\count@
-      \toks@=\expandafter{\csname K:\the\count@\endcsname}%
+      \toks@=\expandafter{\csname CoppeKeyword:\the\count@\endcsname}%
     \else
       \toks@=\expandafter\expandafter\expandafter{%
         \expandafter\the\expandafter\toks@
         \expandafter;\expandafter\space
-        \csname K:\the\count@\endcsname
+        \csname CoppeKeyword:\the\count@\endcsname
       }%
     \fi
     \advance\count@ by 1 %
@@ -338,8 +314,11 @@ p\kern-.025em e}}\kern-.08em\TeX}
 \hypersetup{%
   pdfauthor={\@authname\ \@authsurn},
   pdftitle={\local@title},
- pdfsubject={\local@doctype\ de \@degreename\ em \local@deptname\ da COPPE/UFRJ},
-  pdfcreator={LaTeX with CoppeTeX toolkit}
+  pdfsubject={\local@doctype\ de \@degreename\ em \local@deptname\ da COPPE/UFRJ},
+  pdfcreator={LaTeX with CoppeTeX toolkit},
+  breaklinks={true},
+  raiselinks={true},
+  pageanchor={true},
 }}
 \newcommand\makecatalog{%
   \vspace*{\fill}
@@ -358,23 +337,40 @@ p\kern-.025em e}}\kern-.08em\TeX}
       % There is an issue here. When the last entry must be split between lines,
       % the spacing between it and the next paragraph becomes smaller.
       % Should we manually introduce a fixed space? But how could we know that
-      % a name was split?
-      \begin{tabularx}{100mm}[b]{@{}l@{ }X@{}}
-        \local@advisorstring: & \nohyphens{\@adname\ \@adsurn}%
-        \ifthenelse{\equal{\@coadname}{\@empty}}{}{\\
-          & \nohyphens{\@coadname\ \@coadsurn}}
-      \end{tabularx}\par
+      % a name was split? Is this happening yet?
+      \nohyphens{%
+      \begin{tabularx}{100mm}[b]{@{}l@{ }>{\raggedright\arraybackslash}X@{}}
+        \local@advisorstring: &
+        \count1=0
+        \toks@={}
+        \@whilenum \count1<\@advisor \do{%
+        \ifcase\count1 % same as \ifnum0=\count1
+          \toks@=\expandafter{\csname CoppeAdvisorName:\the\count1%
+          \expandafter\endcsname\expandafter\space%
+          \csname CoppeAdvisorSurname:\the\count1\endcsname\\}
+        \else
+          \toks@=\expandafter\expandafter\expandafter{%
+            \expandafter\the\expandafter\toks@
+            \expandafter&\expandafter\space
+            \csname CoppeAdvisorName:\the\count1\expandafter\endcsname%
+            \expandafter\space\csname CoppeAdvisorSurname:\the\count1\endcsname\\
+          }%
+        \fi
+        \advance\count1 by 1}
+        \the\toks@
+      \end{tabularx}}\par
       \nohyphens{\local@doctype\ ({\MakeLowercase\@degreename}) --
       UFRJ/COPPE/Programa de \local@deptname, \number\year.}\par
       \bibname: p. \pageref{bib:begin} -- \pageref{bib:end}.\par
       \count1=0
       \count2=1
       \nohyphens{\@whilenum \count1<\value{keywords} \do {%
-        \number\count2. \csname K:\the\count1 \endcsname.
+        \number\count2. \csname CoppeKeyword:\the\count1 \endcsname.
         \advance\count1 by 1
         \advance\count2 by 1}
-      I. \@adsurn, \@adname%
-      \ifthenelse{\equal{\@coadname}{\@empty}}{}{\emph{~et~al.}}.
+      I. \csname CoppeAdvisorSurname:0\endcsname,%
+      \ \csname CoppeAdvisorName:0\endcsname%
+      \ifthenelse{\@advisor>1}{\ \emph{et~al.}{}}.
       II. \local@universityname, COPPE, Programa de \local@deptname.
       III. T{\' i}tulo.}
     \end{minipage}}
@@ -382,12 +378,13 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \vspace*{\fill}}
 \newcommand\dedication[1]{
   \gdef\@dedic{#1}
-  \chapter*{\vfill
+    \cleardoublepage
+    \vspace*{\fill}
     \begin{flushright}
       \begin{minipage}{60mm}
-        \it \normalsize \@dedic
+        \raggedleft \it \normalsize \@dedic
       \end{minipage}
-    \end{flushright}}}
+    \end{flushright}}
 
 \newenvironment{abstract}{%
   \clearpage
@@ -403,10 +400,25 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \end{center}\par
   \vspace*{\fill}
   \noindent%
-  \begin{tabularx}{\textwidth}[b]{@{}l@{ }X@{}}
-    \local@advisorstring: & \nohyphens{\@adname\ \@adsurn}\\
-    \ifthenelse{\equal{\@coadname}{\@empty}}{}{%
-      & \nohyphens{\@coadname\ \@coadsurn}\\}
+  \begin{tabularx}{\textwidth}[b]{@{}l@{ }>{\raggedright\arraybackslash}X@{}}
+    \local@advisorstring: &
+    \count1=0
+    \toks@={}
+    \@whilenum \count1<\@advisor \do{%
+    \ifcase\count1 % same as \ifnum0=\count1
+      \toks@=\expandafter{\csname CoppeAdvisorName:\the\count1%
+      \expandafter\endcsname\expandafter\space%
+      \csname CoppeAdvisorSurname:\the\count1\endcsname\\}
+    \else
+      \toks@=\expandafter\expandafter\expandafter{%
+        \expandafter\the\expandafter\toks@
+        \expandafter&\expandafter\space
+        \csname CoppeAdvisorName:\the\count1\expandafter\endcsname%
+        \expandafter\space\csname CoppeAdvisorSurname:\the\count1\endcsname\\
+      }%
+    \fi
+    \advance\count1 by 1}
+    \the\toks@
   \end{tabularx}\par
   \vspace*{2mm}
   \noindent\local@deptstring: \local@deptname\par
@@ -426,10 +438,25 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \end{center}\par
   \vspace*{\fill}
   \noindent%
-  \begin{tabularx}{\textwidth}[b]{@{}l@{ }X@{}}
-    \foreign@advisorstring: & \nohyphens{\@adname\ \@adsurn}\\
-    \ifthenelse{\equal{\@coadname}{\@empty}}{}{%
-      & \nohyphens{\@coadname\ \@coadsurn}\\}
+  \begin{tabularx}{\textwidth}[b]{@{}l@{ }>{\raggedright\arraybackslash}X@{}}
+    \foreign@advisorstring: &
+    \count1=0
+    \toks@={}
+    \@whilenum \count1<\@advisor \do{%
+    \ifcase\count1 % same as \ifnum0=\count1
+      \toks@=\expandafter{\csname CoppeAdvisorName:\the\count1%
+      \expandafter\endcsname\expandafter\space%
+      \csname CoppeAdvisorSurname:\the\count1\endcsname\\}
+    \else
+      \toks@=\expandafter\expandafter\expandafter{%
+        \expandafter\the\expandafter\toks@
+        \expandafter&\expandafter\space
+        \csname CoppeAdvisorName:\the\count1\expandafter\endcsname%
+        \expandafter\space\csname CoppeAdvisorSurname:\the\count1\endcsname\\
+      }%
+    \fi
+    \advance\count1 by 1}
+    \the\toks@
   \end{tabularx}\par
   \vspace*{2mm}
   \noindent\foreign@deptstring: \foreign@deptname\par
@@ -446,8 +473,7 @@ p\kern-.025em e}}\kern-.08em\TeX}
   \global\let\author\relax
   \global\let\date\relax}
 \renewcommand\listoffigures{%
-  \immediate\write\@auxout{%
-  \string\newlabel{cat:lofflag}{{}{:~il.;}{}{page.\roman{page}}{}}}
+    \coppe@hasLof
     \if@twocolumn
       \@restonecoltrue\onecolumn
     \else
@@ -524,13 +550,42 @@ p\kern-.025em e}}\kern-.08em\TeX}
       {\string\indexentry{[#1] #2}{\arabic{page}}}%
     \endgroup
     \@esphack}}}
+\AtBeginDocument{%
+  \ltx@ifpackageloaded{hyperref}{
+    \def\coppe@bibEnd{%
+      \immediate\write\@auxout{%
+        \string\newlabel{bib:end}{{}{\arabic{page}}{}{page.\arabic{page}}{}}}}%
+    \def\coppe@bibBegin{%
+      \immediate\write\@auxout{%
+        \string\newlabel{bib:begin}{{}{\arabic{page}}{}{page.\arabic{page}}{}}}}%
+    \def\coppe@mainBegin{%
+      \immediate\write\@auxout{%
+        \string\newlabel{front:pageno}{{}{\Roman{page}}{}{page.\roman{page}}{}}}}%
+    \def\coppe@hasLof{%
+      \immediate\write\@auxout{%
+        \string\newlabel{cat:lofflag}{{}{:~il.;}{}{page.\roman{page}}{}}}}%
+  }{%
+    \def\coppe@bibEnd{%
+      \immediate\write\@auxout{%
+      \string\newlabel{bib:end}{{}{\arabic{page}}{}}}}%
+    \def\coppe@bibBegin{%
+      \immediate\write\@auxout{%
+      \string\newlabel{bib:begin}{{}{\arabic{page}}{}}}}%
+    \def\coppe@mainBegin{%
+      \immediate\write\@auxout{%
+        \string\newlabel{front:pageno}{{}{\Roman{page}}{}}}}%
+    \def\coppe@hasLof{%
+      \immediate\write\@auxout{%
+        \string\newlabel{cat:lofflag}{{}{:~il.;}{}}}}%
+  }%
+}
 \newdimen\bibindent%
 \setlength\bibindent{1.5em}%
 \renewenvironment{thebibliography}[1]%
-     {\chapter*{\bibname}%
+     {\onehalfspacing%
+      \chapter*{\bibname}%
       \addcontentsline{toc}{chapter}{\bibname}%
-      \immediate\write\@auxout{%
-      \string\newlabel{bib:begin}{{}{\arabic{page}}{}{page.\arabic{page}}{}}}%
+      \coppe@bibBegin
       \list{\@biblabel{\@arabic\c@enumiv}}%
            {\setlength{\labelwidth}{0ex}%
             \setlength{\leftmargin}{9.0ex}%
@@ -547,8 +602,7 @@ p\kern-.025em e}}\kern-.08em\TeX}
       \sfcode`\.\@m}%
      {\def\@noitemerr%
        {\@latex@warning{Empty `thebibliography' environment}}%
-      \immediate\write\@auxout{%
-      \string\newlabel{bib:end}{{}{\arabic{page}}{}{page.\arabic{page}}{}}}%
+       \coppe@bibEnd
       \endlist}
 \newenvironment{theglossary}{%
   \if@twocolumn%
@@ -591,11 +645,10 @@ p\kern-.025em e}}\kern-.08em\TeX}
 \newcommand\local@advisorstring{Orientador}
 \newcommand\foreign@advisorstring{Advisor}
 \ifthenelse{\boolean{maledoc}}{%
-  \newcommand\local@approvedname{Aprovado por}%
+  \newcommand\local@approvedname{Examinado por}%
 }{%
-  \newcommand\local@approvedname{Aprovada por}%
+  \newcommand\local@approvedname{Examinada por}%
 }
-\newcommand\foreign@approvedname{Approved by}
 \newcommand\local@universityname{Universidade Federal do Rio de Janeiro}
 \newcommand\local@deptstring{Programa}
 \newcommand\foreign@deptstring{Department}
@@ -617,8 +670,8 @@ p\kern-.025em e}}\kern-.08em\TeX}
   DE P{\' O}S-GRADUA{\c C}{\~ A}O E PESQUISA DE ENGENHARIA (COPPE) DA
   UNIVERSIDADE FEDERAL DO RIO DE JANEIRO COMO PARTE DOS REQUISITOS
   NECESS{\' A}RIOS PARA A OBTEN{\c C}{\~ A}O DO GRAU DE
-  {\MakeUppercase\local@degname} EM CI{\^E}NCIAS EM}
-  {\MakeUppercase\local@deptname. \par}%
+  {\MakeUppercase\local@degname} EM CI{\^E}NCIAS EM
+  {\MakeUppercase\local@deptname.\par}}%
 }
 \newcommand\frontpage@bottomtext{%
   \begin{center}

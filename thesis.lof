@@ -1,19 +1,66 @@
-\select@language {brazil}
+\babel@toc {brazil}{}
+\babel@toc {english}{}
+\babel@toc {brazil}{}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {1.1}{\ignorespaces Tens\IeC {\~o}es $\sigma _{x.}$ representadas graficamente.\relax }}{2}{figure.caption.5}
+\contentsline {figure}{\numberline {1.2}{\ignorespaces Tens\IeC {\~o}es na dire\IeC {\c c}\IeC {\~a}o y ($\sigma _{.y}$) representadas graficamente. Fonte: \cite {CompGeomec}\relax }}{2}{figure.caption.6}
+\contentsline {figure}{\numberline {1.3}{\ignorespaces Teste de laborat\IeC {\'o}rio tens\IeC {\~a}o-deforma\IeC {\c c}\IeC {\~a}o para uma rocha bem cimentada. Fonte: \cite {ResGeomec}\relax }}{4}{figure.caption.7}
+\contentsline {figure}{\numberline {1.4}{\ignorespaces Exemplo de dom\IeC {\'\i }nio/reservat\IeC {\'o}rio dividido em quadril\IeC {\'a}teros.\relax }}{7}{figure.caption.8}
+\contentsline {figure}{\numberline {1.5}{\ignorespaces Numera\IeC {\c c}\IeC {\~a}o dos n\IeC {\'o}s e das fun\IeC {\c c}\IeC {\~o}es de base. Para numera\IeC {\c c}\IeC {\~a}o das fun\IeC {\c c}\IeC {\~o}es de base foi considerada a borda inferior com condi\IeC {\c c}\IeC {\~a}o de Dirichlet nas dire\IeC {\c c}\IeC {\~o}es x e y. \relax }}{8}{figure.caption.9}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { Numera\IeC {\c c}\IeC {\~a}o global dos n\IeC {\'o}s em malha $3\times 3$. Marcados de vermelho o n\IeC {\'o} 6 e seus adjacentes. }}}{8}{figure.caption.9}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { Numera\IeC {\c c}\IeC {\~a}o das fun\IeC {\c c}\IeC {\~o}es de forma $N_i^h$. Azul as fun\IeC {\c c}\IeC {\~o}es de forma relativa \IeC {\`a} condi\IeC {\c c}\IeC {\~a}o de contorno de Dirichlet }}}{8}{figure.caption.9}
+\contentsline {figure}{\numberline {1.6}{\ignorespaces Gr\IeC {\'a}ficos das fun\IeC {\c c}\IeC {\~o}es de forma para um grid 3x3. Foi considerada condi\IeC {\c c}\IeC {\~a}o de Dirichlet na borda inferior \relax }}{9}{figure.caption.10}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { ${\basefunctionfine [9x]}$ ou ${\basefunctionfine [10y]}$ }}}{9}{figure.caption.10}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { ${\basefunctionfine [13x]}$ ou ${\basefunctionfine [14y]}$ }}}{9}{figure.caption.10}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces { ${\basefunctionfine [27x]}$ ou ${\basefunctionfine [28y]}$ }}}{9}{figure.caption.10}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces { ${\basefunctionfine [31x]}$ ou ${\basefunctionfine [32y]}$ }}}{9}{figure.caption.10}
+\contentsline {figure}{\numberline {1.7}{\ignorespaces Bije\IeC {\c c}\IeC {\~a}o entre elemento $\Omega ^e$ e $\Omega ^\xi $\relax }}{12}{figure.caption.11}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {2.1}{\ignorespaces Tens\IeC {\~o}es $\sigma _{x.}$ representadas graficamente.}}{3}{figure.2.1}
-\contentsline {figure}{\numberline {2.2}{\ignorespaces Tens\IeC {\~o}es na dire\IeC {\c c}\IeC {\~a}o y ($\sigma _{.y}$) representadas graficamente. Fonte: \cite {CompGeomec}}}{3}{figure.2.2}
-\contentsline {figure}{\numberline {2.3}{\ignorespaces Teste de laborat\IeC {\'o}rio tens\IeC {\~a}o-deforma\IeC {\c c}\IeC {\~a}o para uma rocha bem cimentada. Fonte: \cite {ResGeomec}}}{6}{figure.2.3}
-\contentsline {figure}{\numberline {2.4}{\ignorespaces Elementos de divis\IeC {\~a}o do dom\IeC {\'\i }nio.}}{7}{figure.2.4}
-\contentsline {figure}{\numberline {2.5}{\ignorespaces Fun\IeC {\c c}\IeC {\~o}es de forma (numera\IeC {\c c}\IeC {\~a}o local).}}{13}{figure.2.5}
-\contentsline {figure}{\numberline {2.6}{\ignorespaces Numera\IeC {\c c}\IeC {\~a}o dos n\IeC {\'o}s em malha $2\times 2\times 2$. Com elemento 4 destacado em vermelho.}}{14}{figure.2.6}
-\contentsline {figure}{\numberline {2.7}{\ignorespaces Elemento base (Dom\IeC {\'\i }nio $\Omega ^\xi $)}}{15}{figure.2.7}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Exemplo de grid fino $7\time 7$ e um grid grosso $3\times 3$. O elemento inferior esquerdo \IeC {\'e} composto por 9 elementos do grid fino enquanto o elemento superior direito \IeC {\'e} composto com 4 elementos do grid fino.\relax }}{27}{figure.caption.12}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Compara\IeC {\c c}\IeC {\~a}o da solu\IeC {\c c}\IeC {\~a}o do grid fino com a solu\IeC {\c c}\IeC {\~a}o do grid grosso. \relax }}{29}{figure.caption.13}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{29}{figure.caption.13}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{29}{figure.caption.13}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces { }}}{29}{figure.caption.13}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces { }}}{29}{figure.caption.13}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Quantidade de n\IeC {\~a}o zeros do prolongamento $nnz_P$ em fun\IeC {\c c}\IeC {\~a}o do engrossamento da malha. A linha pontilhada mostra o valor de $16(n_x+1)(n_y+1)$.\relax }}{31}{figure.caption.14}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Gr\IeC {\'a}ficos do logaritmo do erro \textup {\hbox {\mathsurround \z@ \normalfont (\ignorespaces \ref {eq:erroAnalitico}\unskip \@@italiccorr )}} em fun\IeC {\c c}\IeC {\~a}o do logaritmo do tamanho $\Delta x$ dos elementos do grid.\relax }}{34}{figure.caption.15}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{34}{figure.caption.15}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{34}{figure.caption.15}
+\contentsline {figure}{\numberline {7.2}{\ignorespaces Grid base utilizado para constru\IeC {\c c}\IeC {\~a}o dos casos A e B.\relax }}{36}{figure.caption.17}
+\contentsline {figure}{\numberline {7.3}{\ignorespaces Esquema das condi\IeC {\c c}\IeC {\~o}es de contorno das simula\IeC {\c c}\IeC {\~o}es. Borda inferior com deslocamentos nulos, bordas laterais com deslocamentos em y permitidos e borda superior livre.\relax }}{37}{figure.caption.18}
+\contentsline {figure}{\numberline {7.4}{\ignorespaces Compara\IeC {\c c}\IeC {\~a}o da solu\IeC {\c c}\IeC {\~a}o do grid fino com a solu\IeC {\c c}\IeC {\~a}o do grid grosso. \relax }}{43}{figure.caption.20}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { Solu\IeC {\c c}\IeC {\~a}o do grid fino. \IeC {\`A} esquerda, o deslocamento em x e, \IeC {\`a} direita, o deslocamento em y}}}{43}{figure.caption.20}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Solu\IeC {\c c}\IeC {\~a}o do grid grosso. \IeC {\`A} esquerda, o deslocamento em x e, \IeC {\`a} direita, o deslocamento em y }}}{43}{figure.caption.20}
+\contentsline {figure}{\numberline {7.5}{\ignorespaces Subsid\IeC {\^e}ncia do topo do caso B, em azul na solu\IeC {\c c}\IeC {\~a}o do grid fino e de vermelho a solu\IeC {\c c}\IeC {\~a}o do grid grosso. \relax }}{44}{figure.caption.21}
+\contentsline {figure}{\numberline {7.6}{\ignorespaces Propor\IeC {\c c}\IeC {\~a}o do tempo gasto entre ILU(1) e multiescala em pr\IeC {\'e}-condicionador aditivo para o casos B, C, D e E. \relax }}{44}{figure.caption.24}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{44}{figure.caption.24}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{44}{figure.caption.24}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces { }}}{44}{figure.caption.24}
+\contentsline {subfigure}{\numberline {(d)}{\ignorespaces { }}}{44}{figure.caption.24}
+\contentsline {figure}{\numberline {7.7}{\ignorespaces Resultados para caso B. Hist\IeC {\'o}rico do res\IeC {\'\i }duo relativo ao longo das itera\IeC {\c c}\IeC {\~o}es, tempo do solver em segundos, n\IeC {\'u}mero de itera\IeC {\c c}\IeC {\~o}es e tempo do solver por itera\IeC {\c c}\IeC {\~a}o. \relax }}{45}{figure.caption.25}
+\contentsline {figure}{\numberline {7.8}{\ignorespaces Resultados para caso B. Hist\IeC {\'o}rico do res\IeC {\'\i }duo relativo ao longo das itera\IeC {\c c}\IeC {\~o}es, tempo do solver em segundos e tempo do solver por itera\IeC {\c c}\IeC {\~a}o. \relax }}{45}{figure.caption.26}
+\contentsline {figure}{\numberline {7.9}{\ignorespaces Hist\IeC {\'o}rico do res\IeC {\'\i }duo, n\IeC {\'u}mero de itera\IeC {\c c}\IeC {\~o}es e tempo do solver por itera\IeC {\c c}\IeC {\~a}o para caso C, D , E. O tempo \IeC {\'e} a media entre 10 rodadas. \relax }}{46}{figure.caption.27}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces {Caso C }}}{46}{figure.caption.27}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces {Caso D }}}{46}{figure.caption.27}
+\contentsline {subfigure}{\numberline {(c)}{\ignorespaces {Caso E }}}{46}{figure.caption.27}
+\contentsline {figure}{\numberline {7.10}{\ignorespaces Varia\IeC {\c c}\IeC {\~a}o do n\IeC {\'u}mero de itera\IeC {\c c}\IeC {\~o}es do gradiente conjugado com toler\IeC {\^a}ncia do grid grosso para Caso E.\relax }}{47}{figure.caption.31}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Propriedades m\IeC {\'o}dulo de Young (a) e coeficiente de poisson (b) para caso C \relax }}{49}{figure.caption.32}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{49}{figure.caption.32}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{49}{figure.caption.32}
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Propriedades m\IeC {\'o}dulo de Young (a) e coeficiente de poisson (b) para caso D \relax }}{50}{figure.caption.33}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{50}{figure.caption.33}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{50}{figure.caption.33}
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Propriedades m\IeC {\'o}dulo de Young (a) e coeficiente de poisson (b) para caso E \relax }}{51}{figure.caption.34}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{51}{figure.caption.34}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{51}{figure.caption.34}
+\contentsline {figure}{\numberline {A.4}{\ignorespaces Grid de simula\IeC {\c c}\IeC {\~a}o original (a) e ap\IeC {\'o}s refinamento 24 x 24(b) para caso E \relax }}{52}{figure.caption.35}
+\contentsline {subfigure}{\numberline {(a)}{\ignorespaces { }}}{52}{figure.caption.35}
+\contentsline {subfigure}{\numberline {(b)}{\ignorespaces { }}}{52}{figure.caption.35}
 \addvspace {10\p@ }

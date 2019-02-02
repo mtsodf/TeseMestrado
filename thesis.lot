@@ -1,4 +1,6 @@
-\select@language {brazil}
+\babel@toc {brazil}{}
+\babel@toc {english}{}
+\babel@toc {brazil}{}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
@@ -6,7 +8,13 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\addvspace {10\p@ }
+\contentsline {table}{\numberline {7.1}{\ignorespaces Tabela com os casos que ser\IeC {\~a}o apresentados os resultados. \relax }}{35}{table.caption.16}
+\contentsline {table}{\numberline {7.2}{\ignorespaces Erro relativo da solu\IeC {\c c}\IeC {\~a}o fina em rela\IeC {\c c}\IeC {\~a}o a grossa para diferentes n\IeC {\'\i }veis de engrossamento.\relax }}{37}{table.caption.19}
+\contentsline {table}{\numberline {7.3}{\ignorespaces Compara\IeC {\c c}\IeC {\~a}o de pr\IeC {\'e}-condicionador aditivo contra multiplicativo para caso A utilizando como solver linear o m\IeC {\'e}todo Bicgstab para diferentes n\IeC {\'\i }veis de engrossamento.\relax }}{38}{table.caption.22}
+\contentsline {table}{\numberline {7.4}{\ignorespaces Compara\IeC {\c c}\IeC {\~a}o de pr\IeC {\'e}-condicionador aditivo contra multiplicativo para caso B utilizando como solver linear o m\IeC {\'e}todo Bicgstab para diferentes n\IeC {\'\i }veis de engrossamento.\relax }}{38}{table.caption.23}
+\contentsline {table}{\numberline {7.5}{\ignorespaces Tabela com compara\IeC {\c c}\IeC {\~a}o entre gradiente conjugado com pr\IeC {\'e}-condicionador ILU(1) e pr\IeC {\'e}-condicionador aditivo multiescala\relax }}{41}{table.caption.28}
+\contentsline {table}{\numberline {7.6}{\ignorespaces Tabela com compara\IeC {\c c}\IeC {\~a}o entre n\IeC {\'u}mero de n\IeC {\~a}o zeros das multiplica\IeC {\c c}\IeC {\~o}es matriz vetor de cada ciclo multigrid.\relax }}{41}{table.caption.29}
+\contentsline {table}{\numberline {7.7}{\ignorespaces Tabela entre complexidade dos operadores multigrid e multiescala.\relax }}{41}{table.caption.30}
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }

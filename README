@@ -15,14 +15,14 @@ a title page, cataloging details, native and foreign languages abstracts, table
 of contents, and list of bibliographic references.
 
 Although it is tied to the COPPE/UFRJ guidelines, it can be easily ported to
-standards of other institutions. This is possible due to the code modularity.
+standards of other institutions.
 
 
 When Conceived
 --------------
 
-It was conceived in January 2007, during the D.Sc. Studies of Vicente Helano
-and George Ainsworth at the Federal University of Rio de Janeiro/COPPE.
+It was conceived in January 2007, during the D.Sc. studies of Vicente Helano
+and George Ainsworth at Federal University of Rio de Janeiro/COPPE.
 
 
 How Much
@@ -50,16 +50,17 @@ files:
 
   3. README: describe the CoppeTeX package.
 
-  4. coppe-unsrt.bst: unsorted BibTeX style.
+  4. coppe-{plain,unsrt}.bst: alphabetically sorted and unsorted numbered
+     BibTeX styles, Natbib compatible.
 
-  5. coppe.bib: contains the references cited in the documentation.
-
-  6. coppe.dtx: main source file; contains the documentation, a sample
-     thesis and Makeindex style.
+  5. coppe.dtx: main source file; contains the documentation, a sample
+     thesis and a Makeindex style.
 
   7. coppe.ins: used to strip out the coppe document class from `coppe.dtx'.
 
-  8. minerva.[eps,pdf]: images included in the front cover.
+  8. coppe-logo.[eps,pdf]: images included in the front cover.
+
+  9. example.bib: sample BibTeX database for being used by example.tex.
 
 A release package should contains only the following files:
 
@@ -69,16 +70,17 @@ A release package should contains only the following files:
 
   3. coppe.cls: the main file. It is a LaTeX document class.
 
-  4. coppe-unsrt.bst: unsorted BibTeX style.
+  4. coppe-{plain,unsrt}.bst: alphabetically sorted and unsorted numbered
+     BibTeX styles, Natbib compatible.
 
   5. coppe.ist: Makeindex style for creating lists of symbols
      and abbreviations.
 
   6. coppe.pdf: CoppeTeX documentation.
 
-  7. example.tex: sample thesis using coppe class.
+  7. example.{tex,bib}: sample thesis using coppe class.
 
-  8. minerva.[eps, pdf]: images included in the front cover.
+  8. coppe-logo.[eps, pdf]: images included in the front cover.
 
 
 Installing
@@ -88,8 +90,11 @@ If you have some experience with LaTeX classes and packages, you won't have any
 difficult when installing CoppeTeX. It should be installed as any other LaTeX
 package you have ever used. So, you can save your time skipping this section.
 
-The impatient user should get a thesis template. For the enthusiastic newbies,
-we give here succinct instructions for installing the CoppeTeX bundle.
+The impatient user should get a thesis template at
+<http://coppetex.sourceforge.net/doc.html#thesistemplate>.
+
+For the enthusiastic newbies, we give here succinct instructions for installing
+the CoppeTeX bundle.
 
 There exist two possible ways of obtaining CoppeTeX. You can download a release
 or the sources. Each of these has its own installation method. We describe both
@@ -115,15 +120,13 @@ coppe.dtx. Now, you should follow the instructions in the 'From releases'
 section.
 
 
-Contact
--------
+Help & Support
+--------------
 
-Please, send any comments, suggestions, questions and bugs to:
-  George Ainsworth <goajunior at users.sourceforge.net>.
+Please, send any comments, suggestions, questions and bugs to our mailing list
+<http://coppetex.sourceforge.net/mailing-list.html>.
 
 
 Have a good thesis,
   CoppeTeX team.
   http://coppetex.sourceforge.net
-
-                                             Rio de Janeiro, 14 October 2008.

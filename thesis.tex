@@ -1,4 +1,4 @@
-\documentclass[dsc,pdftex]{coppe}
+\documentclass[dsc,numbers]{coppe}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb, amsfonts}
 \usepackage{multirow}
@@ -6,7 +6,7 @@
 \usepackage{algorithmic}
 \usepackage{color}
 \usepackage{blkarray}
-
+\usepackage{hyperref}
 
 \makelosymbols
 \makeloabbreviations
@@ -22,27 +22,28 @@
 \usepackage{booktabs}
 \usepackage[tableposition=above]{caption} % a distancia entre o caption e a tabela está muito pequena com esse pacote, o problema está resolvido, só que ele dispara alguns warnings, mas todos corretos.
 
-%fim LMC
-
 \begin{document}
   \title{Método Multiescala aplicado à Geomecânica}
   \foreigntitle{geomechanics simulador}
   \author{Mateus}{Oliveira de Figueiredo}
   \advisor{Prof.}{Nelson}{Maculan Filho}{D.Sc.}
-  \coadvisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
-  \examiner{Prof.}{Examinador 1}{D.Sc.}
+  \examiner{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
   \examiner{Prof.}{Examinador 2}{Ph.D.}
   \examiner{Prof.}{Examinador 3}{D.Sc.}
+
   \department{PESC}
   \date{03}{2019}
   \keyword{Geomecânica}
+  \keyword{Multiescala}
+  \keyword{Pré-condicionador}
+
   \maketitle
 
   \frontmatter
-  %\include{dedic}
-  %\include{thanks}
-  %\include{resumo}
-  %\include{abstract}
+  \include{dedic}
+  \include{thanks}
+  \include{resumo}
+  \include{abstract}
   \tableofcontents
   \listoffigures
   \listoftables
@@ -50,7 +51,7 @@
   \printloabbreviations
 
   \mainmatter
-
+  
   \chapter{Introdução}
 
   \chapter{Modelagem Matemática} \label{ch:modelagem}
@@ -75,11 +76,10 @@
   \chapter{Conclusão e Trabalhos Futuros}
 
   \backmatter
-  \nocite{*}
   \bibliographystyle{coppe-unsrt}
   \bibliography{thesis}
+
   \appendix
   \include{append/appenA}
   \include{append/appendB}
-
 \end{document}
