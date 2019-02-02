@@ -239,16 +239,14 @@ u_x \\ u_y \\ u_z
 
 %Matrizes Griffiths
 \newcommand{\der}{\begin{bmatrix}
-\dxi[N^1]   & \dxi[N^2] & \cdots & \dxi[N^8]      \\
-\deta[N^1]  & \deta[N^2] & \cdots & \deta[N^8]    \\
-\dzeta[N^1] & \dzeta[N^2] & \cdots & \dzeta[N^8]  \\
+\dxi[\phi^1]   & \dxi[\phi^2] & \dxi[\phi^3] & \dxi[\phi^4]      \\
+\deta[\phi^1]  & \deta[\phi^2] & \deta[\phi^3] & \deta[\phi^4]    \\
 \end{bmatrix}
 }
 
 \newcommand{\deriv}{\begin{bmatrix}
-\dx[N^1]   & \dx[N^2] & \cdots & \dx[N^8]    \\
-\dy[N^1]  &  \dy[N^2] & \cdots & \dy[N^8]    \\
-\dz[N^1]  &  \dz[N^2] & \cdots & \dz[N^8]    
+\dx[\phi^1]   & \dx[\phi^2] & \dx[\phi^3] & \dx[\phi^4]    \\
+\dy[\phi^1]   & \dy[\phi^2] & \dy[\phi^3] & \dy[\phi^4]   
 \end{bmatrix}
 }
 
@@ -289,16 +287,19 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\trialaprox}{\mathcal{V}^h}
 
-\newcommand{\trialdef}{\{  \mathbf{w} | \mathbf{w} \in \sobolev , \mathbf{w} = 0 \text{ em } \Gamma_u \}}
+\newcommand{\trialdef}{\{  \mathbf{w} | \mathbf{w} \in \sobolev ^2 , \mathbf{w} = 0 \text{ em } \Gamma_u \}}
 
 \newcommand{\test}{\mathcal{S}(\Omega)}
 
 \newcommand{\testaprox}{\mathcal{S}^h}
 
-\newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev , \mathbf{u} = \bar{u} \text{ em } \Gamma_u \}}
+\newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev ^2 , \mathbf{u} = \bar{u} \text{ em } \Gamma_u \}}
 
 \newcommand{\qtdnos}{n_{\text{nós}}}
 
 \newcommand{\kij}[2]{(\sopnabla \basefunctionfine[#1])^T D \sopnabla \basefunctionfine[#2]}
 
 \newcommand{\kije}[2]{(\sopnabla \basefunctionelem[#1])^T D \sopnabla \basefunctionelem[#2]}
+
+
+\newcommand{\intbase}[1]{\int_{-1}^{1}\int_{-1}^{1} #1 d\xi d\eta }

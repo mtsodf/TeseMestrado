@@ -4,10 +4,9 @@
 \usepackage{multirow}
 \usepackage{subfigure}
 \usepackage{algorithmic}
-\usepackage{placeins}         % Pacote necessario para \FloatBarrier
-\usepackage{listings}
 \usepackage{color}
-\usepackage{algorithm2e}
+\usepackage{blkarray}
+
 
 \makelosymbols
 \makeloabbreviations
@@ -59,9 +58,8 @@
 
   \chapter{Discretização} \label{ch:discretizacao}
 
-  \chapter{Simulação Geomecânica}
-
-  Nesse capítulo, ...
+  \chapter{Simulação Geomecânica}\label{ch:geomecanica}
+  \input{chap03/geomecanica.tex}
 
   \chapter{Solução de Sistemas Lineares}\label{ch:sistemas}
   \input{chap04/sistemas.tex}

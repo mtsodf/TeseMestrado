@@ -110,7 +110,7 @@ Ou ainda, escrevendo de forma matricial.
 
 \begin{equation}
 \label{eq:equilibrio_matriz}
-\nabla \cdot \sigma^\prime + \nabla \alpha P_p - f = 0
+\nabla \cdot \sigma^\prime - \nabla \alpha P_p - f = 0
 \end{equation}
 
 Onde $f^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$.
@@ -164,7 +164,7 @@ A equação \ref{eq:equilibrio_matriz} pode ser reescrita como \ref{eq:equilibri
 
 \begin{equation}
 \label{eq:equilibrio_final}
-\sopnabla^T\sigma^\prime + \sopnabla^T\alpha m  P_p - f = 0
+\sopnabla^T\sigma^{\prime\prime} - \sopnabla^T\alpha m  P_p - f = 0
 \end{equation}
 
 
@@ -208,7 +208,7 @@ A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em funç�
 
 \begin{equation}
 \label{eq:edp_geomec}
-\sopnabla^TD \sopnabla u + \sopnabla^T\alpha m P_p - f = 0
+\sopnabla^TD \sopnabla u - \sopnabla^T\alpha m P_p - f = 0
 \end{equation}
 
 Onde $D$ é a matriz de elasticidade da Lei de Hooke. Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar
@@ -287,41 +287,56 @@ Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de co
 
 \section{Modelagem pelo Método dos Elementos Finitos}
 
-Em posse da Equação \eqref{eq:edp_geomec}, é necessário um método de solução numérica para se resolver. O método utilizado nesse trabalho é o método dos Elementos Finitos. O método dos Elementos finitos é bastante difundido em análises estruturais mas também pode ser utilizado em outros tipos de EDP's como fluxo de calor. 
+Em posse da Equação \eqref{eq:edp_geomec}, é necessário um método numérico para se resolver. O método utilizado nesse trabalho é o método dos Elementos Finitos. O método dos Elementos finitos é bastante difundido. De acordo com \cite{jacob} análise de tensões, transferência de calor, escoamento de fluido e eletromagnetismo. Em particular, a parte de análise de tensões e escoamento de fluído são importantes para a Engenharia de Reservatório. 
 
 
 
 \subsection{Formulação Fraca}
 
-O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca da equação \eqref{eq:edp_geomec}. As referências \cite{jacob} e \cite{hughes} mostram a dedução para chegar em  \eqref{eq:weakform}.
+O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca da equação \eqref{eq:edp_geomec}. As referências \cite{jacob} e \cite{hughes} mostram a dedução para chegar em  \eqref{eq:weakform} com exceção do termo relacionado a pressão de poros pois tratam do problema clássico de elasticidade linear. A Equação com esse termo pode ser encontrado em \cite{femgeomec}. A notação utilizada aqui é a mesma que em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}.
 
 \begin{equation}\label{eq:weakform}
-\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w} \bar{\mathbf{t}} d\Gamma = 0 \quad \forall \mathbf{w} \in \trial 
+\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w} \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T m P_p \quad \forall \mathbf{w} \in \trial 
 \end{equation}
 
 
-Com conjunto de teste $\trial = \trialdef$ e conjunto de avaliação igual a $\test = \testdef$.
-
-
-
+Com conjunto de teste $\trial = \trialdef$ e conjunto de avaliação igual a $\test = \testdef$. Onde $\sobolev$ representa o espaço de Solobev de grau um. 
 
 \subsection{Divisão do domínio}
 
-O domínio do problema será dividido em uma quantidade finita de elementos, o conjunto desses elementos será chamado de $\Tau^h$.  A partição do domínio será realizada em elementos quadriláteros apesar de outras tipos de elementos estarem disponíveis (por exemplo, elementos triangulares). A figura \ref{fig:elemento} mostra como serão os elementos que dividirão o domínio.
+O domínio do problema será dividido em uma quantidade finita de elementos, o conjunto desses elementos será chamado de $\tau^h$.  A partição do domínio será realizada em elementos quadriláteros e seus vértices são denominados nós. A Figura \ref{fig:elemento} mostra um exemplo dessa divisão de domínio.
 
 %TODO trocar por figura em que os elementos não sejam 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=5cm]{interrogacao.png}
-\caption{Exemplo de domínio dividido em quadriláteros.}
+\includegraphics[width=0.8\textwidth]{chap01/figs/exemplo_dominio.png}
+\caption{Exemplo de domínio/reservatório dividido em quadriláteros.}
 \label{fig:elemento}
 \end{figure}
 
-A notação utilizada aqui é a mesma que em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}. Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\freedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=1,2,...,\freedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=\freedomfine+1,2,...,\freedomfine + \essentialfine$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
+
+A ideia é aproximar o campo $\mathbf{u}$ por um campo aproximado $\mathbf{u^h}$ utilizando \eqref{eq:weakform}. Dado a forma fraca definida em \eqref{eq:weakform} e funções de forma $\basefunctionfine$ para $i = 1, 2, 3, ..., \freedomfine + \essentialfine$ pode-se encontrar uma solução aproximada pelo método de Galerkin. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada nos conjuntos  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \freedomfine  \}$ e $\mathbf{u}$ da forma aproximada mostrada na \eqref{eq:udiscret} pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}.
 
 
 \begin{equation}\label{eq:udiscret}
-\mathbf{u}(\mathbf{x}) = \sum_{i=1}^{\freedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h = \mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h
+\mathbf{u}(\mathbf{x}) = \sum_{i=1}^{\freedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h 
+\end{equation}
+
+
+\begin{equation}\label{eq:weakformaprox}
+\omeint{ (\sopnabla \mathbf{w}^h)^T D \sopnabla  \mathbf{u}^h}  =  \int_{\Gamma_\sigma} \mathbf{w}^h \bar{\mathbf{t}} d\Gamma  +  \omeint{(\sopnabla\mathbf{w}^h)^T m P_p}  \quad \forall \mathbf{w}^h \in \trialaprox
+\end{equation}
+
+Onde cada $d_i^h$ representa um grau de liberdade associado a um nó que, a princípio,  tem dois graus de liberdade, um para a direção x e outro para a direção y, a menos dos nós que estão em fronteiras com condição de contorno de Dirichlet. Nesse caso, os nós terão associados valores $\bar{d}_i^h$ para garantir que essas condições de contorno sejam satisfeitas. 
+
+
+ %Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\freedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=1,2,...,\freedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=\freedomfine+1,2,...,\freedomfine + \essentialfine$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
+
+
+A Equação \eqref{eq:udiscret} também pode ser reescrita utilizando vetores,
+
+\begin{equation}\label{eq:udiscretvetor}
+\mathbf{u}(\mathbf{x}) = \mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h
 \end{equation}
 
 onde 
@@ -335,13 +350,15 @@ onde
 
 
 
-Por enquanto, as funções $N^h_i$ em uma abordagem clássica de elementos finitos, serão da forma $[N^h_{ix} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{iy}]^T$  para um grau de liberdade y, dessa forma, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. De acordo com \cite{jacob} essa é a forma mais usual, porém, é possível utilizar outras opções. De fato, a funções de forma que serão utilizadas no método multiescala que serão apresentadas em \ref{ch:multiescala} não vão obedecer esse padrão . A forma exata da definição será apresentada mais a frente pois elas serão definidas em um sistema diferente do (x,y). Agora as funções $N^h_{ix}$ e $N^h_{iy}$ são tais que os valores tem valor igual a um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice. Um exemplo dessas funções é apresentado na Figura \ref{fig:shapefunctions}
+As funções $\basefunctionfine: \Omega \rightarrow \mathbb{R}^2$ em uma abordagem clássica de elementos finitos, serão da forma $[N^h_{ix} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{iy}]^T$  para um grau de liberdade y, portanto, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. Além disso, para um nó com  graus de liberdade $d^h_i$ para x e $d^h_j$ para y tem-se $N^h_{ix} = N^h_{iy}$ que, de acordo com \cite{jacob} é a forma mais usual. Porém, a funções de forma que serão utilizadas no método multiescala, apresentadas no capítulo \ref{ch:multiescala}, não vão obedecer esse padrão e também não terão uma de suas componentes nulas. As funções $N^h_{ix}$ e $N^h_{iy}$ são tais que assumem valor um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice e são bilineares em cada um desses elementos (bilineares por parte). A Figura \ref{fig:grid3x3ver} mostra a numeração dos nós em uma malha 3x3 enquanto a Figura \ref{fig:numeracaofuncoes} apresenta a numeração das funções $\basefunctionfine$ considerando condições de Dirichlet na borda inferior.
+Exemplos da forma das funções são apresentadas na Figura \ref{fig:shapefunctions}. 
+
 
 \begin{figure}[h]
 \center
-\subfigure[ Numeração global dos nós em malha $3\times3$. Marcados de vermelho o nó 6 e seus adjacentes. ]{\includegraphics[width=0.45\textwidth]{chap01/figs/grid3x3ver.png}}\label{fig:grid3x3ver}
+\subfigure[ Numeração global dos nós em malha $3\times3$. Marcados de vermelho o nó 6 e seus adjacentes. ]{\includegraphics[width=0.40\textwidth]{chap01/figs/grid3x3ver.png}\label{fig:grid3x3ver}}
 \qquad
-\subfigure[ Numeração das funções de forma $N_i^h$. Azul as funções de forma relativa à condição de contorno de Dirichlet ]{\includegraphics[width=0.45\textwidth]{chap01/figs/grid3x3_Ni.png}}
+\subfigure[ Numeração das funções de forma $N_i^h$. Azul as funções de forma relativa à condição de contorno de Dirichlet ]{\includegraphics[width=0.45\textwidth]{chap01/figs/grid3x3_Ni.png}\label{fig:numeracaofuncoes}}
 
 \caption{Numeração dos nós e das funções de base. Para numeração das funções de base foi considerada a borda inferior com condição de Dirichlet nas direções x e y. }
 \end{figure}
@@ -356,26 +373,20 @@ Por enquanto, as funções $N^h_i$ em uma abordagem clássica de elementos finit
 \subfigure[ ${\basefunctionfine[27x]}$ ou ${\basefunctionfine[28y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_002.png}}
 \qquad
 \subfigure[ ${\basefunctionfine[31x]}$ ou ${\basefunctionfine[32y]}$ ]{\includegraphics[width=0.45\textwidth]{chap01/figs/prolongation/prolongation_x_total_006.png}}
-\caption{Gráficos das funções de forma para um grid 3x3. Foi considerada condição de Dirichlet na fronteira abaixo }\label{fig:shapefunctions}
+\caption{Gráficos das funções de forma para um grid 3x3. Foi considerada condição de Dirichlet na borda inferior }\label{fig:shapefunctions}
 \end{figure}
     
 
 
 \subsection{Construção do sistema linear}
 
-Dado a forma fraca definida em \eqref{eq:weakform} e as funções de forma $N_i^h$ para $i = 1, 2, 3, ..., \freedomfine + \essentialfine$ pode-se encontrar uma solução aproximada pelo método de Galerkin. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada nos conjuntos  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \freedomfine  \}$ e $\mathbf{u}$ da forma aproximada mostrada na \eqref{eq:udiscret} pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}.
+É importante perceber que as variáveis a serem descobertas são as do vetor $\mathbf{d}$, dado que $\mathbf{\bar{d}}$ já estão definidas pelos valores da fronteira. Esses valores serão encontrados a partir da solução de um sistema linear.
 
-
-\begin{equation}\label{eq:weakformaprox}
-\omeint{ (\sopnabla \mathbf{w}^h)^T D \sopnabla  \mathbf{u}^h}  =  \int_{\Gamma_\sigma} \mathbf{w}^h \bar{\mathbf{t}} d\Gamma \quad \forall \mathbf{w}^h \in \trialaprox
-\end{equation}
-
-
-Assim, se substituirmos $\mathbf{w}$ por cada uma das funções $N_i^h$ para $i = 1, 2, 3, ..., \freedomfine$ em \eqref{eq:weakformaprox} pode-se obter um conjunto de equações que formam um sistema linear. Seguem abaixo os cálculos substituindo $\mathbf{w}$ por $\basefunctionfine$ e $\mathbf{u}^h$ por \eqref{eq:udiscret}.
+Para obter um sistema linear encontrar $\mathbf{d}$, pode-se substituir $\mathbf{w}$ por cada uma das funções $\basefunctionfine$ para $i = 1, 2, 3, ..., \freedomfine$ em \eqref{eq:weakformaprox}. Seguem abaixo os cálculos substituindo $\mathbf{w}$ por $\basefunctionfine$ e $\mathbf{u}^h$ por \eqref{eq:udiscretvetor}.
 
 
 \begin{equation}
-\omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla (\mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h )} = \int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}} d\Gamma 
+\omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla (\mathbf{N^h} \mathbf{d}^h + \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h )} = \int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}}  d\Gamma + \omeint{(\sopnabla N_i)^T m P_p}
 \end{equation}
 
 \begin{equation}\label{eq:umaequacaosistema}
@@ -388,14 +399,21 @@ Definindo,
     K_{i,j} = \omeint{(\sopnabla \basefunctionfine)^T D \sopnabla \basefunctionfine[j]}
 \end{equation}
 
+e
+
+\begin{equation}\label{eq:entradald}
+    f_i = \int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}}  d\Gamma + \omeint{(\sopnabla \basefunctionfine)^T m P_p} - \omeint{ (\sopnabla \basefunctionfine)^T D \sopnabla  \mathbf{\bar{N}^h} \mathbf{\bar{d}}^h} 
+\end{equation}
+
+
 
 A primeira parcela do lado esquerdo pode ser reescrita como:
 
 \begin{equation}
-     (\sopnabla \basefunctionfine)^T D \sopnabla \mathbf{N^h} = [K_{i,1}\quad  K_{i,2} \quad ... \quad K_{i,\freedomfine}] 
+     (\sopnabla \basefunctionfine)^T D \sopnabla \mathbf{N^h} = [K_{i,1}\quad  K_{i,2} \quad ... \quad K_{i,\freedomfine}] = K_{i,:} 
 \end{equation}
 
-E definindo o lado direito de \eqref{eq:umaequacaosistema} como $f_i$, pode-se reescrever a equação como:
+e então chegar a Equação \eqref{eq:umaequacaosistemafim}.
 
 \begin{equation} \label{eq:umaequacaosistemafim}
 K_{i,:} \mathbf{d}^h = f_i \quad \forall \quad i=1,..., \freedomfine
@@ -403,13 +421,13 @@ K_{i,:} \mathbf{d}^h = f_i \quad \forall \quad i=1,..., \freedomfine
 
 E finalmente substituindo todos os valores possíveis de $i$ encontrasse o sistema linear \eqref{eq:sistemalinear}.
 
-\begin{equation}
+\begin{equation}\label{eq:sistemalinear}
     \mathbf{K} \mathbf{d} = \mathbf{f}
 \end{equation}
 
 
 
-onde as entradas de $K$ são definidas por  $K_{i,j} = \omeint{\kij{i}{j}}$. A solução do sistema são tem como resultado os valores de cada um dos graus de liberdade do problema e com isso, encontrar a aproximação dos deslocamentos \eqref{eq:udiscret}. Sobre a matriz $\mathbf{K}$ satisfaz as seguintes propriedades:
+onde as entradas de $K$ são definidas por  $K_{i,j} = \omeint{\kij{i}{j}}$. A solução do sistema tem como resultado os valores de cada um dos graus de liberdade e, portanto, é possível encontrar a aproximação dos deslocamentos com \eqref{eq:udiscret}. Sobre a matriz $\mathbf{K}$ satisfaz as seguintes propriedades:
 
 
 \begin{itemize}
@@ -430,12 +448,12 @@ onde as entradas de $K$ são definidas por  $K_{i,j} = \omeint{\kij{i}{j}}$. A s
 \end{itemize}
 
 
-Ainda sobre a esparsidade da matriz de rigidez, em um grid com quadriláteros cada função de base de um nó (a menos de nós de fronteira) tem conexão com nove outros nós, contando com ele mesmo, como mostra a Figura \ref{fig:grid3x3ver} o nó 6 tem conexões com os nós [1,2,3,5,6, 7,9,10,11]. Assim, cada nó tem duas linhas correspondentes na matriz de rigidez, e cada linha possui $2 \times 9 = 18$ valores não nulos, portanto, cada nó tem $2 \times 18 = 36$ não zeros associados na matriz, o que leva a uma aproximação de $\text{nnz}_K = 36 \qtdnos$ . Como será mostrado no Capítulo \ref{ch:sistemas}, a matriz terá que utilizar alguma estrutura de matriz esparsa pois caso fosse alocada densa a quantidade de valores alocados seria aproximadamente $(2 \times \qtdnos)^2$ que tem ordem quadrática com o número de nós e limitaria precocemente o tamanho dos modelos simulados. 
+Ainda sobre a esparsidade da matriz de rigidez em um grid com quadriláteros, cada função de base de um nó (a menos de nós de fronteira) tem conexão com nove outros nós, contando com ele mesmo, como mostra a Figura \ref{fig:grid3x3ver} o nó 6 tem conexões com os nós [1,2,3,5,6, 7,9,10,11]. Considerando a simplificação que cada nó possui os dois graus de liberdade isso implica em duas linhas correspondentes na matriz de rigidez, e cada linha possui $2 \times 9 = 18$ valores não nulos, portanto, cada nó tem $2 \times 18 = 36$ não zeros associados na matriz, o que leva a uma aproximação para o número de não nulo da matriz de $\text{nnz}_K = 36 \qtdnos$ . Como será mostrado no Capítulo \ref{ch:sistemas}, a matriz terá que utilizar alguma estrutura de matriz esparsa, pois caso fosse alocada densa a quantidade de valores alocados seria aproximadamente $(2 \times \qtdnos)^2$ que tem ordem quadrática com o número de nós e limitaria rapidamente o tamanho dos modelos simulados. 
 
 
-Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em \eqref{eq:entradamatriz} a montagem da matriz não é feita dessa forma. A integrais que aparecem no domínio $\Omega$ serão dividas em cada um dos elementos conforme \eqref{eq:matrizrigidezporelemento}. 
+Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em \eqref{eq:entradamatriz} a montagem da matriz não é feita dessa forma. A integrais que aparecem no domínio $\Omega$ serão dividas em cada um dos elementos passando de \eqref{eq:matrizrigidezaberta} para \eqref{eq:matrizrigidezporelemento}. 
 
-\begin{equation}
+\begin{equation}\label{eq:matrizrigidezaberta}
 \mathbf{K}  = \omeint{
 \begin{bmatrix}
 \kij{1}{1} & \kij{1}{2}  & \hdots & \kij{1}{\freedomfine} \\ 
@@ -445,6 +463,7 @@ Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em
 \end{bmatrix}
 }
 \end{equation}
+
 
 \begin{equation}\label{eq:matrizrigidezporelemento}
 \mathbf{K}  = \sum_{e \in \tau^h} \omeeint{
@@ -458,7 +477,7 @@ Apesar de ter sido mostrado explicitamente quanto vale cada entrada da matriz em
 \end{equation}
 
 
-Cada parcela da somatório dos elementos em \eqref{eq:matrizrigidezporelemento} é uma integral no domínio $\Omega^e$ de algum elemento e portanto apenas 8 funções de forma são não zero nesse conjunto. Dessa forma apenas $8\times8=64$ valores são diferentes de zero em cada uma das matrizes. Assim, esse valores podem ser condensados em uma matriz menor $8\times8$ com uma numeração local do elemento conforme mostrado em \eqref{eq:matrizelementoraw}.
+Cada parcela da somatório dos elementos em \eqref{eq:matrizrigidezporelemento} é uma integral no domínio $\Omega^e$ de algum elemento e portanto apenas 8 funções de forma são não zero nesse conjunto. Dessa forma, apenas $8\times8=64$ valores são diferentes de zero em cada uma das matrizes do somatório. Assim, esse valores podem ser condensados em uma matriz menor $8\times8$ com uma numeração local do elemento conforme mostrado em \eqref{eq:matrizelementoraw}.
 
 \begin{equation}\label{eq:matrizelementoraw}
     K^e = 
@@ -491,10 +510,9 @@ A matriz de rigidez do elemento pode ser escrita como:
 \end{equation}
 
 
-Dessa forma, a montagem da matriz de rigidez pode ser feito calculando a matriz do elemento e acumulando esses valores em suas posições correspondentes na matriz global. Abaixo é apresentado  o algoritmo para montagem da matriz de rigidez global.
+A montagem da matriz de rigidez pode ser feita calculando a matriz do elemento e acumulando esses valores em suas posições correspondentes na matriz global. Abaixo é apresentado  o algoritmo para montagem da matriz de rigidez global.
 
 \vspace{1cm}
-
 \noindent\fbox{%
     \parbox{\textwidth}{%
         \begin{algorithmic}
@@ -510,315 +528,281 @@ Dessa forma, a montagem da matriz de rigidez pode ser feito calculando a matriz 
         \end{algorithmic}
     }%
 }
-
 \vspace{1cm}
 
 
+Algo que ainda precisa ser feito é mostrar como o cálculo da matriz $K^e$ é realizado. O primeiro passo é tentar modificar a integral para um domínio ela pode ser mais facilmente calculada, para isso, o domínio $\Omega^e$ será associado a um elemento padrão  $\Omega^\xi = [-1,1]\times[-1,1]$ que é um elemento padrão em coordenadas $\xi$ e $\eta$. A Figura \ref{fig:bijecaoelemento} mostra a associação entre os dois elementos.
 
-Mas a propriedade do divergente apresentada em \ref{eq:intpartes} é válida para $f:\mathbb{R}^n \rightarrow \mathbb{R}^n$ e $g:\mathbb{R}^n \rightarrow \mathbb{R}$.
-
-\begin{equation} \label{eq:intpartes}
-\nabla (f(x)g(x)) = (\nabla f(x)) g(x) + f(x)\nabla g(x)
-\end{equation}
-
-
-Portanto, pode-se utilizar a seguinte equação em \ref{eq:grad}.
-
-\begin{equation}
-\nabla \sigma_x \phiix = \nabla (\sigma_x \phiix) - \sigma_x \nabla \phiix
-\end{equation}
-
-
-\begin{equation}
-\omeint{
-\begin{bmatrix}
-\nabla \sigma_x \phiix\\ \nabla \sigma_y \phiix \\ \nabla \sigma_z \phiix
-\end{bmatrix}} = \omeint{
-\begin{bmatrix}
-\nabla (\sigma_x \phiix)\\ \nabla (\sigma_y \phiix) \\ \nabla (\sigma_z \phiix)
-\end{bmatrix}
--
-\begin{bmatrix}
- \sigma_x \nabla \phiix\\  \sigma_y \nabla \phiix \\  \sigma_z \nabla \phiix
-\end{bmatrix}
-}
-\end{equation}
-
-Na primeira parcela da integral pode ser utilizado o teorema do divergente.
-
-
-
-\begin{equation}
-\omeint{
-\begin{bmatrix}
-\nabla (\sigma_x \phiix)\\ \nabla (\sigma_y \phiix) \\ \nabla (\sigma_z \phiix)
-\end{bmatrix}
-}
-=
-\iint\limits_{\partial \Omega} \sigma \phiix \: . \: \mathbf{\hat{n}} \: dS
-\end{equation}
-
-Para condições de contorno de Neumman e Dirichlet, esse termo se anula, pois:
-
-\begin{equation*}
-    u = 0 \rightarrow \sigma = 0 \rightarrow \iint\limits_{\partial \Omega} \sigma \phiix \: . \: \mathbf{\hat{n}} \: dS
-\end{equation*}
-
-\begin{equation*}
-     \sigma = 0 \rightarrow \iint\limits_{\partial \Omega} \sigma \phiix \: . \: \mathbf{\hat{n}} \: dS
-\end{equation*}
-
-Caso as condições de contorno do problema não sejam homogêneas, esse termo deve ser contabilizado no lado direito do sistema do linear.
-
-A equação do problema fica, portanto:
-
-\begin{equation}
-\omeint{
-\begin{bmatrix}
- \sigma_x \nabla \phiix\\  \sigma_y \nabla \phiix \\  \sigma_z \nabla \phiix
-\end{bmatrix}}
-= \omeint{\mathbf{F}\phiix}
-\end{equation}
-
-
-Substituindo os gradientes da equação pelo operador S e o valor das tensões $\sigma$ pela relação constitutiva.
-
-\begin{equation}
-\omeint{S^T \phiix D\,S\mathbf{u} }
-= \omeint{\mathbf{F}\phiix}
-\end{equation}
-
-Ainda é possível substituir $\mathbf{u}$ pela discretização da equação \ref{eq:udiscret}.
-
-\begin{equation}\small
-\omeint{S^T \phiix D\,S \sum_{j=1}^{nn}  \phijx
- * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}
-}   =  \omeint{\mathbf{F}\phiix} \quad \forall \: i=1,...,nn
-\end{equation}
-
-
-\begin{equation}\small
-\sum_{j=1}^{nn} \omeint{S^T \phiix D\,S   \phijx
- * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}
-}   =  \omeint{\mathbf{F}\phiix} \quad \forall \: i=1,...,nn
-\end{equation}
-
-O próximo passo, é dividir a integral para cada um dos elementos que o domínio foi dividido.
-
-\begin{equation*}\small
-\sum_{j=1}^{nn} \sum\limits_e \omeeint{S^T \phiix D\,S  \phijx
- * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}
-}   =  \sum\limits_e \omeeint{\mathbf{F}\phiix}
-\end{equation*}
-\begin{equation*}
- \quad \forall \: i=1,...,nn
-\end{equation*}
-
-Definindo,
-
-\begin{equation} \label{eq:ae_def}
- a_e(\phiix,\phijx) := \omeeint{S^T\phiix D S\phijx}
-\end{equation}
-
-e
-
-\begin{equation}
-\ldint := \omeeint{\mathbf{F}\phiix}
-\end{equation}
-
-Tem-se,
-
-\begin{equation}\small
-\sum\limits_e \sum_{j=1}^{nn} a_e(\phiix,\phijx)  * \begin{bmatrix} u^j_x \\ u^j_y \\ u^j_z \end{bmatrix}
-=  \sum\limits_e \ldint \quad \forall \: i=1,...,nn
-\end{equation}
-
-
-Pode-se transformar o somatório em $j$ pela multiplicação de uma matriz $3\times3nn$ por uma $3nn\times1$.
-
-\begin{equation}\small
-\sum\limits_e  \begin{bmatrix} \aelinha \end{bmatrix}  * \libvetor
-=  \sum\limits_e \ldint \quad
-\end{equation}
-\begin{equation*}
-  \forall \: i=1,...,nn
-\end{equation*}
-
-
-Como a equação é válida para todo $i=1,...,nn$, é possível juntar todas as equações da forma apresentada em \ref{eq:sistemalinear}.
-
-\begin{equation}\scriptstyle
-\sum\limits_e\aemat\libvetor = \sum\limits_e \begin{bmatrix}
-\ldint[1] \\
-\ldint[2] \\
-\vdots    \\
-\ldint[nn]
-\end{bmatrix}
-\label{eq:sistemalinear}
-\end{equation}
-
-É importante notar que essa equação apresenta um sistema linear onde as variáveis desconhecidas são os deslocamentos de cada nó. Sobre esse sistema, as seguintes propriedades são necessárias.
-
-\begin{itemize}
-    \item A matriz é simétrica. Pois,
-
-    \begin{eqnarray}
-    a_e(\phiix,\phijx)^T & = & (\omeeint{S^T\phiix D S\phijx})^T \\
-                         & = & \omeeint{(S\phijx)^T D^T (S^T\phiix)^T} \\
-                         & = & \omeeint{(S^T\phijx) D S \phiix} \\
-                         & = & a_e(\phijx,\phiix)
-    \end{eqnarray}
-
-    \item A matriz é esparsa. Cada uma das funções de forma é não nula apenas nos elementos em que aquele nó é vértice. No caso de uma malha de hexaedros, cada função de forma é não nula em oito elementos apenas.
-
-    \item A matriz é positiva definida. {\color{red}TODO: adicionar argumento que a matriz é positiva definida.}
-\end{itemize}
-
-Com a forma do sistema linear montado, resta calcular as entradas da matriz e o vetor do lado direito.
-
-Para o cálculo da matriz, o somatório presente em \ref{eq:sistemalinear} sugere um loop em cada um dos elementos. A figura \ref{fig:elem_func_form_local} mostra um elemento com as funções de forma com numeração local. Nesse caso, apenas oito funções de forma tem valores diferentes de zero nesse domínio.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=6cm]{chap01/elemento_original_func_forma.png}
-\caption{Funções de forma (numeração local).}
-\label{fig:elem_func_form_local}
+\includegraphics[height=6cm]{chap01/figs/elementopadrao.png}
+\caption{Bijeção entre elemento $\Omega^e$ e $\Omega^\xi$}
+\label{fig:bijecaoelemento}
 \end{figure}
 
 
-Considere a numeração local da figura \ref{fig:elem_func_form_local}. Nesse caso, o sobrescrito $e$ nos indica que a numeração que está sendo utilizada é a local do elemento. Considerando, por exemplo, a malha $2\times2\times2$ apresentada em \ref{fig:grid2x2_elem3_vermelho}. O elemento 4 aparece em destaque com os nós pertencentes a ele em vermelho. Nesse caso, comparando com a figura \ref{fig:elem_func_form_local} pode-se associar as numerações da seguinte maneira:
+No elemento padrão $\Omega^\xi$ as funções de forma bilineares associadas aos nós são facilmente definidas como apresentado em \eqref{eq:definicaofuncform}. 
 
-\begin{itemize}
-   \item $\varphi^4_1=\varphi_{17}$ em $\Omega^e$
-   \item $\varphi^4_2=\varphi_{8}$ em $\Omega^e$
-   \item $\vdots$
-   \item $\varphi^4_7=\varphi_{14}$ em $\Omega^e$
-   \item $\varphi^4_8=\varphi_{11}$ em $\Omega^e$
-\end{itemize}
-
-
-
-
-Além disso, definindo $\mathbf{x^e_i} = (x^e_i, y^e_i, z^e_i)$ como as coordenadas do nó $i$ do elemento $e$ e $\Omega^e$ o domínio do elemento $e$.
-
-
-
-Define-se como matriz do elemento, a matriz que contem apenas os valores não nulos de $a_e(\phijx,\phiix)$ no elemento. A matriz de um elemento genérico $e$ é mostrada em \ref{eq:matrizelem}.
 
 \begin{equation}
-\label{eq:matrizelem}
-A^e = \aematelem
-\end{equation}
-
-
-Ainda falta uma definição para o valor as funções de forma. De maneira a interpolar o valor da solução $u^*$ nos nós, as funções $\phiix$ irão satisfazer as seguintes propriedades.
-
-\begin{itemize}
-\item \begin{equation}\label{eq:func_cond1}
-\varphi^e_i(\mathbf{x}^e_j) = \left\{\begin{matrix} 1, \text{ se i = j} \\  0, \text{ caso contrário} \end{matrix}\right.
-\end{equation}
-\item \begin{equation}\label{eq:func_cond2}
-    \sum_{i=1}^8 \phiix = 1
-\end{equation}
-\end{itemize}
-
-
-O fato é que definir tais funções nos domínios $\Omega^e$ é uma tarefa complicada. Além disso, a expressão de $a^e(\phiix,\phijx)$ envolve integrais que são mais complicadas em um domínio {\color{red}``irregular''} como $\Omega^e$.
-
-
-Assim, para o facilitar a definição das funções de forma e do cálculo das integrais pode-se fazer uma mudança para um elemento base $\xi$ definido em $\Omega^\xi = [-1,1]\times[-1,1]\times[-1,1]$. As variáveis que irão indicar as coordenadas nesse novo domínio são $\xi$, $\eta$ e $\zeta$. As funções de base $N_i$ no elemento base são definidas em $\Omega^\xi$ são apresentadas em \ref{eq:func_base}.
-
-\begin{equation}
-\begin{matrix}\label{eq:func_base}
-N_1(\xi, \eta, \zeta) = \frac{1}{8} (1-\xi)(1-\eta)(1-\zeta) \\
-N_2(\xi, \eta, \zeta) = \frac{1}{8} (1-\xi)(1-\eta)(1+\zeta) \\
-N_3(\xi, \eta, \zeta) = \frac{1}{8} (1+\xi)(1-\eta)(1+\zeta) \\
-N_4(\xi, \eta, \zeta) = \frac{1}{8} (1+\xi)(1-\eta)(1-\zeta) \\
-N_5(\xi, \eta, \zeta) = \frac{1}{8} (1-\xi)(1+\eta)(1-\zeta) \\
-N_6(\xi, \eta, \zeta) = \frac{1}{8} (1-\xi)(1+\eta)(1+\zeta) \\
-N_7(\xi, \eta, \zeta) = \frac{1}{8} (1+\xi)(1+\eta)(1+\zeta) \\
-N_8(\xi, \eta, \zeta) = \frac{1}{8} (1+\xi)(1+\eta)(1-\zeta)
+\begin{matrix}\label{eq:definicaofuncform}
+\phi_1(\xi, \eta) = \frac{1}{4} (1-\xi)(1-\eta) \\
+\phi_2(\xi, \eta) = \frac{1}{4} (1-\xi)(1+\eta) \\
+\phi_3(\xi, \eta) = \frac{1}{4} (1+\xi)(1+\eta) \\
+\phi_4(\xi, \eta) = \frac{1}{4} (1+\xi)(1-\eta) \\
 \end{matrix}
 \end{equation}
 
-Note que, essas funções satisfazem as duas propriedades apresentadas em \ref{eq:func_cond1} e \ref{eq:func_cond2}.
+
+Um ponto de $\Omega^e$ é associado a um ponto em $\Omega^\xi$ através de uma associação isoparamétrica de acordo com \eqref{eq:isoparametrico}. 
 
 
-\begin{figure}[!htbp]
-\label{fig:elemento_base}
-\centering
-\includegraphics[width=6cm]{chap01/elemento_base.png}
-\caption{Elemento base (Domínio $\Omega^\xi$)}
-\end{figure}
-
-
-
-A associação de um ponto em $\Omega^\xi$ em um ponto em $\Omega^e$ é feito através da equação \ref{eq:isoparametrico}.
-
-
-\begin{equation}
-\label{eq:isoparametrico}
-\mathbf{x}(\xi, \eta, \zeta) = \sum_{A=1}^{8} N_A(\xi, \eta, \zeta) \mathbf{x^e_A}
+\begin{equation}\label{eq:isoparametrico}
+\begin{matrix}
+\mathbf{x}(\xi, \eta) = \sum_{A=1}^{4} \phi_A(\xi, \eta) \mathbf{x^e_A} \\
+\mathbf{y}(\xi, \eta) = \sum_{A=1}^{4} \phi_A(\xi, \eta) \mathbf{y^e_A} 
+\end{matrix}
 \end{equation}
 
-Assim, pode-se aplicar a mudança de variável na integral da equação \ref{eq:ae_def} para o domínio $\Omega^\xi$.
+Onde $x^e_A$ e $y^e_A$ para $i=1,2,3,4$ são as coordenadas dos vértices do elemento.
 
-\begin{equation}
- a_e(\phiix,\phijx) = \omeeint{S^T\phiix D S\phijx} = \omeint[\Omega^\xi]{S^T N^i D S N^j |J|}
+Com isso, as funções $\phi$ em \eqref{eq:definicaofuncform} estão definidas implicitamente em função de x e y. As funções de base $\basefunctionfine$ assumem exatamente os valores dessas funções em um dado elemento. Portanto, pode-se reescrever a matriz $B^e$ da seguinte forma:
+
+
+\begin{equation} \label{eq:bephi}
+    B^e = \sopnabla \begin{bmatrix}
+\phi_1 & 0      & \phi_2 & 0 & \phi_3 & 0 & \phi_4 & 0\\ 
+0      & \phi_1 & 0 & \phi_2 & 0 & \phi_3 & 0 & \phi_4
+\end{bmatrix}
 \end{equation}
 
 
-\begin{equation}
- a_e(\phiix,\phijx) = \int^1_ {-1}\int^1_ {-1}\int^1_ {-1}{S^T N^i D S N^j |J|} \text{d}\xi \text{d}\eta \text{d}\zeta
-\end{equation}
+Assim é possível realizar uma substituição de variáveis na integral apresentada em \eqref{eq:matrizelementosemiraw}.
 
-onde $J$ representa a matriz jacobiana.
+
+\begin{eqnarray}
+K^e     & = & \omeeint{ (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8] ]) ^T D (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8]])}   \\
+        & = &  \intbase{(\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8] ]) ^T D (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8]]) |J| } 
+\end{eqnarray}
+
+
+Onde J representa o jacobiano
 
 \begin{equation}
 J = \begin{bmatrix}
-\dxi[x]   &  \deta[x]  \\
-  \dxi[y] &  \deta[y] 
+\dxi[x]   &  \dxi[y]    \\
+\deta[x]  &  \deta[y] 
 \end{bmatrix}
 \label{eq:jacobiano}
 \end{equation}
 
-O valor das derivadas do Jacobiano podem ser obtidas derivando a \ref{eq:isoparametrico}.
 
+A integral no domínio $[-1, 1] \times [-1,1] $ pode ser calculada através do método de quadratura de gauss que pode ser encontrado em \cite{jacob}. O método consiste em trocar a integral por um somatório ponderado por pesos $w_i$ em alguns pontos determinados da função chamados de pontos de integração. A quantidade de pontos de integração determina quão boa é a aproximação para o caso. Com $n_p$ pontos de integração é possível integrar exatamente um 
+polinômio de tamanho $2n_p - 1$. % TODO adicionar tabela com pontos de integração?
 
-\begin{equation}\label{eq:dev_x_xi}
-\dxi[x] = \sum^8_{A=1} \dxi[N_A] x^e_A
-\end{equation}
+Com isso a integral pode ser trocada por um somatório.
+
 \begin{equation}
-\deta[x] = \sum^8_{A=1} \deta[N_A] x^e_A
+    \sum^{n_p}_{i=1} (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8] ]) ^T D (\sopnabla [\basefunctionelem[1] \basefunctionelem[2] \hdots \basefunctionelem[8]])|J||_{x=p_i} w_i
+\end{equation}
+
+O cálculo do jacobiano em um determinado ponto pode ser calculado utilizando \eqref{eq:isoparametrico}
+
+\begin{equation}\label{eq:jacobianoderivadas}
+\begin{matrix}
+\dxi[x] = \sum^4_{A=1} \dxi[\phi_A] x^e_A &  \deta[x] = \sum^4_{A=1} \deta[\phi_A] x^e_A\\
+\dxi[y] = \sum^4_{A=1} \dxi[\phi_A] y^e_A &  \deta[y] = \sum^4_{A=1} \deta[\phi_A] y^e_A
+\end{matrix}
 \end{equation}
 
 
-Pode-se perceber também que os somatórios podem ser transformados como a multiplicação de uma matriz linha por uma matriz coluna transformando, por exemplo, \ref{eq:dev_x_xi} em \ref{eq:dev_x_xi_matriz}.
+Além disso, é necessário também calcular as derivadas de $\phi_A$ nas coordenadas x e y.  Para isso será necessário inverter a matriz Jacobiana pois:
 
-\begin{equation}\label{eq:dev_x_xi_matriz}
-\dxi[x] =
-\begin{bmatrix}
- \dxi[N^1]   & \dxi[N^2] & \cdots & \dxi[N^8]
-\end{bmatrix}
-\begin{bmatrix}
-x^1    \\
-x^2    \\
+
+\begin{equation}
+J \deriv = \der \rightarrow
+\end{equation}
+
+\begin{equation} \label{eq:devformglobal}
+     \deriv = J ^{-1}\der
+\end{equation}
+
+Com \eqref{eq:devformglobal}  é possível calcular as derivadas das funções de forma em função das coordenadas x e y. Feito isso, todos os termos da matriz $B^e$ podem ser obtidos finalizando assim o cálculo da matriz de rigidez do elemento.
+
+
+
+\subsection{Condições de Contorno}
+
+As condições de contorno do problema já foram incorporadas no problema através do lado direito do sistema em \eqref{eq:entradald}, porém existem alternativas que, dependendo do caso, podem ser melhores para incorporar as condições de contorno ao problema. São apresentados aqui outras duas maneiras. As duas consistem de, ao invés de remover os graus de liberdade referentes as condições de Dirichlet,  adicioná-los na matriz de rigidez e forçar junto do lado direito que tenham o valor imposto pela condição de contorno. Com isso, a matriz de rigidez terá sempre o mesmo tamanho igual a $2\times \qtdnos$. A  \eqref{eq:bigconst} apresenta como a condição de contorno pode ser adicionada a matriz, onde o valor B representa um valor muito maior que os outros valores da linha. 
+
+\begin{equation} \label{eq:bigconst}
+\begin{blockarray}{ccccc}
+& \bar{d}_1^h &  & d_i ^h & & \\
+& \downarrow &  & \downarrow & & \\
+\begin{block}{c(cccc)}
+\bar{d_1}^h \rightarrow & B & \hdots &  \kij{1+\freedomfine}{i}  & \hdots \\ 
+\vdots                  &   & \vdots &             \\ 
+d_i^h       \rightarrow &{ \color{red}\kij{i}{n_u^h + 1} }  &      & \kij{i}{i}   & \hdots \\
+& \vdots &      & \vdots   &  \\
+\end{block}
+\end{blockarray} \begin{blockarray}{c}
+ \\
+ \\
+\begin{block}{(c)}
+\bar{d_1}^h \\
+\vdots\\
+d_i^h \\
 \vdots  \\
-x^8
-\end{bmatrix}
+\end{block}
+\end{blockarray}\begin{blockarray}{c}
+ \\
+ \\
+ \\
+= \\
+ \\
+\end{blockarray} \begin{blockarray}{c}
+ \\
+ \\
+\begin{block}{(c)}
+ B \bar{u}_1 \\
+\vdots\\
+f^\prime_i \\
+\vdots  \\
+\end{block}
+\end{blockarray}
 \end{equation}
 
-Com isso, substituindo em \ref{eq:jacobiano} as equações análogas a \ref{eq:dev_x_xi_matriz} para cada uma das entradas do jacobiano é possível obter a equação \ref{eq:jacobiano_prod}.
 
+onde $\bar{u}_1$ representa o valor imposto pela condição de Dirichlet e $f^\prime_i$ representa o termo de \ref{eq:entradald} sem o termo da condição de Dirichlet presente. 
 
-\begin{equation}\label{eq:jacobiano_prod}.
-J = \der
-\begin{bmatrix}
-x^1 & y^1 & z^1 \\
-x^2 & y^2 & z^2 \\
-\vdots & \vdots  & \vdots  \\
-x^8 & y^8 & z^8 \\
-\end{bmatrix}
+Dessa forma, a primeira equação quando resolvida mostra $B\bar{d}_1^h = B\bar{u}_1 \rightarrow \bar{d}_1^h = \bar{u}_1$, já a equação relativa ao grau de liberdade $d_i^h$ terá o lado direito $f^\prime_i$ complementada com o valor do lado esquerdo $\bar{d}_1^h \kij{i}{1+\freedomfine}$ (marcado em vermelho) ficando equivalente a \eqref{eq:entradald}.
+
+Uma variante dessa versão é zerar toda a linha relativa à $\bar{d}^h_1$ com exceção da diagonal principal que terá valor um. Nesse caso, tem a desvantagem de remover a simetria da matriz. 
+
+\begin{equation} \label{eq:diagident}
+\begin{blockarray}{ccccc}
+& d_1^h &  & d_i ^h & & \\
+& \downarrow &  & \downarrow & & \\
+\begin{block}{c(cccc)}
+\bar{d_1}^h \rightarrow & 1 & \hdots & 0 & \hdots \\ 
+\vdots                  &   & \vdots &             \\ 
+d_i^h       \rightarrow & \kij{i}{n_u^h + 1}   &      & \kij{i}{i}   & \hdots \\
+& \vdots &      & \vdots   &  \\
+\end{block}
+\end{blockarray} \begin{blockarray}{c}
+ \\
+ \\
+\begin{block}{(c)}
+\bar{d_1}^h \\
+\vdots\\
+d_i^h \\
+\vdots  \\
+\end{block}
+\end{blockarray} \begin{blockarray}{c}
+ \\
+ \\
+ \\
+= \\
+ \\
+\end{blockarray} \begin{blockarray}{c}
+ \\
+ \\
+\begin{block}{(c)}
+ \bar{u}_1 \\
+\vdots\\
+f^\prime_i \\
+\vdots  \\
+\end{block}
+\end{blockarray}
 \end{equation}
 
 
+
+
+\subsection{Cálculo da Carga por Diferença de pressão}
+
+A Equação \eqref{eq:entradald}, mostra cada valor do vetor de carga $\mathbf{f}$. Três termos aparecem nesse caso: o primeiro relativo as condições de contorno de tração, o segundo relativo a pressão de poros e a terceira relativo as condições de contorno de Dirichlet. Nesse trabalho, o segundo termo será o de maior importância, pois serão calculados os deslocamentos no reservatório e rochas adjacentes em função de uma diferença de pressão causada pela produção do petróleo ou injeção de água. Devido a essas duas ações, a pressão de poros do reservatório irá variar gerando deformações e variação nas tensões da rocha. 
+
+Assim, como a matriz de rigidez, o cálculo do lado direito será realizado através do somatório da contribuição de cada elemento. Abaixo segue o cálculo da contribuição do elemento, será considerado que o campo de pressões será constante por elemento visto que esses serão recebidos de um simulador de fluxo que utiliza o método de volumes finitos e, portanto, calcula as pressões nos elementos e não nos nós.
+
+\begin{equation}
+    \mathbf{f^e} = \omeeint{\begin{bmatrix}
+(\sopnabla \basefunctionelem[1])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[2])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[3])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[4])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[5])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[6])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[7])^T m \alpha^e P^e_p
+\\ 
+(\sopnabla \basefunctionelem[8])^T m \alpha^e P^e_p
+\end{bmatrix}}
+\end{equation}
+
+onde $\alpha^e$ e $P^e_p$ são os valores do coeficiente de Biot e de pressão do elemento \textit{e} em questão. Assim, pode-se continuar o calculo de $\mathbf{f^e}$.
+
+
+\begin{equation}
+\mathbf{f^e} = \omeeint{\begin{bmatrix}
+(\sopnabla \basefunctionelem[1])^T 
+\\ 
+(\sopnabla \basefunctionelem[2])^T 
+\\ 
+(\sopnabla \basefunctionelem[3])^T 
+\\ 
+(\sopnabla \basefunctionelem[4])^T 
+\\ 
+(\sopnabla \basefunctionelem[5])^T 
+\\ 
+(\sopnabla \basefunctionelem[6])^T 
+\\ 
+(\sopnabla \basefunctionelem[7])^T 
+\\ 
+(\sopnabla \basefunctionelem[8])^T 
+\end{bmatrix} m \alpha^e P^e_p }
+ = (\sopnabla [\basefunctionelem[1], \basefunctionelem[2], ..., \basefunctionelem[8]])^T m \alpha^e P^e_p
+\end{equation}
+
+O primeiro termo da equação pode ser substituida assim como \eqref{eq:bephi}.
+
+
+\begin{equation}
+   \mathbf{ f^e } = \omeeint{(\sopnabla \begin{bmatrix}
+                        \phi_1 & 0      & \phi_2 & 0 & \phi_3 & 0 & \phi_4 & 0\\ 
+                        0      & \phi_1 & 0 & \phi_2 & 0 & \phi_3 & 0 & \phi_4
+                    \end{bmatrix} ) ^ T \begin{bmatrix}
+                    1\\1\\0
+                    \end{bmatrix} \alpha^e P^e_p}
+\end{equation}
+
+\begin{equation} \label{eq:cargafinal}
+   \mathbf{ f^e } = \omeeint{\begin{bmatrix}
+    \dx[\phi_1] & 0           & \dy[\phi_1] \\
+    0           & \dy[\phi_1] & \dx[\phi_1] \\
+    \dx[\phi_2] & 0           & \dy[\phi_2] \\
+    0           & \dy[\phi_2] & \dx[\phi_2] \\
+    \vdots      & \vdots & \vdots      \\
+
+    \dx[\phi_8] & 0           & \dy[\phi_8] \\
+    0           & \dy[\phi_8] & \dx[\phi_8] \\
+
+    \end{bmatrix} \begin{bmatrix}  1\\1\\0 \end{bmatrix} \alpha^e P^e_p }
+    = \omeeint{\begin{bmatrix}
+      \dx[\phi_1] \\
+      \dy[\phi_1] \\
+      \dx[\phi_2] \\
+      \dy[\phi_2] \\
+      \vdots      \\
+      \dx[\phi_8] \\
+      \dy[\phi_8] \\
+    \end{bmatrix} \alpha^e P^e_p }
+\end{equation}
+
+A fórmula com a carga final utilizada é apresentada \eqref{eq:cargafinal}. Procedimento similar ao feito para a matriz de rigidez tem que ser feito para o cálculo dos valores: Mudança de variáveis para elemento padrão $\Omega^\xi$, substituição da integral por um somatório através da Quadratura de Gauss e cálculo da derivada das funções de forma no sistema de coordenadas x, y. 

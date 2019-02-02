@@ -2,7 +2,7 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}.Para isso, foi montado teste semelhante ao mostrado em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada na Equação \eqref{eq:irinasol} em um domínio  $L \times W$.
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. Para tanto, foi montado um teste semelhante ao proposto em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada em \eqref{eq:irinasol} em um domínio  $L \times W$.
 
 
 \begin{equation} \label{eq:irinasol}
@@ -12,7 +12,7 @@ Inicialmente, é necessário atestar que o código de elementos finitos está re
   \end{aligned}
 \end{equation}
 
-Dada a solução, é possível calcular o lado direito correspondente a essa solução aplicando o lado esquerdo da Equação \eqref{eq:edp_geomec} e obtendo a função $f: R^2 \rightarrow R^2$ apresentada em \eqref{eq:irinald}. 
+Dada a solução, é possível calcular o lado direito correspondente a essa solução aplicando o lado esquerdo de \eqref{eq:edp_geomec} e obtendo a função $f: R^2 \rightarrow R^2$ apresentada em \eqref{eq:irinald}. 
 
 \begin{equation} \label{eq:irinald}
 f(x, y) = 
@@ -30,7 +30,7 @@ Dessa forma, as equações que representam o problema resolvido são apresentada
 \end{equation}
 
 O erro entre a solução calculada pelo método dos elementos finitos pode então ser comparada
-com a solução analítica através do erro relativo mostrado na Equação \eqref{eq:erroAnalitico}.
+com a solução analítica através do erro relativo mostrado em \eqref{eq:erroAnalitico}.
 
 \begin{equation} \label{eq:erroAnalitico}
     \epsilon_{\infty} =\frac{|u_{fem} - u_{ref}|_{\infty}}{|u_{ref}|_{\infty}}
@@ -65,7 +65,7 @@ Atestado o bom funcionamento do método dos elementos finitos, os resultados das
 
 \section{Modelos de simulação utilizados}
 
- A Tabela \ref{tab:descricaoModelos} apresenta os tamanhos dos modelos utilizados neste trabalho. Cinco modelos foram selecionados onde dois deles são de modelos de campos reais. Os casos A e B são baseados nos casos sintéticos apresentados em \cite{casteletto} e \cite{irina}, nesses casos foram utilizados uma compressibilidade vertical uniaxial $c_M$ desenvolvida em \cite{correlacaoE} apresentada na equação \eqref{eq:correlacaoCm}, onde $c_M$ e $\sigma_y^\prime$ são expressas em [bar$^{-1}$] e [bar] e  $\sigma_y^\prime$ representa a tensão vertical efetiva, e a tensão efetiva na rocha é calculada através da Equação \eqref{eq:correlacaoTensao} que considera um gradiente de pressão de 0.1 bar/m e coeficiente de Biot igual a um.
+ A Tabela \ref{tab:descricaoModelos} apresenta os tamanhos dos modelos utilizados neste trabalho. Cinco modelos foram selecionados onde dois deles são de modelos de campos reais. Os casos A e B são baseados nos casos sintéticos apresentados em \cite{casteletto} e \cite{irina}, nesses casos foram utilizados uma compressibilidade vertical uniaxial $c_M$ desenvolvida em \cite{correlacaoE} apresentada em \eqref{eq:correlacaoCm}, onde $c_M$ e $\sigma_y^\prime$ são expressas em [bar$^{-1}$] e [bar] e  $\sigma_y^\prime$ representa a tensão vertical efetiva, e a tensão efetiva na rocha é calculada através de  \eqref{eq:correlacaoTensao} que considera um gradiente de pressão de 0.1 bar/m e coeficiente de Biot igual a um.
 
 \begin{table}[]
     \caption{Tabela com os casos que serão apresentados os resultados. }\label{tab:descricaoModelos}
@@ -144,7 +144,7 @@ As condições de contorno utilizadas para todos os modelos são representadas n
 
 \subsection{Visualização da solução grossa}
 
-Dada que o operador multiescala gera um operador grosso com solução que tenta reproduzir a solução do espaço fino, é possível comparar visualmente e também através do erro entre a solução fina e a solução da malha grossa. No caso, a aproximação para a solução da malha fina $u^h_{ms} = P u^H$ é utilizada nessa comparação de forma que o erro que será apresentado é mostrado na Equação \eqref{eq:erroMS}.
+Dada que o operador multiescala gera um operador grosso com solução que tenta reproduzir a solução do espaço fino, é possível comparar visualmente e também através do erro entre a solução fina e a solução da malha grossa. No caso, a aproximação para a solução da malha fina $u^h_{ms} = P u^H$ é utilizada nessa comparação de forma que o erro que será apresentado é mostrado em \eqref{eq:erroMS}.
 
 \begin{equation}\label{eq:erroMS}
 \epsilon_{\infty} =\frac{|u^h - P u^H|_{\infty}}{|u^h|_{\infty}}
