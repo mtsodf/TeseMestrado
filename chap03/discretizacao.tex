@@ -34,7 +34,7 @@ O domínio do problema será dividido em uma quantidade finita de elementos, o c
 \end{figure}
 
 
-A ideia é aproximar o campo $\mathbf{u}$ por um campo aproximado $\mathbf{u^h}$ utilizando \eqref{eq:weakform}. Dado a forma fraca definida em \eqref{eq:weakform} e funções de forma $\basefunctionfine$ para $i = 1, 2, 3, ..., \qtdfreedomfine + \essentialfine$ pode-se encontrar uma solução aproximada pelo método de Galerkin. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada nos conjuntos  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \qtdfreedomfine  \}$ e $\mathbf{u}$ da forma aproximada mostrada em \eqref{eq:udiscret}. Com isso pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}.
+A ideia é aproximar o campo $\mathbf{u}$ por um campo aproximado $\mathbf{u^h}$ utilizando \eqref{eq:weakform}. Dado a forma fraca definida em \eqref{eq:weakform} e funções de forma $\basefunctionfine$ para $i = 1, 2, 3, ..., \qtdfreedomfine + \qtdessentialfine$ pode-se encontrar uma solução aproximada pelo método de Galerkin. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada nos conjuntos  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \qtdfreedomfine  \}$ e $\mathbf{u}$ da forma aproximada mostrada em \eqref{eq:udiscret}. Com isso pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}.
 
 
 \begin{equation}\label{eq:udiscret}
@@ -49,7 +49,7 @@ A ideia é aproximar o campo $\mathbf{u}$ por um campo aproximado $\mathbf{u^h}$
 Onde cada $d_i^h$ representa um grau de liberdade associado a um nó que, a princípio,  tem dois graus de liberdade, um para a direção x e outro para a direção y, a menos dos nós que estão em fronteiras com condição de contorno de Dirichlet. Nesse caso, os nós terão associados valores $\bar{d}_i^h$ para garantir que essas condições de contorno sejam satisfeitas.
 
 
- %Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\qtdfreedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\essentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=1,2,...,\qtdfreedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=\qtdfreedomfine+1,2,...,\qtdfreedomfine + \essentialfine$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
+ %Para esse tipo de elemento a quantidade de vértices é quatro. Como o campo aproximado de deslocamentos está no plano xy, cada vértice terá dois graus de liberdade um na direção x e um na direção y, que de maneira indistinta serão chamados de $d_i^h$ para algum $i$ que são as variáveis a serem descobertas para encontrar a solução $\textbf{u}$ aproximada. A quantidade de graus de liberdade será chamada de $\qtdfreedomfine$. Um nó pertencente a fronteira de $\Omega$  já tem seu grau de liberdade determinado e, portanto, não será uma variável do problema e esses valores serão chamados de $\bar{d}_i^h$ a quantidade de graus de liberdade pertencentes a fronteira de dirichlet será chamada de $\qtdessentialfine$.  Assim, o campo vetorial $u$ será aproximado através de funções $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=1,2,...,\qtdfreedomfine$  relativa aos graus de liberdade e  $ \basefunctionfine : \Omega \rightarrow \mathbb{R}^2 \quad \forall \quad i=\qtdfreedomfine+1,2,...,\qtdfreedomfine + \qtdessentialfine$  relativas as condições de contorno de Dirichlet através de \eqref{eq:udiscret}.
 
 
 A Equação \eqref{eq:udiscret} também pode ser reescrita utilizando vetores,
@@ -62,9 +62,9 @@ onde
 
 \begin{eqnarray*}
 \mathbf{N^h} = [N^h_1, N^h_2, ..., N^h_{\qtdfreedomfine} ] \\
-\mathbf{\bar{N}^h}  =[N^h_{\qtdfreedomfine + 1}, N^h_{\qtdfreedomfine + 2}, ..., N^h_{\qtdfreedomfine + \essentialfine}] \\
+\mathbf{\bar{N}^h}  =[N^h_{\qtdfreedomfine + 1}, N^h_{\qtdfreedomfine + 2}, ..., N^h_{\qtdfreedomfine + \qtdessentialfine}] \\
 \mathbf{d} = [d_1^h, d_2^h, ... , d_{\qtdfreedomfine}^h]^T \\
-\bar{\mathbf{d}} = [\bar{d}_1^h, \bar{d}_2^h, ... , \bar{d}_{\essentialfine}^h]^T
+\bar{\mathbf{d}} = [\bar{d}_1^h, \bar{d}_2^h, ... , \bar{d}_{\qtdessentialfine}^h]^T
 \end{eqnarray*}
 
 
