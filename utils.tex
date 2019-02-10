@@ -1,7 +1,7 @@
 \newcommand{\wbalTwo}[2][Wikimedia]{
   This is the Wikibook about LaTeX
   supported by {#1} and {#2}!}
- 
+
 
 \newcommand{\dx}[1][ ]{\frac{\partial {#1}}{\partial x}}
 \newcommand{\dy}[1][ ]{\frac{\partial {#1}}{\partial y}}
@@ -95,7 +95,7 @@ u_x \\ u_y \\ u_z
 \begin{bmatrix}
 \stxx & \stxy & \stxz \\
 \styx & \styy & \styz \\
-\stzx & \stzy & \stzz 
+\stzx & \stzy & \stzz
 \end{bmatrix}
 }
 
@@ -103,7 +103,7 @@ u_x \\ u_y \\ u_z
 \begin{bmatrix}
 \dx[\stxx] + \dy[\stxy] + \dz[\stxz] \\
 \dx[\styx] + \dy[\styy] + \dz[\styz] \\
-\dx[\stzx] + \dy[\stzy] + \dz[\stzz] 
+\dx[\stzx] + \dy[\stzy] + \dz[\stzz]
 \end{bmatrix}
 }
 
@@ -123,11 +123,11 @@ u_x \\ u_y \\ u_z
 \newcommand{\elasticinv}{
 \frac{1}{E}
 \begin{bmatrix}
-        1 & -\upsilon & -\upsilon &             0 &             0 &             0 \\ 
--\upsilon &         1 & -\upsilon &             0 &             0 &             0 \\ 
--\upsilon & -\upsilon &         1 &             0 &             0 &             0 \\ 
-        0 &         0 &         0 & 2(1+\upsilon) &             0 &             0 \\ 
-        0 &         0 &         0 &             0 & 2(1+\upsilon) &             0 \\ 
+        1 & -\upsilon & -\upsilon &             0 &             0 &             0 \\
+-\upsilon &         1 & -\upsilon &             0 &             0 &             0 \\
+-\upsilon & -\upsilon &         1 &             0 &             0 &             0 \\
+        0 &         0 &         0 & 2(1+\upsilon) &             0 &             0 \\
+        0 &         0 &         0 &             0 & 2(1+\upsilon) &             0 \\
         0 &         0 &         0 &             0 &             0 & 2(1+\upsilon)
 \end{bmatrix}
 }
@@ -136,12 +136,12 @@ u_x \\ u_y \\ u_z
 \newcommand{\elastic}{
 \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \begin{bmatrix}
-1 - \upsilon &     \upsilon &     \upsilon &                     0 &                     0 &                     0 \\ 
-    \upsilon & 1 - \upsilon &     \upsilon &                     0 &                     0 &                     0 \\ 
-    \upsilon &     \upsilon & 1 - \upsilon &                     0 &                     0 &                     0 \\ 
-           0 &            0 &            0 & \frac{1-2\upsilon}{2} &                     0 &                     0 \\ 
-           0 &            0 &            0 &                     0 & \frac{1-2\upsilon}{2} &                     0 \\ 
-           0 &            0 &            0 &                     0 &                     0 & \frac{1-2\upsilon}{2} 
+1 - \upsilon &     \upsilon &     \upsilon &                     0 &                     0 &                     0 \\
+    \upsilon & 1 - \upsilon &     \upsilon &                     0 &                     0 &                     0 \\
+    \upsilon &     \upsilon & 1 - \upsilon &                     0 &                     0 &                     0 \\
+           0 &            0 &            0 & \frac{1-2\upsilon}{2} &                     0 &                     0 \\
+           0 &            0 &            0 &                     0 & \frac{1-2\upsilon}{2} &                     0 \\
+           0 &            0 &            0 &                     0 &                     0 & \frac{1-2\upsilon}{2}
 \end{bmatrix}
 }
 
@@ -149,11 +149,11 @@ u_x \\ u_y \\ u_z
 % Operador S
 
 \newcommand{\sopwithoutb}[1][ ]{
-\dx[#1] &        0 &   0      \\ 
-      0 & \dy[#1]  &   0      \\ 
-      0 &        0 & \dz[#1]  \\ 
-\dy[#1] & \dx[#1]  &   0      \\ 
-\dz[#1] &        0 & \dx[#1]  \\ 
+\dx[#1] &        0 &   0      \\
+      0 & \dy[#1]  &   0      \\
+      0 &        0 & \dz[#1]  \\
+\dy[#1] & \dx[#1]  &   0      \\
+\dz[#1] &        0 & \dx[#1]  \\
       0 & \dz[#1]  & \dy[#1]
 }
 
@@ -161,20 +161,20 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\sop}[1][ ]{
 \begin{bmatrix}
-\dx[#1] &        0 &   0      \\ 
-      0 & \dy[#1]  &   0      \\ 
-      0 &        0 & \dz[#1]  \\ 
-\dy[#1] & \dx[#1]  &   0      \\ 
-\dz[#1] &        0 & \dx[#1]  \\ 
+\dx[#1] &        0 &   0      \\
+      0 & \dy[#1]  &   0      \\
+      0 &        0 & \dz[#1]  \\
+\dy[#1] & \dx[#1]  &   0      \\
+\dz[#1] &        0 & \dx[#1]  \\
       0 & \dz[#1]  & \dy[#1]
 \end{bmatrix}
 }
 
 \newcommand{\soptwod}[1][ ]{
 \begin{bmatrix}
-\dx[#1] &        0   \\ 
-      0 & \dy[#1]    \\ 
-\dy[#1] & \dx[#1]    \\ 
+\dx[#1] &        0   \\
+      0 & \dy[#1]    \\
+\dy[#1] & \dx[#1]    \\
 \end{bmatrix}
 }
 
@@ -203,8 +203,8 @@ u_x \\ u_y \\ u_z
 \newcommand{\aelocallinha}[1][i]{\aepplocal{#1}{1} & \aepplocal{#1}{2} & \cdots & \aepplocal{#1}{8}}
 
 \newcommand{\aemat}{
-\begin{bmatrix} 
-\aelinha[1] \\ 
+\begin{bmatrix}
+\aelinha[1] \\
 \aelinha[2] \\
 \vdots & \vdots & \ddots & \vdots \\
 \aelinha[nn]
@@ -222,13 +222,13 @@ u_x \\ u_y \\ u_z
 \newcommand{\libvetor}{
  \begin{bmatrix}
   u^{1}_x \\
-  u^{1}_y \\  
+  u^{1}_y \\
   u^{1}_z \\
 
   \vdots\\
   u^{nn}_x \\
-  u^{nn}_y \\  
-  u^{nn}_z 
+  u^{nn}_y \\
+  u^{nn}_z
  \end{bmatrix}
 }
 
@@ -246,12 +246,12 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\deriv}{\begin{bmatrix}
 \dx[\phi^1]   & \dx[\phi^2] & \dx[\phi^3] & \dx[\phi^4]    \\
-\dy[\phi^1]   & \dy[\phi^2] & \dy[\phi^3] & \dy[\phi^4]   
+\dy[\phi^1]   & \dy[\phi^2] & \dy[\phi^3] & \dy[\phi^4]
 \end{bmatrix}
 }
 
 \newcommand{\entradaae}[2]{
- (S^T N^{#1})_{x=p_k} D (S N^{#2})_{x=p_k} 
+ (S^T N^{#1})_{x=p_k} D (S N^{#2})_{x=p_k}
 }
 
 
@@ -263,10 +263,10 @@ u_x \\ u_y \\ u_z
     M^{-1}=M^{-1}_{h} + M^{-1}_{ms}(I-K_hM^{-1}_{h})
 }
 
-\newcommand{\freedomfine}{n_u^h}
+\newcommand{\qtdfreedomfine}{n_u^h}
 \newcommand{\essentialfine}{n_{\bar{u}}^h}
 
-\newcommand{\freedomcoarse}{n_u^H}
+\newcommand{\qtdfreedomcoarse}{n_u^H}
 \newcommand{\essentialcoarse}{n_{\bar{u}}^H}
 
 \newcommand{\numelementsxfine}{n_x}
@@ -277,7 +277,7 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\basefunctionfine}[1][i]{ {\mathbf{N}_{#1}^h} }
 \newcommand{\basefunctionelem}[1][i]{ {\mathbf{N}_{#1}^e} }
-\newcommand{\basefunctionfineessential}{\mathbf{N}_{i+\freedomfine}^h}
+\newcommand{\basefunctionfineessential}{\mathbf{N}_{i+\qtdfreedomfine}^h}
 
 \newcommand{\basefunctioncoarse}[1][i]{ {\mathbf{N}_{#1}^H} }
 
