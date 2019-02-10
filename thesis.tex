@@ -8,6 +8,9 @@
 \usepackage{blkarray}
 \usepackage{hyperref}
 
+\usepackage{empheq}
+\usepackage[most]{tcolorbox}
+
 \makelosymbols
 \makeloabbreviations
 \input{utils}
@@ -27,7 +30,9 @@
   \foreigntitle{geomechanics simulador}
   \author{Mateus}{Oliveira de Figueiredo}
   \advisor{Prof.}{Nelson}{Maculan Filho}{D.Sc.}
-  \examiner{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
+  \advisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
+  \examiner{Prof.}{Nelson Maculan Filho}{D.Sc.}
+  \examiner{Prof.}{Luiz Mariano Paes de Carvalho Filho}{D.Sc.}
   \examiner{Prof.}{Examinador 2}{Ph.D.}
   \examiner{Prof.}{Examinador 3}{D.Sc.}
 
@@ -54,13 +59,21 @@
   
   \chapter{Introdução}
 
+
+\newtcbox{\mymath}[1][]{%
+    nobeforeafter, math upper, tcbox raise base,
+    enhanced, colframe=black!100,
+    colback=white!30, boxrule=1pt,
+    #1}
+    
+
   \chapter{Modelagem Matemática} \label{ch:modelagem}
   \input{chap01/modelagem.tex}
 
   \chapter{Discretização} \label{ch:discretizacao}
-
+  \input{chap03/discretizacao.tex}
+  
   \chapter{Simulação Geomecânica}\label{ch:geomecanica}
-  \input{chap03/geomecanica.tex}
 
   \chapter{Solução de Sistemas Lineares}\label{ch:sistemas}
   \input{chap04/sistemas.tex}
