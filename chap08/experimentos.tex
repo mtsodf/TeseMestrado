@@ -194,10 +194,10 @@ O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador mult
 Essa combinação visa reduzir os erros de alta frequência através do $M_h$ enquanto os erros de baixa frequência são eliminados pelo pré-condicionador multiescala. 
 O acoplamento multiplicativo tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores
 e, portanto, o número de iterações tem que ser reduzido o suficiente para compensar todas essas operações. Um alternativa é aplicação
-dos pré-condicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador aditivo é que caso os $M_h^{-1}$ e $M_{ms}^{-1}$ sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente com o gradiente conjugado com garantia de convergência.
+dos pré-condicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador aditivo é que caso os $\preconfine$ e $\preconms$ sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente com o gradiente conjugado com garantia de convergência.
 
 
-As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos da solução do sistema linear utilizando o pré-condicionador aditivo e o multiplicativo junto com o solver Bicgstab. Nesses testes o pré-condicionador $M_h^{-1}$ foi o ILU(0).
+As tabelas \ref{table:precondcasoAcomp} e \ref{table:precondcasoBcomp} mostram a quantidade de iterações e os respectivos resíduos da solução do sistema linear utilizando o pré-condicionador aditivo e o multiplicativo junto com o solver Bicgstab. Nesses testes o pré-condicionador $\preconfine$ foi o ILU(0).
 
 É importante notar que a quantidade de iterações do dois métodos é bem próxima, em casos em que até o operador aditivo é mais eficiente que o multiplicativo. Dessa forma, uma alternativa a utilizar o Bicgstab com o pré-condicionador aditivo é utilizada o Gradiente conjugados juntamente com o pré-condicionador aditivo.
 

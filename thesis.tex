@@ -1,9 +1,10 @@
-\documentclass[dsc,numbers]{coppe}
+\documentclass[msc,numbers]{coppe}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb, amsfonts}
 \usepackage{multirow}
 \usepackage{subfigure}
 \usepackage{algorithmic}
+\usepackage{algorithm2e}
 \usepackage{color}
 \usepackage{blkarray}
 \usepackage{hyperref}
@@ -27,7 +28,7 @@
 
 \begin{document}
   \title{Método Multiescala aplicado à Geomecânica}
-  \foreigntitle{geomechanics simulador}
+  \foreigntitle{Multiscale method applied to Geomechanics}
   \author{Mateus}{Oliveira de Figueiredo}
   \advisor{Prof.}{Nelson}{Maculan Filho}{D.Sc.}
   \advisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
@@ -38,9 +39,11 @@
 
   \department{PESC}
   \date{03}{2019}
-  \keyword{Geomecânica}
   \keyword{Multiescala}
+  \keyword{Sistemas Lineares}
+  \keyword{Geomecânica}
   \keyword{Pré-condicionador}
+  
 
   \maketitle
 
@@ -78,7 +81,7 @@
   \chapter{Solução de Sistemas Lineares}\label{ch:sistemas}
   \input{chap04/sistemas.tex}
 
-  \chapter{Operadores Multiescala}\label{ch:multiescala}
+  \chapter{Operador Multiescala}\label{ch:multiescala}
   \input{chap06/multiescala.tex}
 
   \chapter{Implementação Computacional}\label{ch:implementacao}

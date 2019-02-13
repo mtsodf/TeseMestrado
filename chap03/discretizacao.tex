@@ -115,7 +115,7 @@ Para obter um sistema linear encontrar $\mathbf{d}$, pode-se substituir $\mathbf
 Definindo,
 
 \begin{equation}\label{eq:entradamatriz}
-    K_{i,j} = \omeint{(\sopnabla \basefunctionfine)^T D \sopnabla \basefunctionfine[j]}
+    [\rigidmatrix]_{i,j} = \omeint{\kij{i}{j}} 
 \end{equation}
 
 e
@@ -484,7 +484,7 @@ onde $\bar{u}_1$ representa o valor imposto pela condição de Dirichlet e $f^\p
 
 Dessa forma, a primeira equação quando resolvida mostra $B\bar{d}_1^h = B\bar{u}_1 \rightarrow \bar{d}_1^h = \bar{u}_1$, já a equação relativa ao grau de liberdade $d_i^h$ terá o lado direito $f^\prime_i$ complementada com o valor do lado esquerdo $\bar{d}_1^h \kij{i}{1+\qtdfreedomfine}$ (marcado em vermelho) ficando equivalente a \eqref{eq:entradald}.
 
-Uma variante dessa versão é zerar toda a linha relativa à $\bar{d}^h_1$ com exceção da diagonal principal que terá valor um. Nesse caso, tem a desvantagem de remover a simetria da matriz.
+Uma variante dessa versão é zerar toda a linha relativa à $\bar{d}^h_1$ com exceção da diagonal principal que terá valor um. Esse caso tem a desvantagem de remover a simetria da matriz.
 
 \begin{equation} \label{eq:diagident}
 \begin{blockarray}{ccccc}

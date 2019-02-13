@@ -9,6 +9,8 @@
 \newcommand{\dxi}[1][ ]{\frac{\partial {#1}}{\partial \xi}}
 \newcommand{\deta}[1][ ]{\frac{\partial {#1}}{\partial \eta}}
 \newcommand{\dzeta}[1][ ]{\frac{\partial {#1}}{\partial \zeta}}
+\newcommand{\dxhat}[1][ ]{\frac{\partial {#1}}{\partial \hat{x}}}
+\newcommand{\dyhat}[1][ ]{\frac{\partial {#1}}{\partial \hat{y}}}
 
 \newcommand{\dxk}[1][ ]{\frac{\partial {#1}}{\partial x_k}}
 
@@ -159,6 +161,8 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\sopnabla}{\nabla_S}
 
+\newcommand{\sopnablafront}{\nabla_{|| S}}
+
 \newcommand{\sop}[1][ ]{
 \begin{bmatrix}
 \dx[#1] &        0 &   0      \\
@@ -255,34 +259,63 @@ u_x \\ u_y \\ u_z
 }
 
 
+\newcommand{\ident}{\mathbf{I}}
+
+\newcommand{\precon}{\mathbf{M}^{-1}}
+
+\newcommand{\preconms}{\precon_{ms}}
+
+\newcommand{\preconfine}{\precon_{h}}
+
 \newcommand{\preconadd}{
-    M^{-1}=M^{-1}_{h} + M^{-1}_{ms}
+   \preconfine + \preconms
 }
 
 \newcommand{\preconmult}{
-    M^{-1}=M^{-1}_{h} + M^{-1}_{ms}(I-K_hM^{-1}_{h})
+   \preconms +\preconfine(\ident- \rigidmatrix \preconms)
 }
 
 \newcommand{\qtdfreedomfine}{n_u^h}
-\newcommand{\qtdessentialfine}{n_{\bar{u}}^h}
-
-\newcommand{\qtdfreedomcoarse}{n_u^H}
-\newcommand{\qtdessentialcoarse}{n_{\bar{u}}^H}
-
-\newcommand{\numelementsxfine}{n_x}
-\newcommand{\numelementsyfine}{n_y}
-\newcommand{\numelementsxcoarse}{n^H_x}
-\newcommand{\numelementsycoarse}{n^H_y}
-
 
 \newcommand{\basefunctionfine}[1][i]{ {\mathbf{N}_{#1}^h} }
 \newcommand{\basefunctionelem}[1][i]{ {\mathbf{N}_{#1}^e} }
 \newcommand{\basefunctionfineessential}{\mathbf{N}_{i+\qtdfreedomfine}^h}
+\newcommand{\qtdessentialfine}{n_{\bar{u}}^h}
+\newcommand{\freedomfine}[1][i]{d^h_i}
+\newcommand{\essentialfine}[1][i]{\bar{d}^h_i}
+\newcommand{\fineelementset}{\tau^h}
+\newcommand{\finesolution}{\mathbf{u}^h}
+\newcommand{\rigidmatrix}{\mathbf{K}^h}
 
+\newcommand{\msfinesolution}{\mathbf{u}^h_{\textit{ms}}}
+
+\newcommand{\qtdfreedomcoarse}{n_u^H}
+\newcommand{\qtdessentialcoarse}{n_{\bar{u}}^H}
 \newcommand{\basefunctioncoarse}[1][i]{ {\mathbf{N}_{#1}^H} }
+\newcommand{\basefunctionelemcoarse}[1][i]{ {\mathbf{N}_{e#1}^H} }
+\newcommand{\basefunctioncoarseessential}[1][i]{ {\basefunctioncoarse[i+\qtdfreedomcoarse]}}
+\newcommand{\freedomcoarse}[1][i]{d^H_{#1}}
+\newcommand{\essentialcoarse}[1][i]{\bar{d}^H_{#1}}
+\newcommand{\coarseelement}{T^K}
+\newcommand{\coarseelementset}{\tau^H}
+\newcommand{\coarsesolution}{\mathbf{u}^H}
+\newcommand{\rigidmatrixcoarse}{\mathbf{K}^H}
+
+\newcommand{\rigidmatrixelementms}{\mathbf{K}^{\coarseelement}}
 
 
 
+\newcommand{\numelementsfine} {n^h}
+\newcommand{\numelementsxfine}{n^h_x}
+\newcommand{\numelementsyfine}{n^h_y}
+
+\newcommand{\numelementscoarse} {n^H}
+\newcommand{\numelementsxcoarse}{n^H_x}
+\newcommand{\numelementsycoarse}{n^H_y}
+
+\newcommand{\coarsefactor}{C_r}
+\newcommand{\coarsefactorx}{C_{rx}}
+\newcommand{\coarsefactory}{C_{ry}}
 
 \newcommand{\sobolev}{H^1(\Omega)}
 
@@ -290,11 +323,15 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\trialaprox}{\mathcal{V}^h}
 
+\newcommand{\trialcoarseaprox}{\mathcal{V}^H}
+
+
+
 \newcommand{\trialdef}{\{  \mathbf{w} | \mathbf{w} \in \sobolev ^2 , \mathbf{w} = 0 \text{ em } \Gamma_u \}}
 
 \newcommand{\test}{\mathcal{S}(\Omega)}
-
 \newcommand{\testaprox}{\mathcal{S}^h}
+\newcommand{\testcoarseaprox}{\mathcal{S}^H}
 
 \newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev ^2 , \mathbf{u} = \bar{u} \text{ em } \Gamma_u \}}
 
@@ -306,3 +343,4 @@ u_x \\ u_y \\ u_z
 
 
 \newcommand{\intbase}[1]{\int_{-1}^{1}\int_{-1}^{1} #1 d\xi d\eta }
+
