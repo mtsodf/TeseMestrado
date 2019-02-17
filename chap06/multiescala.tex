@@ -21,7 +21,7 @@ A ideia do método consiste na construção de um operador grosso semelhante ao 
 
 
 O primeiro passo para a construção do operador multiescala é gerar um novo grid com menos elementos que o grid original do problema (grid fino), mas que ainda represente o mesmo domínio $\Omega$. Esse novo grid será chamado de grid grosso e as variáveis relacionadas com ele serão assinadas com o sobrescrito $H$.
-Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos onde cada elemento será uma aglomeração de elementos do grid fino. Por exemplo, a Figura \ref{fig:gridgrosso} apresenta um grid grosso $3\times 3$ construído a partir de um grid fino $7\times 7$.  As linhas finas representam as fiviões do grid fino e as grossas as divisões do grid grosso, já os  quadrados azuis destacam os nós que pertencem ao grid grosso e ao grid fino simultaneamente. Apesar de serem mostrados quantidade de diferentes quantidade de elementos sendo aglomerados para formar o grid grosso, as implementações desse trabalho se concentraram em juntar uma quantidade fixa de elementos em cada direção. Define-se o fator de engrossamento de acordo com \eqref{eq:fatordeengrossamento}. Analogamente podem ser definidos os fatores $\coarsefactorx$ e $\coarsefactory$ que representam os engrossamento em cada direção, onde, $\coarsefactor = \coarsefactorx \times \coarsefactory$.
+Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos onde cada elemento será uma aglomeração de elementos do grid fino. Por exemplo, a Figura \ref{fig:gridgrosso} apresenta um grid grosso $3\times 3$ construído a partir de um grid fino $7\times 7$.  As linhas finas representam as divisões do grid fino e as grossas as divisões do grid grosso, já os  quadrados azuis destacam os nós que pertencem ao grid grosso e ao grid fino simultaneamente. Apesar de serem mostrados quantidade de diferentes quantidade de elementos sendo aglomerados para formar o grid grosso, as implementações desse trabalho se concentraram em juntar uma quantidade fixa de elementos em cada direção. Define-se o fator de engrossamento de acordo com \eqref{eq:fatordeengrossamento}. Analogamente podem ser definidos os fatores $\coarsefactorx$ e $\coarsefactory$ que representam os engrossamento em cada direção, onde, $\coarsefactor = \coarsefactorx \times \coarsefactory$.
 
 \begin{figure}[!htbp]
 \centering
@@ -100,9 +100,26 @@ Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados
 \end{equation}
 
 
-É importante perceber que os coeficientes $p_{ji}$ fazem uma associação entre o espaço grosso e fino. A matriz $\mathbf{P}$ que será o operador de prolongamento terá justamente esses coeficientes como entradas. De forma que, $[\mathbf{P}]_{i,j} = p_{ij}$ e $\mathbf{P}$ tem dimensão $\qtdfreedomcoarse \times \qtdfreedomcoarse$.
+É importante perceber que os coeficientes $p_{ji}$ fazem uma associação entre o espaço grosso e fino. A matriz $\mathbf{P}$ que será o operador de prolongamento terá justamente esses coeficientes como entradas. De forma que, $[\mathbf{P}]_{i,j} = p_{ij}$ e $\mathbf{P}$ tem dimensão $\qtdfreedomcoarse \times \qtdfreedomcoarse$. A Figura \ref{fig:funcaodebasegrossa} mostra um exemplo de função de base relativa a um grau de liberdade x de um grid grosso construído a partir de um grid $16\times16$ transformado em  $2\times2$. Dois casos são mostrados, um em que as propriedades são constantes e outro em que existe variação no módulo de Young. No caso homogêneo a função tem forma parecida com uma função bilinear padrão de elementos finitos, já no outro caso pode-se perceber alteração na função de base afim de tentar representar as heterogeneidades das propriedades. Além disso, as Figuras \ref{fig:funcaodebasegrossahomy} \ref{fig:funcaodebasegrossahety} mostram a influência dos graus de liberdade x na interpolação do deslocamento em y, lembrando que essas parcela são zeradas. 
 
-%TODO adicionar explicação sobre os valores de 
+
+
+\begin{figure}[]
+\center
+\subfigure[Logaritmo do Módulo de Young ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_young.png}}
+\qquad
+\subfigure[ Logaritmo do Módulo de Young ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_young.png}}
+
+\subfigure[ $\mathbf{N}_{ix}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_x.png}}
+\qquad
+\subfigure[ $ \mathbf{N}_{ix}^H  $ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_x.png}}
+
+\subfigure[ $\mathbf{N}_{iy}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_y.png}\label{fig:funcaodebasegrossahety}}
+\qquad
+\subfigure[ $\mathbf{N}_{iy}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_y.png} \label{fig:funcaodebasegrossahomy}} 
+
+\caption{Exemplo de função de base gerada para módulo de Young homogêneo (lado esquerdo) e para módulo de Young heterogêneo (lado direito). Coeficiente de poisson considerado constante e igual a 0.2. }\label{fig:funcaodebasegrossa}
+\end{figure}
 
 
 Com \eqref{eq:linearbasecoarse} as funções de base do grid grosso estão determinadas e então é possível formular um novo problema \eqref{eq:weakcoarseformaprox} com espaços $\trialcoarseaprox$ e $\testcoarseaprox$  do grid grosseiro de maneira análoga a realizada em \eqref{eq:weakformaprox}.
@@ -157,7 +174,7 @@ Essa aproximação consiste de três passos que são descritas abaixo:
 \end{itemize}
 
 
-Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}  essa solução foi utilizada como solver através iterações de Richardson junto com um pré-condicionador do espaço fino, pois mostra que esse pré-condicionador não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que a matriz $\rigidmatrixcoarse$ é deficiente de rank e portanto a matriz de  iteração tem autovalores iguais a um. No caso, o pré-condicionador utilizado para solução foi um pré-condicionador {\color{red} combinativo multiplicativo} $\precon=\preconmult$ onde $\preconfine$ foi utilizado o BILU. Visando reproduzir os resultados para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para uma iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), combinativo multiplicativo (multiescala + ILU(0)) e combinativo aditivo (multiescala + ILU(0)). Ainda sobre o fato do operador ser utilizado conjuntamente com um pré-condicionador fino, essa é a abordagem típica e também é utilizada em \cite{msparalelo} e \cite{casteletto}.
+Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}  essa solução foi utilizada como solver através iterações de Richardson junto com um pré-condicionador do espaço fino, pois mostra que esse pré-condicionador não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que a matriz $\rigidmatrixcoarse$ é deficiente de rank e portanto a matriz de  iteração tem autovalores iguais a um. No caso, o pré-condicionador utilizado para solução foi um pré-condicionador  multiplicativo $\precon=\preconmult$ onde $\preconfine$ foi utilizado o BILU. Visando reproduzir os resultados para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para uma iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)). Ainda sobre o fato do operador ser utilizado conjuntamente com um pré-condicionador fino, essa é a abordagem típica e também é utilizada em \cite{casteletto} e \cite{msparalelo}.
 
 
 \begin{figure}[h]
@@ -184,7 +201,7 @@ Pode-se verificar que o pré-condicionador multiescala não tem convergência ga
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{chap06/figs/AutovaloresMatPrecondicionada.png}
-\caption{Autovalores da matrix pré-condicionada para caso homogêneo.}
+\caption{Autovalores da matriz pré-condicionada para caso homogêneo.}
 \label{fig:autovaloresMatrizPrecon}
 \end{figure}
 
@@ -215,7 +232,21 @@ A solução dos problemas locais descritos na seção anterior tem como resultad
 
 
 
-Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do pré-condicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. 
+Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do pré-condicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. \eqref{eq:pronlogamento} uma representação do prolongamento onde cada coluna representa uma função de base (essa representação possui um abuso de notação visto que $\basefunctioncoarse$ representa uma função e não entradas da matriz P).
+
+
+
+\begin{equation}\label{eq:pronlogamento}
+ \mathbf{P} =\begin{bmatrix}
+\vdots                    & \vdots                      & \vdots & \vdots   \\ 
+ \basefunctioncoarse[1]      & \basefunctioncoarse[2]         & \hdots & \basefunctioncoarse[\qtdfreedomcoarse] \\ 
+\vdots                    & \vdots                      & \vdots & \vdots 
+\end{bmatrix}
+\end{equation}
+
+
+
+
 
 
 %O primeiro passo é a construção de um grid grosso a partir do grid fino. A nomenclatura dada para os elementos do grid grosso serão direnciadas da do grid fino pelo sobreescrito H maiúsculo. Isso será feito de forma que cada elemento do grid grosso seja uma aglomeração de elementos do grid fino. Por exemplo, a Figura \ref{fig:gridgrosso} mostra um grid fino 7x7 que foi transformado em um grid grosso 3x3 através da junção de elementos. Nesse caso, o grid grosso é formado por nove elementos e dezesseis nós. Do mesmo que apresentado no Capítulo \ref{ch:discretizacao}, cada grau de liberdade do grid grosso $\freedomcoarse$ terá uma função de base associada  $\basefunctioncoarse$.
@@ -234,65 +265,36 @@ Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidm
 
 Em um método multiescala, além da construção de um operador grosso,  precisa-se mover os vetores entre os espaços fino e grosso  Essas movimentações são realizadas através de multiplicação por operadores especiais, $P$ e $P^T$. Essa seção descreve a complexidade destas operações.
 
-As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o valor de $n_u^H$,  não necessariamente ocorre  uma redução de elementos não nulos de $P$. \suge{Talvez uma forma simples de motivar esta ideia, seja dizer que todos os elementos a matriz $A$ tem que ser multiplicados por algum elemento da matriz de restrição, não podendo ficar nenhum de fora, sendo assim, mesmo que ser reduza o número de linhas do operador de restrição, a quantidade de elementos não nulos não pode ser alterada. O que ocorre é que cada linha do operador de restrição, ou coluna do de extensão, fica mais densa quando se diminui a dimensão do espaço grosso}
+As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o valor de $n_u^H$,  não necessariamente ocorre  uma redução de elementos não nulos de $P$. Uma motivação para esse fato é que apesar da quantidade de colunas do operador de prolongamento diminuir quando há um engrossamento maior, cada coluna precisa ter uma quantidade maior de não zeros pois o alcance das funções de base aumenta.
 
-Considerando um grid fino com $\numelementsxfine \times \numelementsyfine$, um grid grosso onde cada elemento tem dimensões $q_x \times q_y$ \suge{neste caso você está considerando que os elementos grossos são formados sempre pelo mesmo número de elementos, talvez seja o caso de dizer que você vai fazer isso mais lá em cima, apesar de isso não ser necessário} e, ainda, que mesmo os nós de fronteira com condição de contorno de Dirichlet não são removidos da matriz de rigidez, então a quantidade de não zeros do operador de prolongamento ($nnz_p$) pode ser calculada contando os nós de três conjuntos:  nós interiores, nós no vértice e os nós na aresta.  A Figura \ref{fig:gridCompleto} mostra cada um desse tipo de nós (em vermelho nó no vértice, em azul nó na aresta e em preto nó interior).
-
-
-\begin{figure}[h]
-\center
-\subfigure[  ]{\includegraphics[width=0.45\textwidth]{chap06/figs/gridCompleto.jpeg}\label{fig:gridCompleto}}
-\qquad
-\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/noInterior.jpeg}\label{fig:noInterior}}
-\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/noVertice.jpeg}\label{fig:noVertice}}
-\subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/noAresta.jpeg}\label{fig:noAresta}}
-
-\caption{Comparação da solução do grid fino com a solução do grid grosso.  }
-\label{fig:verticesTypes}
-\end{figure}
-
-A quantidade de cada um desses nós na malha grossa é apresentado abaixo.
-
-\begin{itemize}
-    \item Nós interiores: $(\frac{n_x}{q_x} - 1) (\frac{n_y}{q_y} - 1)$
-    \item Nós de aresta em $\Gamma_l$ e $\Gamma_r$: $2 ( \frac{n_y}{q_y} - 1)$
-    \item Nós de aresta em $\Gamma_t$ e $\Gamma_b$: $2 ( \frac{n_x}{q_x} - 1)$
-    \item Nós vértices: 4
-\end{itemize}
-
-
-Cada nó tem duas funções de base associadas uma para cada grau de liberdade (x e y). Para construirmos o operador de prolongamento que relaciona os nós do grid grosso com o fino, temos que a cada nó do grid grosso tem relação com $(2q_x+1)(2q_y+1)$ do grid fino. Este será o número de entradas não nulas que aparecerão em cada coluna do operador de prolongamento, como mostra a Figura \ref{fig:noInterior}. Além disso, ela afeta os dois graus de liberdade de cada um desses nós, então cada um deles contribui com $4(2q_x+1)(2q_y+1)$  não zeros para o prolongamento (uma implementação mais cuidadosa do método pode economizar as bordas do suporte pois as funções se anulam). De maneira análoga, os nós vértices contribuem com $ 4 (q_x+1)(q_y+1)$, os nós aresta em $\Gamma_t$ e $\Gamma_b$ contribuem com $ 4 (2q_x+1)(q_y+1) $ e, finalmente, os nós arestas  $\Gamma_l$ e $\Gamma_r$ e contribuem com $ 4(q_x+1)(2q_y+1) $. Assim, para encontrar a quantidade total de não zeros do operador de prolongamento, basta multiplicar as quantidades de cada um dos nós pela duas contribuições conforme a   \eqref{eq:nnzRaw}.
-
-
-\begin{equation} \label{eq:nnzRaw}
-\begin{aligned}
-    nnz_P = & 4(2q_x+1)(2q_y+1)  (\frac{n_x}{q_x} - 1) (\frac{n_y}{q_y} - 1)   \\
-            & + 4 (q_x+1)(2q_y+1)  2 ( \frac{n_y}{q_y} - 1) +  4 (2q_x+1)(q_y+1)  2 (\frac{n_x}{q_x} - 1) \\
-            & +  4(q_x+1)(q_y+1) 4
-\end{aligned}
-\end{equation}
-
-Que pode ser modificada para a \eqref{eq:nnzRaw2},
-
-\begin{equation} \label{eq:nnzRaw2}
-\begin{aligned}
-    nnz_P = &   4 (2+\frac{1}{q_x})(2 + \frac{1}{q_y})  (n_x - q_x) (n_y - q_y) \\
-            & + 8 (q_x+1)(2 + \frac{1}{q_y})  (n_y - q_y) \\
-            & + 8 (2+\frac{1}{q_x})(q_y+1) (n_x - q_x) \\
-            & + 16 (q_x+1)(q_y+1)
-\end{aligned}
-\end{equation}
-
-Assim, se $q_x$ e $q_y$ são de ordem $O(1)$ o primeiro termo da soma é da ordem de $O(n_x \times n_y)$. Caso $q_x$ e $q_y$ sejam de ordem $O(n_x)$ e $O(n_y)$, então o último termo da soma é da ordem $O(n_x \times n_y )$. \suge{não vejo muito sentido em $q_x$ ser $O(1)$, pois $q_x$ e $n_x$ vão sempre ter uma relação direta e, neste caso, o conceito de ordem esconde a constante de proporcionalidade e não ajuda a definir bem a complexidade do problema. $q_x$ e $n_x$ não teriam relação caso um fosse fixado e outro alterado, que é a situação mostrada na Figura \ref{fig:nnzGrafico}}
-Se $q_x$ é $O(n_x)$ e $q_y$ é $O(1)$ então o segundo termo é de ordem $O(n_x \times n_y)$, analogamente para o caso contrário.
-De toda forma, a quantidade de não zeros do prolongamento é da ordem do tamanho do grid $n_x \times n_y$ que é um fato importante, pois a multiplicação pelo prolongamento faz parte do processo de utilização do pré-condicionador multiescala e esse preço sempre terá que ser pago. O valor limite também dos não zeros é representado pelo último termo da soma $16(q_x+1)(q_y+1)$.
-
-Um gráfico representando    \eqref{eq:nnzRaw2} é mostrado na Figura \ref{fig:nnzGrafico}, no eixo y é apresentado $nnz_P$ enquanto no eixo x é apresentado o engrossamento da malha que tem a mesma proporção em x e y ($q_x  = q_y$) para um grid de $1024 \times 1024$. Pelo gráfico é possível ver que o $nnz_P$ tende já em um engrossamento $16 \times 16$.
-
+Considerando um grid fino com $\numelementsxfine \times \numelementsyfine$, um grid grosso onde cada elemento tem dimensões $q_x \times q_y$ e, ainda, que mesmo os nós de fronteira com condição de contorno de Dirichlet não são removidos da matriz de rigidez, pode-se encontrar um limite inferior para a não zeros do operador de prolongamento ($\nnzp$) considerando apenas os nós que estão no interior de um elemento grosso. Por exemplo, a Figura \ref{fig:nosinteriores}, mostra os nós interiores das células grossas para um grid $16\times16$ transformado em um grid de $2\times2$. 
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=8cm]{chap06/figs/nnzProlongamento.png}
-\caption{Quantidade de não zeros do prolongamento $nnz_P$  em função do engrossamento da malha. A linha pontilhada mostra o valor de $16(n_x+1)(n_y+1)$.}
-\label{fig:nnzGrafico}
+\includegraphics[width=8cm]{chap06/figs/nosinteriores.png}
+\caption{Nós interiores para um grid .}
+\label{fig:nosinteriores}
 \end{figure}
+
+No caso, cada célula grossa possui $(q_x-1)(q_y-1)$ nós interiores. Cada um dos dois graus de liberdade de um nó interior recebe influência de cada uma das oito funções de base relacionadas com os vértices do elemento grosso. Dessa forma pode-se escrever \eqref{eq:nnzpraw}.
+
+\begin{equation} \label{eq:nnzpraw}
+    \nnzp \ge  \underbrace{(\frac{\numelementsxfine}{q_x} \times \frac{\numelementsyfine}{q_y})}_{\text{qtd. elem. grossos}} \times 8 \times 2 \times (q_x-1)(q_y-1)
+\end{equation}
+
+Desenvolvendo,
+
+\begin{align}
+     \nnzp   & \ge  16 \times  \frac{\numelementsxfine}{q_x} (q_x-1) \times \frac{\numelementsyfine}{q_y} (q_y-1) \nonumber  \\
+                & \ge  16   (\numelementsxfine - \frac{1}{q_x})  (\numelementsyfine - \frac{1}{q_y}) \nonumber   \\
+                & \ge  16   (\numelementsxfine - 1)  (\numelementsyfine - 1) \label{eq:nnzp}
+\end{align}
+
+Assim, \eqref{eq:nnzp} mostra que $\nnzp$ é no mínimo na ordem do número de elementos do grid fino $\numelementsxfine\times\numelementsyfine$. Um argumento análogo pode ser feito para mostrar que a quantidade de não zeros não é maior que ordem da quantidade de elementos finos, basta considerar majorar $\nnzp$ considerando que todos os nós são interiores visto que são eles que tem a maior quantidade de funções de base grossas com valor diferente zero em comparação com os nós em arestas e os nós vértice. Dessa forma, pode-se escrever \eqref{eq:nnzprawj}.
+
+\begin{equation}\label{eq:nnzprawj}
+    \nnzp \le 8 \times 2 \times \underbrace{(\numelementsxfine + 1)(\numelementsyfine + 1)}_{\text{qtd. nós finos}}
+\end{equation}
+
+
+Portanto, independente do nível engrossamento, a quantidade de não zeros do prolongamento terá não zeros da ordem da dimensão do grid fino. Esse fato é importante, pois, a partir de um certo ponto, não será mais vantajoso engrossar mais o grid por conta do preço dessa multiplicação  que terá sempre que ser pago.

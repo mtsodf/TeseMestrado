@@ -272,7 +272,7 @@ u_x \\ u_y \\ u_z
 }
 
 \newcommand{\preconmult}{
-   \preconms +\preconfine(\ident- \rigidmatrix \preconms)
+   \preconms +\preconfine(\ident - \rigidmatrix \preconms)
 }
 
 \newcommand{\qtdfreedomfine}{n_u^h}
@@ -291,7 +291,7 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\qtdfreedomcoarse}{n_u^H}
 \newcommand{\qtdessentialcoarse}{n_{\bar{u}}^H}
-\newcommand{\basefunctioncoarse}[1][i]{ {\mathbf{N}_{#1}^H} }
+\newcommand{\basefunctioncoarse}[1][i]{ \mathbf{N}_{#1}^H }
 \newcommand{\basefunctionelemcoarse}[1][i]{ {\mathbf{N}_{e#1}^H} }
 \newcommand{\basefunctioncoarseessential}[1][i]{ {\basefunctioncoarse[i+\qtdfreedomcoarse]}}
 \newcommand{\freedomcoarse}[1][i]{d^H_{#1}}
@@ -303,6 +303,8 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\rigidmatrixelementms}{\mathbf{K}^{\coarseelement}}
 
+
+\newcommand{\nnzp}{ \text{nnz}_p }
 
 
 \newcommand{\numelementsfine} {n^h}
@@ -324,7 +326,6 @@ u_x \\ u_y \\ u_z
 \newcommand{\trialaprox}{\mathcal{V}^h}
 
 \newcommand{\trialcoarseaprox}{\mathcal{V}^H}
-
 
 
 \newcommand{\trialdef}{\{  \mathbf{w} | \mathbf{w} \in \sobolev ^2 , \mathbf{w} = 0 \text{ em } \Gamma_u \}}

@@ -1,0 +1,16 @@
+\begin{table}[]
+\centering
+\caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso A utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento.}
+\label{table:precondcasoAcomp}
+\begin{tabular}{ccccccc}
+\cline{2-5}
+\multicolumn{1}{c|}{}             & \multicolumn{4}{c|}{Pré-condicionador}                                                                                            &                                & \multicolumn{1}{l}{}       \\ \cline{2-7} 
+\multicolumn{1}{c|}{}             & \multicolumn{2}{c|}{$\preconmult$}                              & \multicolumn{2}{c|}{$\preconadd$}                               & \multicolumn{2}{c|}{Diferença}                              \\ \hline
+\multicolumn{1}{|c|}{\thead{Elemento\\Grosso}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{\thead{Tempo\\(ms)}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{\thead{Tempo\\(ms)}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{Tempo} \\ \hline
+\multicolumn{1}{|c|}{2x2}         & \multicolumn{1}{c|}{3}         & \multicolumn{1}{c|}{100.97}    & \multicolumn{1}{c|}{6}         & \multicolumn{1}{c|}{106.45}    & \multicolumn{1}{c|}{100.00\%}  & \multicolumn{1}{c|}{5\%}   \\ \hline
+\multicolumn{1}{|c|}{5x5}         & \multicolumn{1}{c|}{7}         & \multicolumn{1}{c|}{28.72}     & \multicolumn{1}{c|}{9}         & \multicolumn{1}{c|}{29.57}     & \multicolumn{1}{c|}{28.57\%}   & \multicolumn{1}{c|}{3\%}   \\ \hline
+\multicolumn{1}{|c|}{10x10}       & \multicolumn{1}{c|}{13}        & \multicolumn{1}{c|}{39.30}     & \multicolumn{1}{c|}{15}        & \multicolumn{1}{c|}{35.98}     & \multicolumn{1}{c|}{15.38\%}   & \multicolumn{1}{c|}{-8\%}  \\ \hline
+\multicolumn{1}{|c|}{20x20}       & \multicolumn{1}{c|}{23}        & \multicolumn{1}{c|}{64.99}     & \multicolumn{1}{c|}{26}        & \multicolumn{1}{c|}{55.99}     & \multicolumn{1}{c|}{13.04\%}   & \multicolumn{1}{c|}{-14\%} \\ \hline
+\end{tabular}
+\end{table}
+

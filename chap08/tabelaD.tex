@@ -1,0 +1,16 @@
+\begin{table}[]
+\centering
+\caption{Comparação de pré-condicionador aditivo contra multiplicativo para caso D utilizando como solver linear o método Bicgstab para diferentes níveis de engrossamento.}
+\label{table:precondcasoDcomp}
+\begin{tabular}{ccccccc}
+\cline{2-5}
+\multicolumn{1}{c|}{}             & \multicolumn{4}{c|}{Pré-condicionador}                                                                                            &                                & \multicolumn{1}{l}{}       \\ \cline{2-7} 
+\multicolumn{1}{c|}{}             & \multicolumn{2}{c|}{$\preconmult$}                              & \multicolumn{2}{c|}{$\preconadd$}                               & \multicolumn{2}{c|}{Diferença}                              \\ \hline
+\multicolumn{1}{|c|}{\thead{Elemento\\Grosso}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{\thead{Tempo\\(ms)}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{\thead{Tempo\\(ms)}} & \multicolumn{1}{c|}{Iterações} & \multicolumn{1}{c|}{Tempo} \\ \hline
+\multicolumn{1}{|c|}{2x2}         & \multicolumn{1}{c|}{4}         & \multicolumn{1}{c|}{742.54}    & \multicolumn{1}{c|}{6}         & \multicolumn{1}{c|}{787.70}    & \multicolumn{1}{c|}{50.00\%}   & \multicolumn{1}{c|}{6\%}   \\ \hline
+\multicolumn{1}{|c|}{4x4}         & \multicolumn{1}{c|}{6}         & \multicolumn{1}{c|}{179.77}    & \multicolumn{1}{c|}{8}         & \multicolumn{1}{c|}{187.48}    & \multicolumn{1}{c|}{33.33\%}   & \multicolumn{1}{c|}{4\%}   \\ \hline
+\multicolumn{1}{|c|}{8x8}         & \multicolumn{1}{c|}{9}         & \multicolumn{1}{c|}{134.78}    & \multicolumn{1}{c|}{11}        & \multicolumn{1}{c|}{130.19}    & \multicolumn{1}{c|}{22.22\%}   & \multicolumn{1}{c|}{-3\%}  \\ \hline
+\multicolumn{1}{|c|}{16x16}       & \multicolumn{1}{c|}{10}        & \multicolumn{1}{c|}{136.04}    & \multicolumn{1}{c|}{11}        & \multicolumn{1}{c|}{113.89}    & \multicolumn{1}{c|}{10.00\%}   & \multicolumn{1}{c|}{-16\%} \\ \hline
+\multicolumn{1}{|c|}{32x32}       & \multicolumn{1}{c|}{16}        & \multicolumn{1}{c|}{204.28}    & \multicolumn{1}{c|}{16}        & \multicolumn{1}{c|}{154.87}    & \multicolumn{1}{c|}{0.00\%}    & \multicolumn{1}{c|}{-24\%}  \\ \hline
+\end{tabular}
+\end{table}
