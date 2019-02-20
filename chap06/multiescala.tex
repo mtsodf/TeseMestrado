@@ -1,17 +1,17 @@
 
-Nesse capítulo, será apresentada a construção do operador grosso Multiescala e suas aplicações. Daqui para frente, o grid original do problema ser denominado grid fino e o operador associado a esse grid $\rigidmatrix$ será chamado de operador fino. A partir do grid fino será construído um grid grosso onde cada elemento é uma aglomeração de elementos do grid fino, o operador associado a esse grid será chamado de operador grosso $\rigidmatrixcoarse$.
+Nesse capítulo, será apresentada a construção do operador grosso Multiescala e suas aplicações. Daqui para frente, o grid original do problema será denominado grid fino e o operador associado a esse grid $\rigidmatrix$ será chamado de operador fino. A partir do grid fino será construído um grid grosso onde cada elemento é uma aglomeração de elementos do grid fino, o operador associado a esse grid será chamado de operador grosso $\rigidmatrixcoarse$.
 
 
 O método \textit{Multiscale Finite Element Method} (MSFEM) foi introduzido por \citet{thomashou} e inicialmente foi aplicado para obter soluções aproximadas do grid fino através do grid grosso para casos de transferência de calor de materiais e meios porosos com propriedades aleatórias. A principal conclusão desse trabalho foi que o método MSFEM é capaz de reproduzir a heterogeneidade da solução através da construção das funções de base com solução de problemas locais baseados no operador original. Mais tarde, o método MSFEM se mostrou problemático para conservação de massa em problemas de transporte e, por isso, foram criado os métodos \textit{Mixed Multiscale Finite Element} (MMSFEM) em \citet{mixedmsfem} e  \textit{Multiscale Finite Volume Method} (MSFVM) em \citet{msfv} que garantem a conservação.
 
 
-Apesar do método MSFV garantir a conservação da massa, as soluções do grid fino não se mostravam adequadas para todas as situações, assin, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
+Apesar do método MSFVM garantir a conservação da massa, as soluções do grid fino não se mostravam adequadas para todas as situações, assim, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
 
 
-Apesar de todos esses estudos,  o método multiescala continuava sendo possível aplicada em problemas em que informações do grid são conhecidas para a construção do operador grosso o que torna uma desvantagem em relação ao multigrid. Essa desvantagem é parcialmente resolvida através do Multiescala algébrico (apresentado em \citet{msalgebrico}) que, de certa forma semelhante aos métodos multigrid, montam o operador grosso através das entradas da matriz do grid fino utilizando uma ordenação de Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis também já foram desenvolvidos como os \citet{multilevel}.
+Apesar de todos esses estudos,  o método multiescala continuava sendo  aplicado em problemas nos quais  informações do grid eram conhecidas para a construção do operador grosso, o que era uma desvantagem em relação ao multigrid algébrico. Essa desvantagem é parcialmente resolvida através do Multiescala algébrico (apresentado em \citet{msalgebrico}) que, de certa forma semelhante aos métodos multigrid algébricos, montam o operador grosso através das entradas da matriz do grid fino utilizando uma ordenação de Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis também já foram desenvolvidos como os \citet{multilevel}. \suge{problema nesta citação}
 
 
-Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para os problemas de fluxo que, atualmente, na industria tem maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, trabalhos como \citet{mbuck}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica.
+Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para  problemas de fluxo que, atualmente, na indústria têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, podemos encontrar trabalhos com aplicações do método de multiescala neste domínio, ver \citet{mbuck}. 
 
 Implementações em paralelo do método multiescala também podem ser encontradas, por exemplo em \citet{msparalelo} que faz comparação com o método multigrid mostrando que o multiescala é uma opção competitiva e tem escalabilidade similar ao multigrid.
 
@@ -21,12 +21,12 @@ A ideia do método consiste na construção de um operador grosso semelhante ao 
 
 
 O primeiro passo para a construção do operador multiescala é gerar um novo grid com menos elementos que o grid original do problema (grid fino), mas que ainda represente o mesmo domínio $\Omega$. Esse novo grid será chamado de grid grosso e as variáveis relacionadas com ele serão assinadas com o sobrescrito $H$.
-Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos onde cada elemento será uma aglomeração de elementos do grid fino. Por exemplo, a Figura \ref{fig:gridgrosso} apresenta um grid grosso $3\times 3$ construído a partir de um grid fino $7\times 7$.  As linhas finas representam as divisões do grid fino e as grossas as divisões do grid grosso, já os  quadrados azuis destacam os nós que pertencem ao grid grosso e ao grid fino simultaneamente. Apesar de serem mostrados quantidade de diferentes quantidade de elementos sendo aglomerados para formar o grid grosso, as implementações desse trabalho se concentraram em juntar uma quantidade fixa de elementos em cada direção. Define-se o fator de engrossamento de acordo com \eqref{eq:fatordeengrossamento}. Analogamente podem ser definidos os fatores $\coarsefactorx$ e $\coarsefactory$ que representam os engrossamento em cada direção, onde, $\coarsefactor = \coarsefactorx \times \coarsefactory$.
+Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos onde cada elemento será uma aglomeração de elementos do grid fino. Por exemplo, a Figura \ref{fig:gridgrosso} apresenta um grid grosso $3\times 3$ construído a partir de um grid fino $7\times 7$.  As linhas finas representam as divisões do grid fino e as grossas as divisões do grid grosso, já os  quadrados azuis destacam os nós que pertencem ao grid grosso e ao grid fino simultaneamente. Apesar de serem apresentadas diferentes quantidade de elementos sendo aglomerados para formar o grid grosso, as implementações deste trabalho consideram uma quantidade fixa de elementos em cada direção. Define-se o fator de engrossamento de acordo com \eqref{eq:fatordeengrossamento}. Analogamente podem ser definidos os fatores $\coarsefactorx$ e $\coarsefactory$ que representam os engrossamento em cada direção, onde, $\coarsefactor = \coarsefactorx \times \coarsefactory$.
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=6cm]{chap06/figs/grosso.png}
-\caption{Exemplo de grid fino $7\time 7$ e um grid grosso $3\times 3$. O elemento inferior esquerdo é composto por 9 elementos do grid fino enquanto o elemento superior direito é composto com 4 elementos do grid fino.}
+\caption{Exemplo de grid fino $7\times 7$ e um grid grosso $3\times 3$. O elemento inferior esquerdo é composto por 9 elementos do grid fino enquanto o elemento superior direito é composto com 4 elementos do grid fino.}
 \label{fig:gridgrosso}
 \end{figure}
 
@@ -38,14 +38,14 @@ Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos o
 
 
 
-Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$ será associada uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$ uma função de base $\basefunctioncoarseessential$. E então, é possível encontrar uma solução aproximada do grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
+Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$ \suge{é bom dizer como $i$ varia} será associada uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$ uma função de base $\basefunctioncoarseessential$ \suge{é bom relembrar aqui o que é $n_u^H$}. E então, é possível encontrar uma solução aproximada no grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
 
 \begin{equation} \label{eq:aproximacaogrossa}
     \msfinesolution = \coarsesolution = \sum_{i=1}^{\qtdfreedomcoarse} \basefunctioncoarse \freedomcoarse + {\sum_{i=1}^ {\qtdfreedomcoarse}}  \basefunctioncoarseessential \essentialcoarse
 \end{equation}
 
 
-Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  mostrado em \eqref{eq:problemaslocais}, conforme mostrado em \cite{casteletto}.
+Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  apresentado em \eqref{eq:problemaslocais}, conforme proposta em \cite{casteletto}.
 
 
 \begin{subequations} \label{eq:problemaslocais}
@@ -56,7 +56,6 @@ Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combi
 \label{eq:valorvertice}
 \end{align}
 \end{subequations}
-
 onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenadas $\hat{x}$ e $\hat{y}$ que representam a direção paralela e perpendicular a $\partial \coarseelement$ como mostrada na Figura \ref{fig:direcoesoperadorfronteira}, $\mathbf{x}_j$ representa as coordenadas do vértice relacionado ao grau de liberdade $\freedomcoarse[j]$ e  $\mathbf{e} = [1\quad0]^T $ se $\basefunctioncoarse$ é relacionada a um grau de liberdade x caso contrário,  $\mathbf{e}=[0\quad1]^T$.
 
 \begin{equation}\label{eq:sopnabladef}
@@ -77,7 +76,7 @@ onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenad
 \end{figure}
 
 
-Um fato importante é que \eqref{eq:operadorlocal} mostra que a função de base $\basefunctioncoarse$ satisfaz ao mesmo operador que o problema fino, de acordo com \citet{thomashou} essa é uma das vantagens do método multiescala, pois as funções de base tentam reproduzir o operador localmente. Essa vantagem vem com o custo da solução dos problemas locais que também de acordo com \citet{thomashou} são custosas. Estimativas do dispêndio desse cálculos são encontradas em \citet{msparalelo} e \citet{mbuck}.
+Um fato importante é que \eqref{eq:operadorlocal} mostra que a função de base $\basefunctioncoarse$ satisfaz ao mesmo operador que o problema fino, de acordo com \citet{thomashou} essa é uma das vantagens do método multiescala, pois as funções de base tentam reproduzir o operador localmente. Essa vantagem vem com o custo da solução dos problemas locais que também de acordo com \citet{thomashou} são caros. Estimativas do dispêndio desse cálculos são encontradas em \citet{msparalelo} e \citet{mbuck}.
 
 Dessa forma, desconsiderando as condições de contorno, dado um elemento quadrilátero $\coarseelement$, este possui oito funções $\basefunctioncoarse$ que são não nulas nesse domínio (duas para cada um dos vértices). Considerando uma numeração local do elemento e representando as funções como $\basefunctionelemcoarse$ para $i=1,2,\dots, 8$. A Figura \ref{fig:coarsefunctionslocalnum} apresenta as funções associadas a cada um dos nós na numeração local.
 
@@ -89,7 +88,7 @@ Dessa forma, desconsiderando as condições de contorno, dado um elemento quadri
 \label{fig:coarsefunctionslocalnum}
 \end{figure}
 
-Para cada uma das funções é necessário resolver \eqref{eq:problemaslocais}, a solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ na fronteira do elemento $\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, podem ser encontrados no apêndice de \cite{casteletto}. 
+Para cada uma das funções é necessário resolver \eqref{eq:problemaslocais}, a solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ \suge{talvez usar ${\bf{N}}^H_{e_i}$, com subíndide para o $e$} na fronteira do elemento $\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, podem ser encontrados no apêndice de \cite{casteletto}. 
 
 
 Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados como condição de contorno de Dirichlet para \eqref{eq:operadorlocal}. Esse problema também é resolvido com elementos finitos onde os resultados encontrados serão chamados de coeficientes $p_{ij}$ que descrevem $\basefunctioncoarse$ como combinação linear de $\basefunctionfine$ conforme mostrado em \eqref{eq:linearbasecoarse}. 

@@ -20,7 +20,7 @@ Para a implementação do método multiescala, foi adicionada criada a classe \t
 
 \section{Montagem dos Operador Multiescala}
 
-O primeiro passo para utilizar o método multiescala é a escolha do nível de engrossamento. A implementação aceita diferentes fatores para a direção x e y, apesar dos testes serem apresentados com o mesmo fator. O método \textbf{CoarseContext} é responsável por realizar a tarefa de construir $\mathbf{P}$ e $\rigidmatrixcoarse$. Essa tarefa é dividida nos seguintes passos: 
+O primeiro passo para utilizar o método multiescala é a escolha do nível de engrossamento. A implementação aceita diferentes fatores para a direção x e y, apesar dos testes serem apresentados com o mesmo fator. O método \textbf{CoarseContext} da classe textbf{Multiscale} é responsável por realizar a tarefa de construir $\mathbf{P}$ e $\rigidmatrixcoarse$. Essa tarefa é dividida nos seguintes passos: 
 
 \begin{itemize}
     \item Criar objetos \textbf{FemContext} para cada um dos problemas locais.
@@ -31,7 +31,7 @@ O primeiro passo para utilizar o método multiescala é a escolha do nível de e
     \item Calcular $\rigidmatrixcoarse = \mathbf{P}^T \rigidmatrix \mathbf{P}$
 \end{itemize}
 
-A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse operador. Pode-se perceber que os problemas são independentes exceto pela solução dos problemas das arestas em comum. A implementação desse trabalho resolveu esse mesmo problema na fronteira duas vezes, uma vez em cada problema local diferente, uma implementação mais otimizada pode resolver apenas uma vez cada problema de fronteira.
+A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse operador. Pode-se perceber que os problemas são independentes exceto pela solução dos problemas das arestas em comum. A implementação desse trabalho resolveu esse mesmo problema na fronteira duas vezes, uma implementação mais otimizada pode resolver apenas uma vez cada problema de fronteira. Em relação a resolver os oito problemas locais, foi realizada a fatoração LU da matriz 
 
 \begin{figure}[!htbp]
 \centering
@@ -40,8 +40,17 @@ A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse 
 \label{fig:esquemaconstrucao}
 \end{figure}
 
-O cálculo das matrizes dos operadores locais  $\rigidmatrixelementms$ tem os mesmos coeficientes presentes na matriz de rigidez $\rigidmatrix$ visto que o operador de \eqref{eq:edp_geomec} é o mesmo de \eqref{eq:operadorlocal}. Dessa forma, a matriz de um operador local é uma submatriz do operador original, portanto, foi utilizado o método GetSubMatrix das matrizes do petsc para construir $\rigidmatrixelementms$ a partir de $\rigidmatrix$.
+
+O cálculo das matrizes dos operadores locais $\rigidmatrixelementms$ tem os mesmos coeficientes presentes na matriz de rigidez $\rigidmatrix$ visto que o operador de \eqref{eq:edp_geomec} é o mesmo de \eqref{eq:operadorlocal}. Assim, para o código executar mais rápido a matriz de rigidez de cada elemento foi armazenada para não precisar ser calculada novamente, isso torna o custo da memória maior, pois esses valores não precisam ser necessariamente guardados. Outra opção é perceber que a matriz de um operador local é uma submatriz do operador original, e portanto, poderia ser utilizado o método foi utilizado o método GetSubMatrix das matrizes do petsc para construir $\rigidmatrixelementms$ a partir de $\rigidmatrix$ conforme mostra a Figura \ref{fig:submatrix}. Essa ideia é similar a utilizar uma reordenação Wire-Basket como apresentada em \cite{casteletto} e \cite{irina}.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{chap07/figs/submatrix.png}
+\caption{Exemplo de construção de uma matriz relacionada a um problema local.}
+\label{fig:submatrix}
+\end{figure}
 
 
-A classe \textbf{Multiscale} também possui um método solve, que só pode ser chamado a após o método \textbf{CoarseContext} ter sido executado. Esse método recebe como entrada um vetor $\mathbf{f}^h$ relacionado a um lado direito do grid fino e resolve o problema no grid grosso e retorna para o grid fino. Em outras palavras, esse método retorna o seguinte valor $\mathbf{P}(\rigidmatrixcoarse)^{-1}\mathbf{P}^T \mathbf{f}^h$. Esse método será aplicado ao resíduo quando o multiescala estiver sendo utilizado como pré-condicionador nos estudos aqui apresentados. 
-                                                                                       
+A classe \textbf{Multiscale} também possui um método solve, que só pode ser chamado após o método \textbf{CoarseContext} ter sido executado. Esse método recebe como entrada um vetor $\mathbf{f}^h$ relacionado a um lado direito do grid fino e resolve o problema no grid grosso e retorna para o grid fino. Em outras palavras, esse método retorna o seguinte valor $\mathbf{P}(\rigidmatrixcoarse)^{-1}\mathbf{P}^T \mathbf{f}^h$. Para a solução do sistema $(\rigidmatrixcoarse)^{-1}$ a solução utilizada foi uma fatoração LU. Essa fatoração é guardada para ser utilizada entre as iterações do método de Krylov quando o objeto o método \textbf{Multiescala} está sendo utilizado como pré-condicionador.
+
+                                                                                   
