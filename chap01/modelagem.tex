@@ -1,4 +1,4 @@
-Nesse capítulo, serão apresentados as Equações que regem os fenômenos geomecânicos. O primeiro trabalho famoso na modelagem de tensões no solo é \citet{Terzaghi} que desenvolveu a teoria para uma dimensão. Mais tarde, \citet{Biot} generalizou essa teoria para três dimensões e essas são as Equações que serão apresentadas. Como intuito do trabalho é testar o método multiescala aplicado para matrizes dessa natureza, o caso aqui considerado será o de elasticidade linear onde a rocha não é tensionada até que apresente falhas. O capítulo \ref{ch:discretizacao} apresentará como as equações aqui encontradas são resolvidas utilizando o método dos elementos finitos.
+Nesse capítulo, serão apresentados as Equações que regem os fenômenos geomecânicos. O primeiro trabalho famoso na modelagem de tensões no solo é Terzaghi que desenvolveu a teoria para uma dimensão. Mais tarde, Biot generalizou essa teoria para três dimensões e essas são as Equações que serão apresentadas. Detalhes das duas teorias podem ser encontradas em \citet{CompGeomec}. Como intuito do trabalho é testar o método multiescala aplicado para matrizes dessa natureza, o caso aqui considerado será o de elasticidade linear onde a rocha não é tensionada até que apresente falhas. O capítulo \ref{ch:discretizacao} apresentará como as equações aqui encontradas são resolvidas utilizando o método dos elementos finitos.
 
 
 
@@ -131,7 +131,7 @@ Por motivos de implementação mais eficiente menor uso de memória e utilizaç�
 \sopnabla^T \stef - \sopnabla^T\alpha m  P_p - f = 0
 \end{equation}
 
-Onde, 
+Onde,
 \begin{equation}
 \begin{matrix}\label{eq:definicoesvoigt}
 \stef = \begin{bmatrix}
@@ -178,7 +178,7 @@ m = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \\ 0 \\ 0\end{bmatrix}
 
 \subsection{Relações Constitutivas}
 
-A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação é necessário colocar em função das variáveis de deslocamento. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. A relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}. 
+A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação é necessário colocar em função das variáveis de deslocamento. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. A relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}.
 
 \begin{equation}
 \label{eq:defor_desloc}
@@ -231,8 +231,8 @@ de três dimensões para duas dimensões existem duas abordagens possíveis de s
 \begin{equation} \label{eq:elasticplanestress}
 D_{stress} = \frac{E}{1-\upsilon^2}
 \begin{bmatrix}
-1  & \upsilon & 0 \\ 
-\upsilon & 1 &  0 \\ 
+1  & \upsilon & 0 \\
+\upsilon & 1 &  0 \\
 0 & 0 & \frac{1-\upsilon}{2}
 \end{bmatrix}
 \end{equation}
@@ -240,8 +240,8 @@ D_{stress} = \frac{E}{1-\upsilon^2}
 \begin{equation} \label{eq:elasticplanestrain}
 D_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \begin{bmatrix}
- 1-\upsilon & \upsilon    &  0 \\ 
- \upsilon   &  1-\upsilon &  0 \\ 
+ 1-\upsilon & \upsilon    &  0 \\
+ \upsilon   &  1-\upsilon &  0 \\
  0& 0 & \frac{1-2\upsilon}{2}
 \end{bmatrix}
 \end{equation}
@@ -290,11 +290,11 @@ m = \begin{bmatrix} 1 \\ 1 \\ 0\end{bmatrix}
 
 u = \begin{bmatrix}
 u_x
-\\ 
+\\
 u_y
 \end{bmatrix}
 
 \end{matrix}
 \end{equation}
 
-Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. 
+Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido.
