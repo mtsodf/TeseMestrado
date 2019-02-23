@@ -1,19 +1,12 @@
+Nesse capítulo, serão apresentados as Equações que regem os fenômenos geomecânicos. O primeiro trabalho famoso na modelagem de tensões no solo é \citet{Terzaghi} que desenvolveu a teoria para uma dimensão. Mais tarde, \citet{Biot} generalizou essa teoria para três dimensões e essas são as Equações que serão apresentadas. Como intuito do trabalho é testar o método multiescala aplicado para matrizes dessa natureza, o caso aqui considerado será o de elasticidade linear onde a rocha não é tensionada até que apresente falhas. O capítulo \ref{ch:discretizacao} apresentará como as equações aqui encontradas são resolvidas utilizando o método dos elementos finitos.
 
 
-
-Geomecânica é o estudo das deformações e tensões em solos e rocha. Esse estudo se torna de extrema importância, pois, várias problemas podem ser solucionados através desses estudos, como:
-\begin{itemize}
-    \item Cálculo da pressão de fratura.
-    \item Estabilidade de poços
-\end{itemize}
-
-Assim, simulações de geomecânicas são importantes para uma exploração segura do campo.
 
 \section{Tensor de Tensões}
 
-Para representar a tensão em um ponto da rocha, é utilizado um tensor de tensões de segunda ordem como segue abaixo:
+Para representar a tensão total (ou \textit{overburden}) em um ponto da rocha, é utilizado um tensor de tensões de segunda ordem como mostra \eqref{eq:tensordetensoes}.
 
-\begin{equation}
+\begin{equation} \label{eq:tensordetensoes}
 \mathbf{\sigma} =
     \begin{bmatrix}
     \stxx & \stxy & \stxz \\
@@ -27,12 +20,12 @@ O primeiro subscrito do tensor representa a face que a tensão está sendo aplic
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=5cm]{chap01/tensor.png}
+\includegraphics[width=5cm]{chap01/figs/tensor.png}
 \caption{Tensões $\sigma_{x.}$ representadas graficamente.}
 \label{fig:tensoesx}
 \end{figure}
 
-Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores. Dessa forma, pode-se considerar a tensão como o vetor apresentado \label{eq:tensor6} essa notação é chamada de notação de Voigt e é a bastante utilizada nas implementações de elementos finitos, por exemplo, nas formulações apresentadas por \cite{hughes} e \cite{jacob}.
+Ao aplicar a condição de equilíbrio do momento angular, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores. Pode-se considerar então a tensão como o vetor apresentado \label{eq:tensor6} essa notação é chamada de notação de Voigt e é a bastante utilizada nas implementações de elementos finitos, por exemplo, nas formulações apresentadas por \cite{hughes} e \cite{jacob}.
 
 
 \begin{equation}
@@ -45,31 +38,42 @@ Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\s
 
 \section{Teoria da Consolidação}
 
-Para um certo elemento de volume $\Delta x\Delta y \Delta z$, representado na figura \ref{fig:equilibrio}, pode-se escrever o equilíbrio nas direções x, y e z.
+Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as equações de equilíbrio para cada uma dessas direções. A Figura \ref{fig:equilibrio} apresenta todas as tensões relativas a direção x.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=6cm]{chap01/equilibrio.png}
-\caption{Tensões na direção y ($\sigma_{.y}$) representadas graficamente.  Fonte: \cite{CompGeomec}}
+\includegraphics[width=8cm]{chap01/figs/equilibrio.png}
+\caption{Tensões na direção x ($\sigma_{.x}$) representadas graficamente.  Adaptado de \cite{CompGeomec}.}
 \label{fig:equilibrio}
 \end{figure}
 
-Para a direção y, por exemplo, tem-se:
+O equilíbrio de forças nessa direção pode ser escrito como apresentado em \eqref{eq:equilibrio0}. Nesse caso as forças atuantes são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em ??? (colocar referência de doutorado) $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação realizada nesse trabalho, fazendo com que as modificações no equilíbrio serão apenas relativas a mudança de pressão.
 
-\begin{multline}
-   (\stxy - \stxy - \Delta \stxy) \Dy\Dz + (\styy - \styy - \Delta \styy)\Dx\Dz  +\\
-   + (\stzy - \stzy - \Delta\stzy) \Dx\Dy + f_y\Dx\Dy\Dz = 0
+
+\begin{multline} \label{eq:equilibrio0}
+   (\stxx - \stxx - \Delta \stxx) \Dy\Dz + (\styx - \styx - \Delta \styx)\Dx\Dz  +\\
+   + (\stzx - \stzx - \Delta\stzx) \Dx\Dy + f_x\Dx\Dy\Dz = 0
 \end{multline}
 
-\begin{equation}
- \Delta \stxy \Dy\Dz + \Delta \styy\Dx\Dz + \Delta\stzy - f_y\Dx\Dy\Dz = 0
-\end{equation}
 
 \begin{equation}
-\dx[\stxy] + \dy[\styy] + \dy[\stzy] - f_y = 0
+ \Delta \stxx \Dy\Dz + \Delta \styx\Dx\Dz + \Delta\stzx - f_x\Dx\Dy\Dz = 0
 \end{equation}
 
-Analogamente, para as outras direções, pode-se montar o seguinte sistema de equações de equilíbrio.
+Dividindo todos os termos por $\Dx\Dy\Dz$.
+
+
+\begin{equation}
+\frac{ \Delta \stxx }{ \Dx } + \frac{\Delta \styx}{ \Dy } + \frac{\Delta\stzx}{ \Dz } - f_x = 0
+\end{equation}
+
+Fazendo $\Dx \rightarrow 0$, $\Dy \rightarrow 0 $ e $\Dz \rightarrow 0$
+
+\begin{equation}
+\dx[\stxx] + \dy[\styx] + \dy[\stzx] - f_x = 0
+\end{equation}
+
+Analogamente, para as direções y e z pode-se encontrar a equação de equilíbrio também, montando o sistema \eqref{eq:equilibrio1}.
 
 \begin{equation}
 \label{eq:equilibrio1}
@@ -80,47 +84,57 @@ Analogamente, para as outras direções, pode-se montar o seguinte sistema de eq
 \end{matrix}\right.
 \end{equation}
 
-As tensões apresentadas nas equações \ref{eq:equilibrio1} são as atuam no bloco infinitesimal. Acontece que ao tratar de reservatórios de petróleo, estes possuem fluído no volume poroso da rocha (óleo ou água) e, portanto, parte da tensão será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
 
-Experimentalmente foi constado por Biot em que a equação que rege a tensão efetiva na rocha ($\sigma^{\prime\prime}$) é dada pela equação \ref{eq:tensaoefetiva} (veja \cite{ResGeomec} cap 02).
+As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que atuam no cubo infinitesimal. Acontece que ao tratar de reservatórios de petróleo, estes possuem fluído no volume poroso da rocha (óleo, água e gás) como mostra a Figura \ref{fig:rochaComFluido} e, portanto, parte da tensão total será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=7cm]{chap01/figs/fluido_rocha_tensoes.png}
+\caption{Figura de meio poroso, grãos amarelos representando a matriz da rocha e fluído representado por cor azul}
+\label{fig:rochaComFluido}
+\end{figure}
+
+Para isso pode-se utilizar a teoria de consolidação de poroelasticidade desenvolvida por Biot,  \citet{}, para três dimensões que mostra que a tensão efetiva na rocha ($\sigma^{\prime\prime}$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva} conforme mostrado em \citet{ResGeomec}.
 
 \begin{equation}
 \label{eq:tensaoefetiva}
     \sigma^{\prime\prime} = \sigma - \alpha P_p
 \end{equation}
 
-Onde $\alpha$ é o coeficiente de biot e $P_p$ a pressão de poros. O coeficiente de biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha, portanto, $\alpha \in [0,1]$.
+Onde $\sigma^{\prime\prime}$ é a tensão efetiva, $\alpha$ é o coeficiente de Biot e $P_p$ a pressão de poros. O coeficiente de Biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha e está no intervalo $\alpha \in [0,1]$.
 
-Assim, as equações \ref{eq:equilibrio1} podem ser reescritas como \ref{eq:equilibrio} substituindo a tensão total $\sigma$ pela tensão efetiva na rocha ($\sigma^\prime$). Essas equações são encontras em \cite{CompGeomec}.
+Assim, as equações \eqref{eq:equilibrio1} podem ser reescritas como \eqref{eq:equilibrio} substituindo as tensões totais ($\sigma$) pela tensões efetivas na rocha ($\sigma^\prime$). Essas equações são encontras em \cite{CompGeomec}.
 
 
 
 \begin{equation}
 \label{eq:equilibrio}
 \left\{\begin{matrix}
-\dx[\sxx]  + \dy[\syx] + \dz[\szx] + \dx[\alpha P_p] - f_x   = 0
+\dx[\sxx]  + \dy[\syx] + \dz[\szx] - \dx[\alpha P_p] + f_x   = 0
 \\
-\dx[\sxy]  + \dy[\syy] + \dz[\szy] + \dy[\alpha P_p]  - f_y   = 0
+\dx[\sxy]  + \dy[\syy] + \dz[\szy] - \dy[\alpha P_p]  + f_y   = 0
 \\
-\dx[\sxz]  + \dy[\syz] + \dz[\szz] + \dz[\alpha P_p] - f_z   = 0
+\dx[\sxz]  + \dy[\syz] + \dz[\szz] - \dz[\alpha P_p] + f_z   = 0
 \end{matrix}\right.
 \end{equation}
 
-Ou ainda, escrevendo de forma matricial.
-
+Ou ainda, escrevendo utilizando os operadores divergente, gradiente e $f^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$ a Equação pode ser rescrita como \eqref{eq:equilibrio_matriz}.
 \begin{equation}
 \label{eq:equilibrio_matriz}
-\nabla \cdot \sigma^\prime - \nabla \alpha P_p - f = 0
+\nabla \cdot \stef - \nabla \alpha P_p + f = 0
 \end{equation}
 
-Onde $f^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$.
-
-
-Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a equação acima pode ser escrita na notação de Voigt que considerando as definições abaixo:
+Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt  considerando as definições conforme \eqref{eq:equilibrio_final}.
 
 \begin{equation}
-\begin{matrix}
-\sigma^\prime = \begin{bmatrix}
+\label{eq:equilibrio_final}
+\sopnabla^T \stef - \sopnabla^T\alpha m  P_p - f = 0
+\end{equation}
+
+Onde, 
+\begin{equation}
+\begin{matrix}\label{eq:definicoesvoigt}
+\stef = \begin{bmatrix}
 \sxx
 \\
 \syy
@@ -160,26 +174,25 @@ m = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \\ 0 \\ 0\end{bmatrix}
 \end{matrix}
 \end{equation}
 
-A equação \ref{eq:equilibrio_matriz} pode ser reescrita como \ref{eq:equilibrio_final}.
-
-\begin{equation}
-\label{eq:equilibrio_final}
-\sopnabla^T\sigma^{\prime\prime} - \sopnabla^T\alpha m  P_p - f = 0
-\end{equation}
 
 
 \subsection{Relações Constitutivas}
 
-\textit{"Uma relação constitutiva descreve a deformação de uma rocha em resposta a uma tensão (e vice-versa)."} \cite{ResGeomec}
+A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação é necessário colocar em função das variáveis de deslocamento. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. A relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}. 
+
+\begin{equation}
+\label{eq:defor_desloc}
+\deformacao = \sopnabla \deslocamento
+\end{equation}
 
 
-Vários tipos de leis constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que o comportamento linear é a região dominante nesse tipo de teste. Essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica.
+Vários tipos de relações constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A Figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que existe um comportamento linear dominante na parte central do gráfico antes da falha. Essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica, que será a região de estudo desse trabalho. %TODO talvez citar um pouco das regições de faha
 
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=7cm]{chap01/stress_strain.PNG}
-\caption{Teste de laboratório tensão-deformação para uma rocha bem cimentada. Fonte: \cite{ResGeomec}}
+\caption{Teste de laboratório tensão-deformação para uma rocha bem cimentada. Adaptada de \cite{ResGeomec}.}
 \label{fig:stress_strain}
 \end{figure}
 
@@ -193,6 +206,7 @@ O estudo de mecânica dos sólidos nos mostra que, na região elástica e materi
 \sigma ^{\prime\prime}= D \epsilon
 }
 \end{equation}
+
 
 
 
