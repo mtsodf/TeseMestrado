@@ -1,20 +1,11 @@
 
 
-Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos sistemas lineares gerados a partir da discretização apresentadas no capítulo \ref{ch:discretizacao}.
-
-
-Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos para solução de sistema lineares são necessários para que a resolução do problema seja possível. A seção \ref{sec:csr} apresenta uma discussão sobre as estruturas de dados para armazenamento das matrizes enquanto que a seção \ref{sec:cg} apresenta o método dos Gradientes Conjugados como solver linear.
+Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos sistemas lineares gerados a partir da discretização apresentadas no Capítulo \ref{ch:discretizacao}. Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos para solução de sistema lineares são necessários para que a resolução seja possível. A seção \ref{sec:csr} apresenta uma breve discussão sobre as estruturas de dados para armazenamento das matrizes enquanto que a seção \ref{sec:cg} apresenta o método dos Gradientes Conjugados como solver linear.
 
 
 \section{Estruturas de Dados para Matrizes Esparsas} \label{sec:csr}
 
-
-Visto que a quantidade de zeros da matrizes obtidas através da discretização com elementos finitos são a maior parte dos valores não é interessante guardar esses valores em uma matriz densa de duas dimensões. Idealmente, é necessário guardar apenas os valores que são diferentes de zero para economia de memória.
-
-Conforme mostrado em \ref{ch:discretizacao}, a quantidade de não zeros da matriz é $O(\qtdnos)$, enquanto a quantidade total de entradas da matriz é da ordem de $O(\qtdnos^2)$. Portanto, é necessário utilizar estruturas de dados para armazenar apenas os valores não zeros da matriz. 
-
-
-Uma ideia simples para guardar esse tipo de matriz consiste em guardar para cada elemento não zero seu valor, sua linha e sua coluna. Esse formato é chamado de \textit{Coordinate Format} (COO) mostrado em \citet{solverlinear}. Nesse formato três vetores são necessários para guardar os valores:
+Conforme mostrado no Capítulo \ref{ch:discretizacao}, a quantidade de não zeros da matriz é $O(\qtdnos)$, enquanto a quantidade total de entradas da matriz é da ordem de $O(\qtdnos^2)$. Dessa forma, é necessário utilizar uma estrutura de dados que seja capaz de apenas armazenar esses valores.  Uma ideia simples para guardar esse tipo de matriz consiste em guardar para cada elemento não zero seu valor, sua linha e sua coluna. Esse formato é chamado de \textit{Coordinate Format} (COO) mostrado em \citet{solverlinear}. Nesse formato três vetores são necessários para guardar os valores:
 
 
 \begin{itemize}
@@ -59,50 +50,94 @@ No caso, para a matriz acima, tem-se:
     \item A linha 4 começa a partir do elemento 7 do vetor AA e, portanto, $IA(4) = 8$
 \end{itemize}
 
-Assim, para saber os valores de determinada linha $i$ basta olhar os valores das posições $IA(i)$ até $IA(i+1)-1$ do vetor AA com exceção da última linha de acordo com o definido acima (visto que o valor n+1 não está nem definido no vetor). Para que essa afirmação seja válida para toda linha, é adicionada o valor $IA(5) = 10$. De maneira geral, $IA(n+1) = nnz+1$.
-
-
-Os valores dos vetores CSR são portanto:
-
+É adicionado ainda um valor a mais ao vetor IA que guarda a quantidade de nnz+1, no exemplo acima, IA(5) = 10, com isso é possível saber as entradas de determinada linha $i$ olhando para as posições $IA(i)$ a $IA(i+1)-1$ do vetor AA e as respectivas colunas em JC. Os valores dos vetores CSR da matriz então ficam:
 
 %TODO deixar valores one-based
 \begin{center}
     \begin{itemize}
-        \item IA = 0 2 5 7 9
-        \item JA = 0 2 0 1 3 1 2 2 3
+        \item IA = 1 3 7 8 10
+        \item JA = 1 3 1 2 4 2 3 3 4
         \item AA = 1 2 3 4 5 6 7 8 9
     \end{itemize}
 \end{center}
 
 
-De acordo com \citet{solverlinear}, o formato CSR é provavelmente o mais comum mais popular para guardar matrizes esparsas por ser mais eficiente que o COO em operações típicas de álgebra linear. Nesse trabalho, a implementação é feita utilizando esse tipo de estrutura de dados conforme mostrado no Capítulo \ref{ch:implementacao}.
+De acordo com \citet{solverlinear}, o formato CSR é provavelmente o mais comum mais popular para guardar matrizes esparsas por ser mais eficiente que o COO em operações típicas de álgebra linear. Nesse trabalho, a implementação é feita utilizando esse tipo de estrutura de dados conforme será mostrado no Capítulo \ref{ch:implementacao}.
 
-Uma operação particularmente importante é a multiplicação matriz vetor $y = Ax$. No contexto dessa dissertação ela é importante para aplicar o operadores de prolongamento  e restrição apresentados no Capítulo \ref{ch:multiescala} e também nos métodos de solução de sistemas lineares Gradiente Conjugado (CG) e Bicgstab. O algoritmo para essa multiplicaçõa é mostrado abaixo:
-
-
+Uma operação particularmente importante com as matrizes é a multiplicação matriz vetor $y = Ax$. No contexto dessa dissertação, ela é importante para aplicar o operadores de prolongamento e restrição apresentados no Capítulo \ref{ch:multiescala} e também nos métodos de solução de sistemas lineares Gradiente Conjugado (CG) e Bicgstab. A Figura \ref{fig:algoritmomatmult} apresenta o algoritmo para multiplicação matriz vetor utilizando uma matriz CSR representada pelos vetores IA, JA, AA, x.
 
 
-Em relação aos vetores da implementação, eles serão armazenados densos visto que o tamanho dos vetores são bem menores que as matrizes.
+
+\begin{figure}
+    \centering
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+        \begin{algorithmic}
+        \STATE Entradas: IA(n+1), JA(nnz), AA(nnz), x(n)
+        \STATE Saída: y = Ax
+        \STATE y $\leftarrow \mathbf{0}$ 
+        \FOR{row $\in$ \{1, 2, 3, ..., n\}}
+        \FOR{j $\in$ \{IA(row), ..., IA(row+1)-1\}}
+        \STATE col $\leftarrow$ JA(j)
+        \STATE{y(row) $\leftarrow$ y(row) + AA(j) $\times$ x(col) }
+        \ENDFOR
+        \ENDFOR
+        \end{algorithmic}
+    }%
+}
+    \caption{Algoritmo de multiplicação matriz vetor esparsa }
+    \label{fig:algoritmomatmult}
+\end{figure}
 
 
-\section{Gradientes Conjugados} \label{sec:cg}
+Nesse algoritmo, é importante notar que a varíavel j irá assumir valores de 1 a IA(n+1), como IA(n+1) é $nnz + 1$, esse algoritmo tem que complexidade $O(nnz)$. Essa é uma vantagem da matriz ser armazenada esparsa pois caso esse produto fosse realizado com matriz densa, os zeros também teriam que ser percorridos pelo loop fazendo com que a complexidade fosse $O(n^2)$. 
 
-Nessa seção, é apresentado o método dos gradientes conjugados que é utilizado para a solução dos sistemas lineares. Será considerado o seguinte sistema:
 
-\begin{equation} \label{eq:sistemalinearcg}
-    Ax = b
+\section{Solução de Sistemas Esparsos} \label{sec:cg}
+
+Nessa seção serão apresentados alguma métodos para solução de sistemas lineares, em especial o gradiente conjugado que será utilizado para as comparações entre o método multiescala e multigrid apresentados no Capítulo \ref{ch:resultados}. Será considerado o sistema linear apresentado em \eqref{eq:sistemalinear4}.
+
+\begin{equation} \label{eq:sistemalinear4}
+    \mathbf{Ax = b}
 \end{equation}
 
-onde $A$ é uma matriz simétrica positiva definida (SPD).
+\subsection{Pré-condicionadores}
+
+Define-se como número de condicionamento da matriz a Equação apresentada em \eqref{eq:condicionamento}, quanto maior o número de condicionamento mais próximo da matriz ser singular. As matrizes advindas de sistemas gerados pelas equações \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
+
+\begin{equation} \label{eq:condicionamento}
+1+1=2
+\end{equation}
 
 
-Primeiramente, pode-se encontrar um problema de minimização equivalente a \ref{eq:sistemalinearcg} através da definição da forma quadrática
+Uma estratégia importante para a solução desses sistemas lineares é a utilização de pré-condicionadores. Que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de pré-condicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de pré-condicionamento  \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o pré-condicionamento pela esquerda e pela direita respectivamente. A matriz de pré-condicionamento geralmente é uma matriz que aproxima a matriz original $\mathbf{A}$, de forma que o operador $\precon$ pode ser aplicado a um vetor de forma que o número de condicionamento das matrizes $\precon \mathbf{A}$ e $\mathbf{A} \precon$ sejam menores que o da matriz original. Um fato importante é que apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$ eles não efetivamente realizados. Isso por conta que muitas vezes apenas $\mathbf{M}$ é conhecida ao invés de $\precon$ e mesmo que $\precon$ fosse conhecido, nos casos dos pré-condicionares que aproxima a inversa, o produto pode ser denso. 
+
+
+\begin{equation} \label{eq:preconesq}
+\precon \mathbf{A} \mathbf{x}= \precon \mathbf{b}
+\end{equation}
+
+\begin{align} \label{eq:precondir}
+\mathbf{A} \precon \mathbf{y} = \mathbf{b} \\
+\mathbf{x} = \precon \mathbf{{y}}
+\end{align}
+
+
+Um pré-condicionador popular são os pré-condicionadores baseados em fatorações incompletas (ILU) apresentados em \citet{ilupaper}. Esses pré-condicionadores calculam aproximações para a fatoração LU de uma matriz e são apresentadas na seção \ref{sec:fatoracaolu}.
+
+\subsection{Iteração de Richardson}
+
+
+
+\subsection{Método do Gradiente Conjugado}
+
+O método dos Gradiente Conjugado pode ser utilizados em sistemas lineares da forma \eqref{eq:sistemalinear4} onde $A$ é uma matriz simétrica positiva definida (SPD). Nesse caso, pode-se encontrar um problema de minimização equivalente através da definição da forma quadrática apresentada em \eqref{eq:quadratica} que é minimizar o valor de $f(x)$. 
 
 \begin{equation} \label{eq:quadratica}
-    f(x) = \frac{1}{2}  x^T A x - b^T x + c
+    f(x) = \frac{1}{2}  x^T A x - b^T x + c, \quad f:\mathbb{R}^n \rightarrow \mathbb{R}
 \end{equation}
 
-Para encontrar os pontos extremos da função \ref{eq:quadratica} é necessário calcular os pontos em que o gradiente de $f$ é o vetor nulo. Portanto, é necessário calcular a derivada parcial de $f$ para cada uma das coordenadas. Para facilitar esse cálculo a equação \ref{eq:quadratica} é apresentada em notação indicial em \ref{eq:quadratica_ind}.
+Para encontrar os pontos extremos da função \eqref{eq:quadratica} é necessário calcular os pontos em que o gradiente de $f$ é o vetor nulo. Portanto, é necessário calcular a derivada parcial de $f$ para cada uma das coordenadas. Para facilitar esse cálculo a equação \ref{eq:quadratica} é apresentada em notação indicial em \eqref{eq:quadratica_ind}.
 
 
 \begin{equation} \label{eq:quadratica_ind}
@@ -124,7 +159,7 @@ Aplicando a derivada parcial com relação a uma coordenada $x_k$.
 \end{eqnarray}
 
 
-Logo, retornando para a notação matricial
+Retornando para a notação matricial
 
 
 \begin{equation}
@@ -152,21 +187,20 @@ Em um ponto extremo de  $ x_e$ de $f(x)$ tem-se $(\nabla f)|_{x=x_e} = 0 $
     Ax_e = b
 \end{equation}
 
-Portanto, $f(x)$ possui um único ponto extremo $x_e = A^{-1}b$ que é justamente a solução do sistema linear \ref{eq:sistemalinear}. Resta mostrar que $x_e$ é um ponto de mínimo.
-Considerando $x = x_e + e$ com $e \neq 0 $
+Portanto, $f(x)$ possui um único ponto extremo $x_e = A^{-1}b$ que é justamente a solução do sistema linear \eqref{eq:sistemalinear4}. Resta mostrar que $x_e$ é um ponto de mínimo. A demonstração a seguir pode ser encontrada em \citet{Shewchuk94anintroduction}. Considerando $x = x_e + e$ com $e \neq 0 $
 
 
-\begin{eqnarray}
-     f(x_e + e) & = & \frac{1}{2} (x_e + e)^T A (x_e + e) - b^T(x_e + e) + c \\
-                & = & \frac{1}{2} (x_e^TAx_e + x_e^TAe + e^TAx_e + e^TAe )- b^T(x_e + e) + c \\
-                & = & \frac{1}{2} x_e^TAx_e -b^Tx_e + c + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te \\
-                & = & f(x_e) + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te \\
-                & = & f(x_e) + \frac{1}{2} ( (A^{-1}b)^TAe + e^TAA^{-1}b + e^TAe ) - b^Te \\
-                & = & f(x_e) + \frac{1}{2} ( b^TA^{-1}Ae + e^Tb + e^TAe ) - b^Te \\
-                & = & f(x_e) + \frac{1}{2} ( b^Te + e^Tb + e^TAe ) - b^Te \\
-                & = & f(x_e) + \frac{1}{2}  e^TAe  + b^Te - b^Te \\
-                & = & f(x_e) + \frac{1}{2}  e^TAe
-\end{eqnarray}
+\begin{align}
+     f(x_e + e) & =  \frac{1}{2} (x_e + e)^T A (x_e + e) - b^T(x_e + e) + c  \nonumber\\
+                & =  \frac{1}{2} (x_e^TAx_e + x_e^TAe + e^TAx_e + e^TAe )- b^T(x_e + e) + c  \nonumber\\
+                & =  \frac{1}{2} x_e^TAx_e -b^Tx_e + c + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2} ( x_e^TAe + e^TAx_e + e^TAe ) - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2} ( (A^{-1}b)^TAe + e^TAA^{-1}b + e^TAe ) - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2} ( b^TA^{-1}Ae + e^Tb + e^TAe ) - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2} ( b^Te + e^Tb + e^TAe ) - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2}  e^TAe  + b^Te - b^Te  \nonumber\\
+                & =  f(x_e) + \frac{1}{2}  e^TAe \nonumber
+\end{align}
 
 
 Como $A$ é positiva definida pela definição $e^TAe  > 0$, logo
@@ -176,29 +210,166 @@ Como $A$ é positiva definida pela definição $e^TAe  > 0$, logo
 \end{equation}
 
 
-Assim, $x_e$ é ponto de mínimo global de $x_e$. E o problema de encontra $x$ tal que $Ax = b$ é equivalente a \textit{minimizar} $f(x)$.
+Assim, $x_e$ é ponto de mínimo global de $f(x)$. E o problema de encontra $x$ tal que $Ax = b$ é equivalente a \textit{minimizar} $f(x)$. Para encontrar o mínimo de $f$ é possível utilizar o método de otimização do Gradiente Conjugado. O método consiste em partir de um ponto $x_0$ e caminhar em direções conjugadas até que o mínimo local seja encontrado. Entende-se por direções conjugadas $d_i$ e $d_j$ tais que $d_i^TAd_j=0$. 
 
-Para encontrar o mínimo de $f(x)$ é possível utilizar o método dos gradientes conjugados. O método consiste em partir de um ponto $x_0$ e caminhar em direções conjugadas até que o mínimo local seja encontrado.
+O método do gradiente encontra a solução exata do sistema linear após n iterações, onde n é a dimensão da matriz, porém, este é utilizado como solver iterativo aproximado onde outro critério de parada é utilizado, como por exemplo, quando o resíduo da solução se torna menor que determinado valor. 
 
-Primeiramente, é possível encontrar o ponto de mínimo ao de caminhar a partir ponto inicial $x_0$ e uma direção $d_0$. Dessa forma, sendo $x_1 = x_0 + \alpha d_0$ para encontrar o ponto que minimiza o $f(x_1)$ deve-se ter $\frac{d f(x_1)}{d\alpha} = 0$.
 
-\begin{equation}
-    \frac{df(x_1)}{d \alpha} =  \nabla f(x_1)^T d_0 = 0
+\begin{figure}
+    \centering
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+        \begin{algorithmic}
+        \STATE Entradas: A, x, b
+        \STATE $i \leftarrow 0$
+        \STATE $\mathbf{r} \leftarrow \mathbf{b} - \mathbf{A}\mathbf{x}$
+        \STATE $\mathbf{d} \leftarrow \mathbf{r}$
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{r}$
+        \STATE $\delta_{0} \leftarrow \delta_{new}$
+        \WHILE{$i < i_{max}$ e $\delta_{new} > \epsilon^2\delta$ }
+        \STATE $\mathbf{q} \leftarrow \mathbf{A}\mathbf{d}$
+        \STATE $\alpha \leftarrow \delta_{new}/\mathbf{d}^T\mathbf{q} $ 
+        \STATE $\mathbf{x} \leftarrow \mathbf{x} + \alpha \mathbf{d} $
+        \STATE $\mathbf{r} \leftarrow \mathbf{r} - \alpha \mathbf{q} $
+        \STATE $\delta_{old} \leftarrow \delta_{new} $
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{r} $
+        \STATE $\beta \leftarrow \delta_{new}/\delta_{old}$
+        \STATE $\mathbf{d} \leftarrow \mathbf{r} + \beta \mathbf{d}$
+        \STATE $i \leftarrow i + 1$
+        \ENDWHILE
+        \end{algorithmic}
+    }%
+}
+    \caption{Algoritmo do Gradiente Conjugado. Adaptado de \citet{Shewchuk94anintroduction}. }
+    \label{fig:algoritmocgprecon}
+
+\end{figure}
+
+
+
+\subsubsection{Gradiente Conjugado Pré-Condicionado}
+
+
+Uma dificuldade em se utilizar pré-condicionamento com o Gradiente Conjugado é que o método necessita que a matriz seja simétrica para garantir a convergência para a solução do sistema linear. Porém, se aplicarmos um pré-condicionador $\precon$ esquerda ou pela direita perde-se que a matriz seja simétrica. Para solucionar essa questão, o pré-condicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}. Em \citet{Shewchuk94anintroduction} é mostrado que apesar da dessa decomposição, o método não precisa calcular explicitamente a matriz $\mathbf{E}$. E o algoritmo do gradiente conjugado pré-condicionado é mostrado na Figura \ref{fig:algoritmocgprecon}.
+
+
+\begin{equation} \label{eq:esqdirpreconcg}
+(\mathbf{E}^{-1})\mathbf{A}(\mathbf{E}^{-T}) = \mathbf{E}^{-1}\mathbf{b}
 \end{equation}
 
-Pela equação \ref{eq:gradf}, $\nabla f(x_1) = -r_1 $ então:
 
 
-\begin{align}
-     r_1^T r_0                         & =  0 \\
-     r_0^T r_1                         & =  0 \\
-     r_0^T (b - Ax_1)                  & =  0 \\
-     r_0^T (b - A(x_0 - \alpha d_0))   & =  0 \\
-     r_0^T (b - Ax_0  - \alpha A d_0)  & =  0 \\
-     r_0^T (r_0 - \alpha A d_0)        & =  0 \\
-     r_0^T r_0 - \alpha  r_0^T A d_0   & =  0 \\
-     \alpha  r_0^T A d_0               & =  r_0^T r_0 \\
-     \alpha                            & =  \frac{r_0^T r_0}{r_0^T Ad_0}
-\end{align}
+\begin{figure}
+    \centering
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+        \begin{algorithmic}
+        \STATE Entradas: $\mathbf{A}$, $\mathbf{x}$, $\mathbf{b}$
+        \STATE $i \leftarrow 0$
+        \STATE $\mathbf{r} \leftarrow \mathbf{b} - \mathbf{A}\mathbf{x}$
+        \STATE $\mathbf{d} \leftarrow \precon \mathbf{r}$
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{r}$
+        \STATE $\delta_{0} \leftarrow \delta_{new}$
+        \WHILE{$i < i_{max}$ e $\delta_{new} > \epsilon^2\delta$ }
+        \STATE $\mathbf{q} \leftarrow \mathbf{A}\mathbf{d}$
+        \STATE $\alpha \leftarrow \delta_{new}/\mathbf{d}^T\mathbf{q} $ 
+        \STATE $\mathbf{x} \leftarrow \mathbf{x} + \alpha \mathbf{d} $
+        \STATE $\mathbf{r} \leftarrow \mathbf{r} - \alpha \mathbf{q} $
+        \STATE $s \leftarrow \precon \mathbf{r}$
+        \STATE $\delta_{old} \leftarrow \delta_{new} $
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{s} $
+        \STATE $\beta \leftarrow \delta_{new}/\delta_{old}$
+        \STATE $\mathbf{d} \leftarrow \mathbf{r} + \beta \mathbf{d}$
+        \STATE $i \leftarrow i + 1$
+        \ENDWHILE
+        \end{algorithmic}
+    }%
+}
+    \caption{Algoritmo do Gradiente Conjugado Pré-Condicionado. Adaptado de \citet{Shewchuk94anintroduction}. }
+    \label{fig:algoritmocgprecon}
 
-O método dos gradientes conjugados em andar em direções conjugadas a cada passo de tempo minimizando $f(x)$ naquela direção. A direção inicial escolhida é
+\end{figure}
+
+
+\subsection{Método Multigrid}
+
+O método multigrid tem colocado como ideia principal a resolução do solver linear utilizando um conjunto de operadores que representam versões mais grosseiras do operador inicial onde os níveis mais finos são responsáveis a reduzir os erros de alta frequência enquanto os níveis mais grosseiros reduzem as frequências mais baixas do erro. O nível mais grosso geralmente é resolvido com solver direito pois a quantidade de variáveis é pequena. Um exemplo em uma dimensão é apresentado na Figura \ref{fig:exemplomultigrid}. 
+
+
+%TODO buscar figura em algum lugar relacionado a isso
+\begin{figure}[!htbp]
+\centering
+\includegraphics[height=6cm]{interrogacao.png}
+\caption{Exemplo de operadores multigrid}
+\label{fig:exemplomultigrid}
+\end{figure}
+
+
+Apesar de inicialmente ter sido concebido com ideias geométricas, o método ficou reconhecido por sua versão algébrica onde os operadores são montados apenas a partir da montagem das entradas da matriz tendo inclusive versões implementadas em paralelo como {\color{red} adicionar referencia a implementação utilizada na comparação do paper paralelo}.  
+
+
+Entre os níveis é necessário tem operadores que levam os vetores de uma escala mais fina para uma escala mais grossa e vice-versa. O operador que leva um vetor de um grid fino para o grid grosso é chamado de restrição, enquanto um que leva de um nível mais grosso para um nível mais fino é chamado de pronlongamento. 
+
+
+Iniciando com um exemplo de solver multigrid apenas com dois níveis, chamemos de $\mathbf{A^h}$ como sendo o operador do nível fino e $\mathbf{A}^H$ o operador do grid grosso. Nesse caso, só existe um operador de prolongamento ($\mathbf{P}$) e um operador de restrição ($\mathbf{R}$). Uma iteração de um solver multigrid com dois níveis é apresentado na Figura \ref{fig:ciclomg2niveis}. Esse ciclo é semelhante o mesmo que é apresentado para o método multiescala no Capítulo \ref{ch:multiescala} com a diferença que apenas uma relaxação é aplicada no método multiescala.
+
+
+%TODO buscar figura em algum lugar relacionado a isso
+\begin{figure}[!htbp]
+    \centering
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+        \begin{algorithmic}
+        \STATE Entradas: $\mathbf{A}^h$, $\mathbf{A}^H$, $\mathbf{x}_0 $, $\mathbf{b}$
+        \STATE $i \leftarrow 0$
+        \STATE $\mathbf{r} \leftarrow \mathbf{b} - \mathbf{A}\mathbf{x}$
+        \STATE $\mathbf{d} \leftarrow \precon \mathbf{r}$
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{r}$
+        \STATE $\delta_{0} \leftarrow \delta_{new}$
+        \WHILE{$i < i_{max}$ e $\delta_{new} > \epsilon^2\delta$ }
+        \STATE $\mathbf{q} \leftarrow \mathbf{A}\mathbf{d}$
+        \STATE $\alpha \leftarrow \delta_{new}/\mathbf{d}^T\mathbf{q} $ 
+        \STATE $\mathbf{x} \leftarrow \mathbf{x} + \alpha \mathbf{d} $
+        \STATE $\mathbf{r} \leftarrow \mathbf{r} - \alpha \mathbf{q} $
+        \STATE $s \leftarrow \precon \mathbf{r}$
+        \STATE $\delta_{old} \leftarrow \delta_{new} $
+        \STATE $\delta_{new} \leftarrow \mathbf{r}^T\mathbf{s} $
+        \STATE $\beta \leftarrow \delta_{new}/\delta_{old}$
+        \STATE $\mathbf{d} \leftarrow \mathbf{r} + \beta \mathbf{d}$
+        \STATE $i \leftarrow i + 1$
+        \ENDWHILE
+        \end{algorithmic}
+    }%
+}
+\caption{Aplicação de um ciclo V com dois níveis.}
+\label{fig:ciclomg2niveis}
+\end{figure}
+
+%Primeiramente, é possível encontrar o ponto de mínimo ao de caminhar a partir ponto inicial $x_0$ e uma direção $d_0$. Dessa forma, sendo $x_1 = x_0 + \alpha d_0$ para encontrar o ponto que minimiza o $f(x_1)$ deve-se ter $\frac{d f(x_1)}{d\alpha} = 0$.
+
+%\begin{equation}
+%    \frac{df(x_1)}{d \alpha} =  \nabla f(x_1)^T d_0 = 0
+%\end{equation}
+
+%Pela equação \ref{eq:gradf}, $\nabla f(x_1) = -r_1 $ então:
+
+
+% \begin{align}
+%      r_1^T r_0                         & =  0 \\
+%      r_0^T r_1                         & =  0 \\
+%      r_0^T (b - Ax_1)                  & =  0 \\
+%      r_0^T (b - A(x_0 - \alpha d_0))   & =  0 \\
+%      r_0^T (b - Ax_0  - \alpha A d_0)  & =  0 \\
+%      r_0^T (r_0 - \alpha A d_0)        & =  0 \\
+%      r_0^T r_0 - \alpha  r_0^T A d_0   & =  0 \\
+%      \alpha  r_0^T A d_0               & =  r_0^T r_0 \\
+%      \alpha                            & =  \frac{r_0^T r_0}{r_0^T Ad_0}
+% \end{align}
+
+% O método dos gradientes conjugados em andar em direções conjugadas a cada passo de tempo minimizando $f(x)$ naquela direção. A direção inicial escolhida é
+
+\section{Fatoração LU} \label{sec:fatoracaolu}
+
+Outra parte importante para esse trabalho é a solução direta de sistemas, em particular por conta dos sistemas que serão resolvidos nos espaços grossos e também para cálculo das funções de base que serão apresentados no Capítulo \ref{ch:multiescala}. Esses sistemas tem um número bem menor de variáveis do que as associadas com os sistemas associados com o Grid Fino e, portanto, pode-se pensar em utilizar solvers diretos.
+
+A fatoração LU consiste em transformar a matriz A em o produto de outras duas $\mathbf{A}=\mathbf{L}\mathbf{U}$: L triangular inferior e U triangular superior. Assim, o sistema fica da forma $\mathbf{L} \mathbf{U} \mathbf{x} = \mathbf{b}$ e a solução é realizada através da solução de dois sistemas triangulares $\mathbf{L}\mathbf{y} = \mathbf{b}$ e $\mathbf{U}\mathbf{x} = \mathbf{y}$. O cálculo dos fatores LU é feito utilizando uma eliminação Gaussiana e pode ser encontrada em \citet{heath1997scientific}. Uma vantagem desse método é que se for necessário resolver sistemas para diferentes lados direito $\mathbf{b}$ a fatoração pode ser reutilizada e não precisa ser calculada novamente. 

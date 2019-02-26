@@ -47,7 +47,7 @@ Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as
 \label{fig:equilibrio}
 \end{figure}
 
-O equilíbrio de forças nessa direção pode ser escrito como apresentado em \eqref{eq:equilibrio0}. Nesse caso as forças atuantes são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em ??? (colocar referência de doutorado) $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação realizada nesse trabalho, fazendo com que as modificações no equilíbrio serão apenas relativas a mudança de pressão.
+O equilíbrio de forças nessa direção pode ser escrito como apresentado em \eqref{eq:equilibrio0}. Nesse caso as forças atuantes são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em \citet{xiuligai} $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação realizada nesse trabalho, fazendo com que as modificações no equilíbrio serão apenas relativas a mudança de pressão.
 
 
 \begin{multline} \label{eq:equilibrio0}
@@ -178,7 +178,7 @@ m = \begin{bmatrix} 1 \\ 1 \\ 1 \\ 0 \\ 0 \\ 0\end{bmatrix}
 
 \subsection{Relações Constitutivas}
 
-A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação é necessário colocar em função das variáveis de deslocamento. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. A relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}.
+A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação é necessário colocar em função das variáveis de deslocamento. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. 
 
 \begin{equation}
 \label{eq:defor_desloc}
@@ -186,18 +186,18 @@ A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das 
 \end{equation}
 
 
-Vários tipos de relações constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A Figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que existe um comportamento linear dominante na parte central do gráfico antes da falha. Essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica, que será a região de estudo desse trabalho. %TODO talvez citar um pouco das regições de faha
+Já a relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}.Vários tipos de relações constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A Figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que existe um comportamento linear dominante na parte central do gráfico antes da falha. Essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica, que será a região de estudo desse trabalho. %TODO talvez citar um pouco das regições de faha
 
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=7cm]{chap01/stress_strain.PNG}
-\caption{Teste de laboratório tensão-deformação para uma rocha bem cimentada. Adaptada de \cite{ResGeomec}.}
+\includegraphics[width=8cm]{chap01/figs/stress_strain.png}
+\caption{Teste de laboratório tensão-deformação para uma rocha bem cimentada. Adaptada de \citet{ResGeomec}.}
 \label{fig:stress_strain}
 \end{figure}
 
 
-O estudo de mecânica dos sólidos nos mostra que, na região elástica e materiais isotrópicos, é possível escrever uma relação entre as deformações e tensões nos elementos de forma simples. Essa relação é denominada de Lei de Hooke Generalizada e é apresentada na Equação \eqref{eq:hooke}. E a Equação \eqref{eq:elasticMatrix} apresenta a matriz de elasticidade.
+O estudo de mecânica dos sólidos nos mostra que, na região elástica e materiais isotrópicos, é possível escrever uma relação entre as deformações e tensões nos elementos de forma simples. Essa relação é denominada de Lei de Hooke Generalizada e é apresentada na Equação \eqref{eq:hooke}.
 
 
 \begin{equation}{
@@ -207,26 +207,30 @@ O estudo de mecânica dos sólidos nos mostra que, na região elástica e materi
 }
 \end{equation}
 
-
-
-
-Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson. Já as deformações se relacionam com os deslocamentos pela equação \eqref{eq:defor_desloc}.
+onde,
 
 \begin{equation}
-\label{eq:defor_desloc}
-\epsilon = \sopnabla u
+    D = \begin{bmatrix}
+ 1-\upsilon & \upsilon    &  \upsilon & 0 & 0 & 0  \\
+ \upsilon   &  1-\upsilon &  \upsilon & 0 & 0 & 0  \\
+  \upsilon & \upsilon   &  1-\upsilon &  0 & 0 & 0 \\
+ 0& 0& 0 & \frac{1-2\upsilon}{2} & 0 & 0    \\
+ 0& 0& 0 & 0 &\frac{1-2\upsilon}{2} & 0     \\
+ 0& 0& 0 & 0 & 0 &  \frac{1-2\upsilon}{2}     \\
+ 
+\end{bmatrix}
 \end{equation}
 
+Onde $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson.
 
-A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos substituindo as equações \eqref{eq:hooke} e \eqref{eq:defor_desloc}.
+A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos substituindo \eqref{eq:hooke} e \eqref{eq:defor_desloc}.
 
 \begin{equation}
 \label{eq:edp_geomec}
-\sopnabla^TD \sopnabla u - \sopnabla^T\alpha m P_p - f = 0
+\sopnabla^TD \sopnabla \deslocamento - \sopnabla^T\alpha m P_p - \mathbf{f} = 0
 \end{equation}
 
-Onde $D$ é a matriz de elasticidade da Lei de Hooke. Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar
-de três dimensões para duas dimensões existem duas abordagens possíveis de stress plano ou deformação plana. Que são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
+ Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar de três dimensões para duas dimensões existem duas abordagens possíveis de tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
 
 \begin{equation} \label{eq:elasticplanestress}
 D_{stress} = \frac{E}{1-\upsilon^2}
@@ -246,9 +250,7 @@ D_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \end{bmatrix}
 \end{equation}
 
-De acordo com \cite{jacob}, a condição de deformação plana é melhor aplicada quando o elemento é grosso em relação ao plano xy que é o caso dos reservatórios de petróleo.  Dessa forma, artigos como \cite{planeStrainProblems}, \cite{casteletto} e \cite{irina} utilizam a hipótese de deformação plana que será a mesma utilizada nesse trabalho.
-
-Os operadores e vetores devem então ser redefinidos para os mostrados em \eqref{eq:vetores2d}.
+De acordo com \citet{jacob}, a condição de deformação plana é melhor aplicada quando o elemento é grosso em relação ao plano xy que é o caso dos reservatórios de petróleo.  Dessa forma, artigos como \cite{casteletto}, \cite{planeStrainProblems} e \cite{irina} utilizam a hipótese de deformação plana que será a mesma utilizada nesse trabalho. Os operadores e vetores devem então ser redefinidos para os mostrados em \eqref{eq:vetores2d}.
 
 \begin{equation}
 \label{eq:vetores2d}
@@ -297,4 +299,21 @@ u_y
 \end{matrix}
 \end{equation}
 
-Além da Equação \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido.
+Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno, a de Dirichlet onde o deslocamento da fronteira é prescrito e condição de contorno de tensão normal a fronteira é definida. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$. Dividindo a fronteira em duas partes $\Gamma_u$ e $\Gamma_t$ onde possuem condição de Dirichlet e Neumann respectivamente o problema fica totalmente definido em \eqref{eq:edp_geomec_contorno}.
+
+
+\begin{equation} \label{eq:edp_geomec_contorno}
+\begin{aligned}
+     \sopnabla^T D \sopnabla \deslocamento - \sopnabla^T\alpha m P_p - \mathbf{f} = 0, & \text{ em }\Omega  \\
+     \deslocamento = \bar{\mathbf{u}},& \text{ em } \Gamma_u \\
+    \begin{bmatrix}
+        \stxx^{\prime\prime} & \stxy^{\prime\prime}
+    \end{bmatrix} \mathbf{n} = \bar{t}_x \text{   }     \begin{bmatrix}
+        \stxy^{\prime\prime} & \styy^{\prime\prime}
+    \end{bmatrix} \mathbf{n} = \bar{t}_y, & \text{   em } \Gamma_t 
+\end{aligned}  
+\end{equation}
+
+onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$, $\hat{\deslocamento} \in \mathbb{R}^2$ e $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{\deslocamento} \in \mathbb{R}^2$  . O problema \eqref{eq:edp_geomec_contorno} pode ser descrita mais genericamente com condição de contorno de Dirichelet aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.
+
+%[\stxx \stxy] \mathbf{n} = \bar{t_x} \text{ e } [\styx \styy] \mathbf{n} = \bar{t_y}, \text{ em } \Gamma_t 
