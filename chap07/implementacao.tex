@@ -1,24 +1,25 @@
-Nesse capítulo serão apresentados detalhes da implementação realizada nesse trabalho. O código foi desenvolvido em python com auxílio da biblioteca PETSc (\citet{petsc-user-ref}). O PETSc é uma biblioteca famosa com diversas rotinas para computação científica, possui paralelismo utilizando MPI, estruturas de dados para matrizes esparsas, métodos de Krylov para solução de sistemas lineares, conjunto de pré-condicionadores (em particular os ILU), dentre outros. Estudos da performance do PETSc podem ser encontrados \citet{petsc-efficient}. Utilizar o PETSc junto com o python é possível através do \textit{bindings} realizados pelo petsc4py (\citet{Dalcin2011}). O código aqui apresentado foi desenvolvido em sequencial. 
+Nesse capítulo serão apresentados detalhes da implementação realizada nesse trabalho. O código foi desenvolvido em python com auxílio da biblioteca PETSc (\citet{petsc-user-ref}). O PETSc é uma biblioteca famosa com diversas rotinas para computação científica, possui paralelismo utilizando MPI, estruturas de dados para matrizes esparsas, métodos de Krylov para solução de sistemas lineares, conjunto de pré-condicionadores (em particular os ILU), dentre outros. Estudos da performance do PETSc podem ser encontrados \citet{petsc-efficient}. O PETSc foi utilizado com a linguagem Python através dos \textit{bindings} disponibilizados no petsc4py (\citet{Dalcin2011}). O código aqui apresentado foi desenvolvido em sequencial. 
 
 
 
 \section{Estrutura de Classes}
 
-Primeiramente, foi necessário desenvolver uma estrutura para resolver problemas através do método dos elementos finitos para depois iniciar implementação com o método multiescala. Para esse desenvolvimento três principais classes foram implementadas: Element, Node, FemContext. As responsabilidades das classes são descritas abaixo:
+Primeiramente, foi necessário desenvolver uma estrutura para resolver problemas através do método dos elementos finitos para depois iniciar implementação com o método multiescala. Para esse desenvolvimento três principais classes foram implementadas: \textbf{Element}, \textbf{Node}, \textbf{FemContext}. As responsabilidades das classes são descritas abaixo:
 
 \begin{itemize}
     \item \textbf{Node}: essa classe tem como intuito representar os nós do problema de elementos finitos. Guarda como propriedade as coordenadas x, y correspondentes, uma numeração global associada ao grid fino e se o nó pertence ou não a uma fronteira com condição de Dirichlet.
-    \item \textbf{Element}: essa classe tem como intuito representar os elementos do problema de elementos finitos. Tem uma referência para os nós que pertencem ao elemento. Guarda os valores do coeficiente de Young e Poisson. Sabe calcular as funções de forma em coordenadas locais conforme \eqref{eq:definicaofuncform}. Assim, é responsável por calcular a matriz do elemento local.
+    \item \textbf{Element}: essa classe tem como intuito representar os elementos do problema de elementos finitos. Tem uma referência para os nós que pertencem ao elemento, guarda os valores do coeficiente de Young e Poisson, sabe calcular as funções de forma em coordenadas locais conforme \eqref{eq:definicaofuncform} e também é responsável por calcular a matriz do elemento local (conforme \eqref{eq:matrizelemento}).
     \item \textbf{FemContext}: essa classe tem como intuito representar um problema de elementos finitos. Ela possui o conjunto de elementos e nós do problema em questão. Dá a numeração de cada um dos graus de liberdade dos nós. Calcula a matriz de rigidez através do algoritmo apresentado no Capítulo \ref{ch:discretizacao} e o lado direito correspondente. 
 \end{itemize}
 
-Essas três classes são capazes de realizar a solução de um problema de elementos finitos. Existem métodos auxiliares para ler dados de entrada para montar os elementos e nós de um grid fino. Um fato importante é que a classe \textbf{FemContext} é que tem a numeração dos graus de liberdade, isso acontece, pois, para calcular a base de diferentes problemas locais de elementos finitos serão resolvidos e essa classe será reaproveitada. Em uma implementação de elementos finitos clássica o mais natural seria a numeração do grau de liberdade está associada com um nó.
+Essas três classes são capazes de realizar a solução de um problema de elementos finitos. Um fato importante é que a classe \textbf{FemContext} é que tem a numeração dos graus de liberdade, isso acontece, pois, para calcular as funções de diferentes problemas locais de elementos finitos são resolvidos e essa classe será reaproveitada. Em uma implementação de elementos finitos clássica o mais natural seria a numeração do grau de liberdade está associada com um nó.
 
+Existem 
+
+\section{Montagem dos Operador Multiescala}
 
 Para a implementação do método multiescala, foi adicionada criada a classe \textbf{Multiscale}, essa classe tem como responsabilidade receber um objeto \textbf{FemContext} que representa o grid fino e calcular os operadores de prolongamento ($\mathbf{P}$), restrição ($\mathbf{P}^T$) e operador grosso ($\rigidmatrixcoarse$).
 
-
-\section{Montagem dos Operador Multiescala}
 
 O primeiro passo para utilizar o método multiescala é a escolha do nível de engrossamento. A implementação aceita diferentes fatores para a direção x e y, apesar dos testes serem apresentados com o mesmo fator. O método \textbf{CoarseContext} da classe textbf{Multiscale} é responsável por realizar a tarefa de construir $\mathbf{P}$ e $\rigidmatrixcoarse$. Essa tarefa é dividida nos seguintes passos: 
 
@@ -36,7 +37,7 @@ A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\textwidth]{chap07/figs/esquemaprolongamento.png}
-\caption{Esquema de construção dos operadores grossos.}
+\caption{Esquema de construção dos operadores grossos. Mostrando um grid 8x8 sendo descomposto em um grid grosseiro 2x2 onde cada elemento grosso é formado por 4x4 elementos finos.}
 \label{fig:esquemaconstrucao}
 \end{figure}
 

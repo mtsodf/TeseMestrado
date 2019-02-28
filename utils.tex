@@ -292,7 +292,7 @@ u_x \\ u_y \\ u_z
 \newcommand{\qtdfreedomcoarse}{n_u^H}
 \newcommand{\qtdessentialcoarse}{n_{\bar{u}}^H}
 \newcommand{\basefunctioncoarse}[1][i]{ \mathbf{N}_{#1}^H }
-\newcommand{\basefunctionelemcoarse}[1][i]{ {\mathbf{N}_{e#1}^H} }
+\newcommand{\basefunctionelemcoarse}[1][i]{ {\mathbf{N}_{e_{#1}}^H} }
 \newcommand{\basefunctioncoarseessential}[1][i]{ {\basefunctioncoarse[i+\qtdfreedomcoarse]}}
 \newcommand{\freedomcoarse}[1][i]{d^H_{#1}}
 \newcommand{\essentialcoarse}[1][i]{\bar{d}^H_{#1}}
@@ -316,8 +316,8 @@ u_x \\ u_y \\ u_z
 \newcommand{\numelementsycoarse}{n^H_y}
 
 \newcommand{\coarsefactor}{C_r}
-\newcommand{\coarsefactorx}{C_{rx}}
-\newcommand{\coarsefactory}{C_{ry}}
+\newcommand{\coarsefactorx}{C_{r_x}}
+\newcommand{\coarsefactory}{C_{r_y}}
 
 \newcommand{\sobolev}{H^1(\Omega)}
 
@@ -345,8 +345,11 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\intbase}[1]{\int_{-1}^{1}\int_{-1}^{1} #1 d\xi d\eta }
 
+
+
+\newcommand{\st}{\pmb{\sigma}}
 %TENSAO EFETIVA
-\newcommand{\stef}{\pmb{\sigma}^{\prime\prime}}
+\newcommand{\stef}{\st^{\prime\prime}}
 
 %DEFORMACOES
 \newcommand{\deformacao}{\pmb{\epsilon}}
