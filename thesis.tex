@@ -4,7 +4,7 @@
 \usepackage{multirow}
 \usepackage{subfigure}
 \usepackage{algorithmic}
-\usepackage{algorithm2e}
+\usepackage[portuguese,ruled,lined]{algorithm2e}
 \usepackage{color}
 \usepackage{blkarray}
 \usepackage{hyperref}
@@ -73,14 +73,13 @@
   \chapter{Introdução}
   \input{chap00/intro.tex}
     
-
   \chapter{Modelagem Matemática} \label{ch:modelagem}
   \input{chap01/modelagem.tex}
 
   \chapter{Discretização} \label{ch:discretizacao}
   \input{chap03/discretizacao.tex}
   
-  \chapter{Simulação Geomecânica}\label{ch:geomecanica}
+  %\chapter{Simulação Geomecânica}\label{ch:geomecanica}
 
   \chapter{Solução de Sistemas Lineares}\label{ch:sistemas}
   \input{chap04/sistemas.tex}
@@ -95,12 +94,13 @@
   \input{chap08/experimentos.tex}
 
   \chapter{Conclusão e Trabalhos Futuros}
-
+  \input{chap09/conclusao.tex}
+  
   \backmatter
   \bibliographystyle{coppe-unsrt}
   \bibliography{thesis}
 
   \appendix
-  \include{append/appenA}
+  \include{append/appendA}
   \include{append/appendB}
 \end{document}
