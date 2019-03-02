@@ -1,4 +1,5 @@
-Nesse capítulo, serão apresentados as equações que regem os fenômenos geomecânicos. O primeiro trabalho famoso na modelagem de tensões no solo é Terzaghi que desenvolveu a teoria para uma dimensão. Mais tarde, Biot generalizou essa teoria para três dimensões e essas são as Equações que serão apresentadas. Detalhes das duas teorias podem ser encontradas em \citet{CompGeomec}. Como intuito do trabalho é avaliar o método multiescala aplicado para matrizes dessa natureza, o caso aqui considerado será o de elasticidade linear onde a rocha não é tensionada até que apresente falhas.
+
+Nesse capítulo, serão apresentados as equações que regem os fenômenos geomecânicos. O primeiro trabalho famoso na modelagem de tensões no solo é Terzaghi que desenvolveu a teoria para uma dimensão. Mais tarde, Biot generalizou essa teoria para três dimensões e essas são as equações que serão apresentadas. Detalhes das duas teorias podem ser encontradas em \citet{CompGeomec}. Como intuito do trabalho é avaliar o método multiescala aplicado para matrizes dessa natureza, o caso aqui considerado será o de elasticidade linear onde a rocha não é tensionada até que apresente falhas.
 
 
 
@@ -7,7 +8,7 @@ Nesse capítulo, serão apresentados as equações que regem os fenômenos geome
 Para representar a tensão total (ou \textit{overburden}) em um ponto da rocha, é utilizado um tensor de tensões de segunda ordem como mostra \eqref{eq:tensordetensoes}.
 
 \begin{equation} \label{eq:tensordetensoes}
-\mathbf{\sigma} =
+\mathbf{\st} =
     \begin{bmatrix}
     \stxx & \stxy & \stxz \\
     \styx & \styy & \styz \\
@@ -25,7 +26,7 @@ O primeiro subscrito do tensor representa a face que a tensão está sendo aplic
 \label{fig:tensoesx}
 \end{figure}
 
-Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores. Pode-se considerar então a tensão como o vetor apresentado \eqref{eq:tensor6} essa notação é chamada de notação de Voigt e é a bastante utilizada nas implementações de elementos finitos, por exemplo, nas formulações apresentadas por \cite{hughes} e \cite{jacob}.
+Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\stxy=\styx$, $\stxz=\stzx$ e $\styz=\stzy$. Dessa maneira, para a representação desse tensor, são necessários guardar apenas seis valores. Pode-se considerar então a tensão como o vetor apresentado \eqref{eq:tensor6} essa notação é chamada de notação de Voigt e é a bastante utilizada nas implementações de elementos finitos, por exemplo, nas formulações apresentadas por \citet{hughes} e \citet{jacob}.
 
 
 \begin{equation}
@@ -48,7 +49,7 @@ Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as
 \end{figure}
 
 
-As forças atuantes no cubo são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em \citet{xiuligai} $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação realizada nesse trabalho, fazendo com que as modificações no equilíbrio sejam apenas relativas a mudança de pressão. 
+As forças atuantes no cubo são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em \citet{xiuligai} $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação, fazendo com que as modificações no equilíbrio sejam apenas relativas à mudança de pressão. 
 
 O equilíbrio de forças na direção x pode ser escrito como apresentado em \eqref{eq:equilibrio0}. 
 
@@ -73,7 +74,7 @@ Dividindo todos os termos por $\Dx\Dy\Dz$.
 Fazendo $\Dx \rightarrow 0$, $\Dy \rightarrow 0 $ e $\Dz \rightarrow 0$
 
 \begin{equation}
-\dx[\stxx] + \dy[\styx] + \dy[\stzx] - f_x = 0
+\dx[\stxx] + \dy[\styx] + \dz[\stzx] - f_x = 0
 \end{equation}
 
 Analogamente, para as direções y e z pode-se encontrar a equação de equilíbrio também, montando o sistema \eqref{eq:equilibrio1}.
@@ -88,7 +89,7 @@ Analogamente, para as direções y e z pode-se encontrar a equação de equilíb
 \end{equation}
 
 
-As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que atuam no cubo infinitesimal. Acontece que, como mostra a Figura \ref{fig:rochaComFluido}, os reservatórios de petróleo possuem fluído no volume poroso da rocha (óleo, água e gás) e, portanto, parte da tensão total será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
+As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que atuam no cubo infinitesimal, acontece que, como mostra a Figura \ref{fig:rochaComFluido}, os reservatórios de petróleo possuem fluído no volume poroso da rocha (óleo, água e gás) e, portanto, parte da tensão total será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
 
 \begin{figure}[!htbp]
 \centering
@@ -99,16 +100,20 @@ As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que a
 
 Para isso pode-se utilizar a teoria de consolidação de poroelasticidade desenvolvida por Biot para três dimensões que mostra que a tensão efetiva na rocha ($\stef$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva} conforme mostrado em \citet{ResGeomec}.
 
+
 \begin{equation}
 \label{eq:tensaoefetiva}
-    \stef = \st - \alpha P_p
+\left\{\begin{matrix}
+ \sxx = \stxx - \alpha P_p \\
+ \syy = \styy - \alpha P_p \\
+ \szz = \stzz - \alpha P_p
+\end{matrix}\right.
 \end{equation}
 
-Onde $\stef$ é a tensão efetiva, $\alpha$ é o coeficiente de Biot e $P_p$ a pressão de poros. O coeficiente de Biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha e está no intervalo $\alpha \in [0,1]$.
 
-Assim, as equações \eqref{eq:equilibrio1} podem ser reescritas como \eqref{eq:equilibrio} substituindo as tensões totais ($\st$) pela tensões efetivas na rocha ($\stef$). Essas equações são encontras em \cite{CompGeomec}.
+Onde $\sxx$, $syy$  e $szz$ são as tensões efetivas, $\alpha$ é o coeficiente de Biot e $P_p$ a pressão de poros. O coeficiente de Biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha e está no intervalo $\alpha \in [0,1]$.
 
-
+As equações \eqref{eq:equilibrio1} podem ser reescritas como \eqref{eq:equilibrio} substituindo as tensões totais ($\st$) pela tensões efetivas na rocha ($\stef$).
 
 \begin{equation}
 \label{eq:equilibrio}
@@ -121,13 +126,15 @@ Assim, as equações \eqref{eq:equilibrio1} podem ser reescritas como \eqref{eq:
 \end{matrix}\right.
 \end{equation}
 
-Ou ainda, escrevendo utilizando os operadores divergente, gradiente e $\mathbf{f}^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$ a Equação pode ser rescrita como \eqref{eq:equilibrio_matriz}.
+Ou ainda, escrevendo \eqref{eq:equilibrio} utilizando os operadores divergente, gradiente e $\mathbf{f}^T=\begin{bmatrix}f_x & f_y & f_z\end{bmatrix}$ pode-se chegar em
+\eqref{eq:equilibrio_matriz}.
+
 \begin{equation}
 \label{eq:equilibrio_matriz}
 \nabla \cdot \stef - \nabla \alpha \mathbf{m} P_p + \mathbf{f} = 0
 \end{equation}
 
-Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt  considerando as definições conforme \eqref{eq:equilibrio_final}.
+Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt considerando as definições conforme \eqref{eq:definicoesvoigt}.
 
 \begin{equation}
 \label{eq:equilibrio_final}
@@ -189,7 +196,7 @@ A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das 
 \end{equation}
 
 
-Já a relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}. Diferentes tipos de relações constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A Figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que existe um comportamento linear dominante na parte central do gráfico antes da falha. Essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica, que será a região de estudo desse trabalho. %TODO talvez citar um pouco das regições de faha
+Já a relação entre a deformação e as tensões é definida como relação constitutiva de acordo com \citet{ResGeomec}. Diferentes tipos de relações constitutivas podem ser utilizadas para representar essa relação entre tensão e deformação. A Figura \ref{fig:stress_strain} mostram dados de um teste típico de tensão-deformação em uma rocha bem cimentada. Nesse caso, é importante notar que existe um comportamento linear dominante na parte central do gráfico antes da falha, essa região onde as deformações e tensões se relacionam linearmente é chamada de elástica, e será a região de estudo desse trabalho. %TODO talvez citar um pouco das regições de faha
 
 
 \begin{figure}[!htbp]
@@ -200,20 +207,18 @@ Já a relação entre a deformação e as tensões é definida como relação co
 \end{figure}
 
 
-O estudo de mecânica dos sólidos nos mostra que, na região elástica e materiais isotrópicos, é possível escrever uma relação entre as deformações e tensões nos elementos de forma simples. Essa relação é denominada de Lei de Hooke Generalizada e é apresentada na Equação \eqref{eq:hooke}.
-
+Para o caso de elasticidade linear, a relação entre tensões e deformação é dada por uma formas simples  que é a Lei de Hooke Generalizada apresentada em \eqref{eq:hooke}. Essa equação é a mesma que apresentada para estudos de mecânica dos sólidos tradicional.
 
 \begin{equation}{
 \label{eq:hooke}
-\fontsize{4}{4}\selectfont
-\sigma ^{\prime\prime}= D \epsilon
+\stef = \mathbf{D} \deformacao
 }
 \end{equation}
 
 onde, $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson e
 
 \begin{equation}
-    D = \begin{bmatrix}
+    \mathbf{D} = \begin{bmatrix}
  1-\upsilon & \upsilon    &  \upsilon & 0 & 0 & 0  \\
  \upsilon   &  1-\upsilon &  \upsilon & 0 & 0 & 0  \\
   \upsilon & \upsilon   &  1-\upsilon &  0 & 0 & 0 \\
@@ -230,13 +235,13 @@ A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em funç�
 
 \begin{equation}
 \label{eq:edp_geomec}
-\sopnabla^TD \sopnabla \deslocamento - \sopnabla^T\alpha m P_p - \mathbf{f} = 0
+\sopnabla^T \mathbf{D} \sopnabla \deslocamento - \sopnabla^T\alpha \mathbf{m} P_p - \mathbf{f} = 0
 \end{equation}
 
- Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar de três dimensões para duas dimensões existem duas abordagens possíveis de tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
+ Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar de três dimensões para duas dimensões existem duas abordagens possíveis: tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
 
 \begin{equation} \label{eq:elasticplanestress}
-D_{stress} = \frac{E}{1-\upsilon^2}
+\mathbf{D}_{stress} = \frac{E}{1-\upsilon^2}
 \begin{bmatrix}
 1  & \upsilon & 0 \\
 \upsilon & 1 &  0 \\
@@ -245,7 +250,7 @@ D_{stress} = \frac{E}{1-\upsilon^2}
 \end{equation}
 
 \begin{equation} \label{eq:elasticplanestrain}
-D_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
+\mathbf{D}_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \begin{bmatrix}
  1-\upsilon & \upsilon    &  0 \\
  \upsilon   &  1-\upsilon &  0 \\
@@ -253,7 +258,7 @@ D_{strain} = \frac{E}{(1+\upsilon)(1-2\upsilon)}
 \end{bmatrix}
 \end{equation}
 
-De acordo com \citet{jacob}, a condição de deformação plana é melhor aplicada quando o elemento é grosso em relação ao plano xy, que é o caso dos reservatórios de petróleo com o mesmo eixo definido \ref{fig:equilibrio}. Dessa forma, artigos como \cite{casteletto}, \cite{planeStrainProblems} e \cite{irina} utilizam a hipótese de deformação plana que será a mesma utilizada nesse trabalho. Os operadores e vetores podem ser redefinidos para os mostrados em \eqref{eq:vetores2d}.
+De acordo com \citet{jacob}, a condição de deformação plana é melhor aplicada quando o elemento é grosso em relação ao plano xy, que é o caso dos reservatórios de petróleo com os mesmos eixos definidos na Figura \ref{fig:equilibrio}. Dessa forma, artigos como \cite{casteletto}, \cite{planeStrainProblems} e \cite{irina} utilizam a hipótese de deformação plana que é a mesma utilizada nessa dissertação. Os operadores e vetores podem ser redefinidos para os mostrados em \eqref{eq:vetores2d}.
 
 \begin{equation}
 \label{eq:vetores2d}
@@ -271,7 +276,7 @@ De acordo com \citet{jacob}, a condição de deformação plana é melhor aplica
 
 &
 
-f = \begin{bmatrix}
+\mathbf{f} = \begin{bmatrix}
 f_{x}
 \\
 f_{y}
@@ -302,19 +307,19 @@ u_y
 \end{matrix}
 \end{equation}
 
-Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno, a de Dirichlet onde o deslocamento da fronteira é prescrito e condição de contorno de tensão normal a fronteira é definida. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$ a fronteira do domínio. Dividindo a fronteira em duas partes $\Gamma_u$ e $\Gamma_t$ onde possuem condição de Dirichlet e Neumann respectivamente o problema fica totalmente definido em \eqref{eq:edp_geomec_contorno}.
+Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno a de Dirichlet, onde o deslocamento da fronteira é prescrito e condição de contorno de Neumann, onde a tensão normal a fronteira é preescrita. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$ a fronteira do domínio e dividindo a fronteira em duas partes $\Gamma_u$ e $\Gamma_{\sigma}$ onde $\Gamma_u \cup \Gamma_{\sigma} = \Gamma$, $\Gamma_u \cap \Gamma_{\sigma} = \emptyset $ e possuem condição de Dirichlet e Neumann respectivamente. O problema fica então totalmente definido em \eqref{eq:edp_geomec_contorno}.
 
 
 \begin{equation} \label{eq:edp_geomec_contorno}
 \begin{aligned}
-     \sopnabla^T D \sopnabla \deslocamento - \sopnabla^T\alpha m P_p - \mathbf{f} = 0, & \text{ em }\Omega  \\
+     \sopnabla^T \mathbf{D} \sopnabla \deslocamento - \sopnabla^T\alpha \mathbf{m} P_p - \mathbf{f} = 0, & \text{ em }\Omega  \\
      \deslocamento = \bar{\mathbf{u}},& \text{ em } \Gamma_u \\
     \begin{bmatrix}
         \stxx^{\prime\prime} & \stxy^{\prime\prime}
     \end{bmatrix} \mathbf{n} = \bar{t}_x \text{   }     \begin{bmatrix}
         \stxy^{\prime\prime} & \styy^{\prime\prime}
-    \end{bmatrix} \mathbf{n} = \bar{t}_y, & \text{   em } \Gamma_t 
+    \end{bmatrix} \mathbf{n} = \bar{t}_y, & \text{   em } \Gamma_{\sigma} 
 \end{aligned}  
 \end{equation}
 
-onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$,  $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{t} = [ \bar{t}_x \quad \bar{t}_y ]$  . O problema \eqref{eq:edp_geomec_contorno} pode ser descrita mais genericamente com regiões da fronnteira onde uma condição de contorno de Dirichlet é aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.
+onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$,  $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{t} = [ \bar{t}_x \quad \bar{t}_y ]$  . O problema \eqref{eq:edp_geomec_contorno} pode ser descrita mais genericamente com regiões da fronteira onde uma condição de contorno de Dirichlet é aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.

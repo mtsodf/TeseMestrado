@@ -302,7 +302,7 @@ u_x \\ u_y \\ u_z
 \newcommand{\rigidmatrixcoarse}{\mathbf{K}^H}
 
 \newcommand{\rigidmatrixelementms}{\mathbf{K}^{\coarseelement}}
-
+\newcommand{\bee}{\mathbf{B}^e}
 
 \newcommand{\nnzp}{ \text{nnz}_p }
 
@@ -334,13 +334,13 @@ u_x \\ u_y \\ u_z
 \newcommand{\testaprox}{\mathcal{S}^h}
 \newcommand{\testcoarseaprox}{\mathcal{S}^H}
 
-\newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev ^2 , \mathbf{u} = \bar{u} \text{ em } \Gamma_u \}}
+\newcommand{\testdef}{\{  \mathbf{u} | \mathbf{u} \in \sobolev ^2 , \mathbf{u} = \bar{\mathbf{u}} \text{ em } \Gamma_u \}}
 
 \newcommand{\qtdnos}{n_{\text{nós}}}
 
-\newcommand{\kij}[2]{(\sopnabla \basefunctionfine[#1])^T D \sopnabla \basefunctionfine[#2]}
+\newcommand{\kij}[2]{(\sopnabla \basefunctionfine[#1])^T \mathbf{D} \sopnabla \basefunctionfine[#2]}
 
-\newcommand{\kije}[2]{(\sopnabla \basefunctionelem[#1])^T D \sopnabla \basefunctionelem[#2]}
+\newcommand{\kije}[2]{(\sopnabla \basefunctionelem[#1])^T \mathbf{D}^e \sopnabla \basefunctionelem[#2]}
 
 
 \newcommand{\intbase}[1]{\int_{-1}^{1}\int_{-1}^{1} #1 d\xi d\eta }
