@@ -1,38 +1,36 @@
 Nesse capítulo serão apresentados detalhes da implementação realizada nesse trabalho. O código foi desenvolvido em python com auxílio da biblioteca PETSc (\citet{petsc-user-ref}). O PETSc é uma biblioteca famosa com diversas rotinas para computação científica, possui paralelismo utilizando MPI, estruturas de dados para matrizes esparsas, métodos de Krylov para solução de sistemas lineares, conjunto de pré-condicionadores (em particular os ILU), dentre outros. Estudos da performance do PETSc podem ser encontrados \citet{petsc-efficient}. O PETSc foi utilizado com a linguagem Python através dos \textit{bindings} disponibilizados no petsc4py (\citet{Dalcin2011}). O código aqui apresentado foi desenvolvido em sequencial. 
 
 
-
 \section{Estrutura de Classes}
 
-Primeiramente, foi necessário desenvolver uma estrutura para resolver problemas através do método dos elementos finitos para depois iniciar implementação com o método multiescala. Para esse desenvolvimento três principais classes foram implementadas: \textbf{Element}, \textbf{Node}, \textbf{FemContext}. As responsabilidades das classes são descritas abaixo:
+Primeiramente, foi necessário desenvolver uma estrutura para resolver problemas através do método dos elementos finitos, para depois iniciar implementação com o método multiescala. Esse desenvolvimento possui três principais classes: \textbf{Element}, \textbf{Node}, \textbf{FemContext}. As responsabilidades das classes são descritas abaixo:
 
 \begin{itemize}
     \item \textbf{Node}: essa classe tem como intuito representar os nós do problema de elementos finitos. Guarda como propriedade as coordenadas x, y correspondentes, uma numeração global associada ao grid fino e se o nó pertence ou não a uma fronteira com condição de Dirichlet.
-    \item \textbf{Element}: essa classe tem como intuito representar os elementos do problema de elementos finitos. Tem uma referência para os nós que pertencem ao elemento, guarda os valores do coeficiente de Young e Poisson, sabe calcular as funções de forma em coordenadas locais conforme \eqref{eq:definicaofuncform} e também é responsável por calcular a matriz do elemento local (conforme \eqref{eq:matrizelemento}).
-    \item \textbf{FemContext}: essa classe tem como intuito representar um problema de elementos finitos. Ela possui o conjunto de elementos e nós do problema em questão. Dá a numeração de cada um dos graus de liberdade dos nós. Calcula a matriz de rigidez através do algoritmo apresentado no Capítulo \ref{ch:discretizacao} e o lado direito correspondente. 
+    \item \textbf{Element}: essa classe tem como intuito representar os elementos do problema de elementos finitos. Tem referência para os nós que pertencem ao elemento, guarda os valores do coeficiente de Young e Poisson, sabe calcular as funções de forma em coordenadas locais conforme \eqref{eq:definicaofuncform} e também é responsável por calcular a matriz do elemento local conforme \eqref{eq:matrizelemento}.
+    \item \textbf{FemContext}: essa classe tem como intuito representar um problema de elementos finitos. Ela possui o conjunto de elementos e nós do problema em questão. Dá a numeração de cada um dos graus de liberdade dos nós. Calcula a matriz de rigidez através do Algoritmo \ref{alg:buildmatrix} e o lado direito correspondente. 
 \end{itemize}
 
-Essas três classes são capazes de realizar a solução de um problema de elementos finitos. Um fato importante é que a classe \textbf{FemContext} é que tem a numeração dos graus de liberdade, isso acontece, pois, para calcular as funções de diferentes problemas locais de elementos finitos são resolvidos e essa classe será reaproveitada. Em uma implementação de elementos finitos clássica o mais natural seria a numeração do grau de liberdade está associada com um nó.
+Essas três classes conjuntamente são capazes de montar e solucionar um problema de elementos finitos. Um fato importante é que a classe \textbf{FemContext} é responsável pela numeração dos graus de liberdades, pois, para calcular as funções de base, diferentes problemas locais tem que ser resolvidos e diferentes numeração locais são necessárias. Em uma implementação mais clássica de elementos finitos, o mais natural seria a numeração do grau de liberdade estar associada com a classe \textbf{Node}.
 
-Existem 
 
 \section{Montagem dos Operador Multiescala}
 
-Para a implementação do método multiescala, foi adicionada criada a classe \textbf{Multiscale}, essa classe tem como responsabilidade receber um objeto \textbf{FemContext} que representa o grid fino e calcular os operadores de prolongamento ($\mathbf{P}$), restrição ($\mathbf{P}^T$) e operador grosso ($\rigidmatrixcoarse$).
+Para a implementação do método multiescala, foi criada a classe \textbf{Multiscale}, essa classe tem como responsabilidade receber um objeto \textbf{FemContext} que representa o grid fino e calcular os operadores de prolongamento ($\mathbf{P}$), restrição ($\mathbf{P}^T$) e operador grosso ($\rigidmatrixcoarse$).
 
 
-O primeiro passo para utilizar o método multiescala é a escolha do nível de engrossamento. A implementação aceita diferentes fatores para a direção x e y, apesar dos testes serem apresentados com o mesmo fator. O método \textbf{CoarseContext} da classe textbf{Multiscale} é responsável por realizar a tarefa de construir $\mathbf{P}$ e $\rigidmatrixcoarse$. Essa tarefa é dividida nos seguintes passos: 
+O primeiro passo para utilizar o método multiescala é a escolha do nível de engrossamento. A implementação aceita diferentes fatores para a direção x e y, apesar dos testes serem apresentados com o mesmo fator. O método \textbf{CoarseContext} da classe \textbf{Multiscale} é responsável por realizar a tarefa de construir $\mathbf{P}$ e $\rigidmatrixcoarse$. Essa tarefa é dividida nos seguintes passos: 
 
 \begin{itemize}
-    \item Criar objetos \textbf{FemContext} para cada um dos problemas locais.
+    \item Criar objetos \textbf{FemContext} para cada um dos elementos grossos.
     \item Adicionar os nós e elementos correspondentes em cada um dos seus respectivos \textbf{FemContext}
     \item Para cada \textbf{FemContext} calcular a matriz de rigidez $\rigidmatrixelementms$.
-    \item Resolver os oito problemas associados as funções de Base.
+    \item Resolver os oito problemas associados as funções de base encontrando $\basefunctionelemcoarse[1],  \basefunctionelemcoarse[2], \hdots, \basefunctionelemcoarse[8]$.
     \item Fazer o Assembly do operador de prolongamento.
     \item Calcular $\rigidmatrixcoarse = \mathbf{P}^T \rigidmatrix \mathbf{P}$
 \end{itemize}
 
-A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse operador. Pode-se perceber que os problemas são independentes exceto pela solução dos problemas das arestas em comum. A implementação desse trabalho resolveu esse mesmo problema na fronteira duas vezes, uma implementação mais otimizada pode resolver apenas uma vez cada problema de fronteira. Em relação a resolver os oito problemas locais, foi realizada a fatoração LU da matriz 
+A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse operador. Pode-se perceber que os problemas de cada \textbf{FemContext} são independentes, exceto pela solução dos problemas das arestas em comum. A implementação desse trabalho resolveu as arestas da fronteira duas vezes, uma implementação mais otimizada pode resolver apenas uma vez cada problema de fronteira. Em relação a resolver os oito problemas locais, foi realizada a fatoração LU da matriz que foi reaproveitada para a solução desses problemas visto que a matriz é a mesma. 
 
 \begin{figure}[!htbp]
 \centering
@@ -42,7 +40,7 @@ A Figura \ref{fig:esquemaconstrucao} apresenta um esboço da construção desse 
 \end{figure}
 
 
-O cálculo das matrizes dos operadores locais $\rigidmatrixelementms$ tem os mesmos coeficientes presentes na matriz de rigidez $\rigidmatrix$ visto que o operador de \eqref{eq:edp_geomec} é o mesmo de \eqref{eq:operadorlocal}. Assim, para o código executar mais rápido a matriz de rigidez de cada elemento foi armazenada para não precisar ser calculada novamente, isso torna o custo da memória maior, pois esses valores não precisam ser necessariamente guardados. Outra opção é perceber que a matriz de um operador local é uma submatriz do operador original, e portanto, poderia ser utilizado o método foi utilizado o método GetSubMatrix das matrizes do petsc para construir $\rigidmatrixelementms$ a partir de $\rigidmatrix$ conforme mostra a Figura \ref{fig:submatrix}. Essa ideia é similar a utilizar uma reordenação Wire-Basket como apresentada em \cite{casteletto} e \cite{irina}.
+O cálculo das matrizes dos operadores locais $\rigidmatrixelementms$ tem os mesmos coeficientes presentes na matriz de rigidez $\rigidmatrix$ visto que o operador de \eqref{eq:edp_geomec} é o mesmo de \eqref{eq:operadorlocal}. Assim, para o código executar mais rápido a matriz de rigidez de cada elemento foi armazenada para não precisar ser calculada novamente, isso torna o custo da memória maior, pois esses valores não precisam ser necessariamente guardados. Outra opção é perceber que a matriz de um operador local é uma submatriz do operador original, e portanto, poderia ser utilizado o método \textbf{GetSubMatrix} das matrizes do P etsc para construir $\rigidmatrixelementms$ a partir de $\rigidmatrix$ conforme mostra a Figura \ref{fig:submatrix}. Essa ideia é similar a utilizar uma reordenação Wire-Basket como apresentada em \cite{casteletto} e \cite{irina}.
 
 \begin{figure}[!htbp]
 \centering

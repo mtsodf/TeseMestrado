@@ -1,23 +1,22 @@
 
-Nesse capítulo, será apresentada a construção do operador grosso Multiescala e suas aplicações. Daqui para frente, o grid original do problema será denominado grid fino e o operador associado a esse grid $\rigidmatrix$ será chamado de operador fino. A partir do grid fino será construído um grid grosso onde cada elemento é uma aglomeração de elementos do grid fino, o operador associado a esse grid será chamado de operador grosso $\rigidmatrixcoarse$.
+Nesse capítulo, serão apresentados a construção do operador grosso Multiescala e suas aplicaçõesno contexto das equações apresentadas no Capítulo \ref{ch:modelagem}. Daqui para frente, o grid original do problema será denominado grid fino e o operador associado a esse grid $\rigidmatrix$ será chamado de operador fino. A partir do grid fino será construído um grid grosso onde cada elemento é uma aglomeração de elementos do grid fino, o operador associado a esse grid será chamado de operador grosso $\rigidmatrixcoarse$.
 
 
 O método \textit{Multiscale Finite Element Method} (MSFEM) foi introduzido por \citet{thomashou} e inicialmente foi aplicado para obter soluções aproximadas do grid fino através do grid grosso para casos de transferência de calor de materiais e meios porosos com propriedades aleatórias. A principal conclusão desse trabalho foi que o método MSFEM é capaz de reproduzir a heterogeneidade da solução através da construção das funções de base com solução de problemas locais baseados no operador original. Mais tarde, o método MSFEM se mostrou problemático para conservação de massa em problemas de transporte e, por isso, foram criado os métodos \textit{Mixed Multiscale Finite Element} (MMSFEM) em \citet{mixedmsfem} e  \textit{Multiscale Finite Volume Method} (MSFVM) em \citet{msfv} que garantem a conservação.
 
 
-Apesar do método MSFVM garantir a conservação da massa, as soluções do grid fino não se mostravam adequadas para todas as situações, assim, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
+Apesar do método MSFVM garantir a conservação da massa, as soluções do grid grosso prolongadas para o grid fino não se mostravam adequadas para todas as situações, assim, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
+
+A despeito de todos esses estudos,  o método multiescala continuava sendo aplicado em problemas nos quais informações do grid eram conhecidas para a construção do operador grosso, o que era uma desvantagem em relação ao multigrid algébrico. Essa desvantagem é parcialmente resolvida através do Multiescala algébrico (apresentado em \citet{msalgebrico}) que, de certa forma semelhante aos métodos multigrid algébricos, montam o operador grosso através das entradas da matriz do grid fino utilizando uma ordenação de Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis também já foram desenvolvidos como os \citet{multilevel}. \suge{problema nesta citação}
 
 
-Apesar de todos esses estudos,  o método multiescala continuava sendo  aplicado em problemas nos quais  informações do grid eram conhecidas para a construção do operador grosso, o que era uma desvantagem em relação ao multigrid algébrico. Essa desvantagem é parcialmente resolvida através do Multiescala algébrico (apresentado em \citet{msalgebrico}) que, de certa forma semelhante aos métodos multigrid algébricos, montam o operador grosso através das entradas da matriz do grid fino utilizando uma ordenação de Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis também já foram desenvolvidos como os \citet{multilevel}. \suge{problema nesta citação}
-
-
-Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para  problemas de fluxo que, atualmente, na indústria têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, podemos encontrar trabalhos com aplicações do método de multiescala neste domínio, ver \citet{mbuck}. 
+Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para  problemas de fluxo que, historicamente, na indústria do petróleo têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, podemos encontrar trabalhos utéis com aplicações do método de multiescala neste domínio, por exemplo \citet{mbuck}. 
 
 Implementações em paralelo do método multiescala também podem ser encontradas, por exemplo em \citet{msparalelo} que faz comparação com o método multigrid mostrando que o multiescala é uma opção competitiva e tem escalabilidade similar ao multigrid.
 
 \section{Construção de Operador Grosso Multiescala}
 
-A ideia do método consiste na construção de um operador grosso semelhante ao realizado no multigrid de forma que a solução desse operador pode ser utilizada para ajudar na solução da escala original do problema ou ainda ser utilizada como uma aproximação para a mesma. Para isso, será necessário construir o próprio operador grosso e também operadores que fazem a transferência de escala do grid fino para o grosso (restrição) e do grid grosso para o grid fino (prolongamento).
+A ideia do método consiste na construção de um operador grosso semelhante ao realizado no multigrid de forma que a solução desse operador pode ser utilizada para ajudar na solução da escala original do problema ou ainda ser utilizada como uma aproximação para a mesma. Para isso, é necessário construir o próprio operador grosso e também operadores que fazem a transferência de escala do grid fino para o grosso (restrição) e do grid grosso para o grid fino (prolongamento).
 
 
 O primeiro passo para a construção do operador multiescala é gerar um novo grid com menos elementos que o grid original do problema (grid fino), mas que ainda represente o mesmo domínio $\Omega$. Esse novo grid será chamado de grid grosso e as variáveis relacionadas com ele serão assinadas com o sobrescrito $H$.
@@ -38,14 +37,14 @@ Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos o
 
 
 
-Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$ \suge{é bom dizer como $i$ varia} será associada uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$ uma função de base $\basefunctioncoarseessential$ \suge{é bom relembrar aqui o que é $n_u^H$}. E então, é possível encontrar uma solução aproximada no grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
+Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$, para $i=1, 2,..., \qtdfreedomcoarse$, será associada a uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$, para i $i=1, 2,..., \qtdessentialcoarse$,  uma função de base $\basefunctioncoarseessential$. E então, é possível encontrar uma solução aproximada no grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
 
 \begin{equation} \label{eq:aproximacaogrossa}
     \msfinesolution = \coarsesolution = \sum_{i=1}^{\qtdfreedomcoarse} \basefunctioncoarse \freedomcoarse + {\sum_{i=1}^ {\qtdfreedomcoarse}}  \basefunctioncoarseessential \essentialcoarse
 \end{equation}
 
 
-Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  apresentado em \eqref{eq:problemaslocais}, conforme proposta em \cite{casteletto}.
+Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  apresentados em \eqref{eq:problemaslocais}, conforme proposto em \cite{casteletto}.
 
 
 \begin{subequations} \label{eq:problemaslocais}
@@ -76,9 +75,9 @@ onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenad
 \end{figure}
 
 
-Um fato importante é que \eqref{eq:operadorlocal} mostra que a função de base $\basefunctioncoarse$ satisfaz ao mesmo operador que o problema fino, de acordo com \citet{thomashou} essa é uma das vantagens do método multiescala, pois as funções de base tentam reproduzir o operador localmente. Essa vantagem vem com o custo da solução dos problemas locais que também de acordo com \citet{thomashou} são caros. Estimativas do dispêndio desse cálculos são encontradas em \citet{msparalelo} e \citet{mbuck}.
+Um fato importante é que \eqref{eq:operadorlocal} mostra que a função de base $\basefunctioncoarse$ satisfaz ao mesmo operador que o problema fino, de acordo com \citet{thomashou} essa é uma das vantagens do método multiescala, pois as funções de base tentam reproduzir o operador localmente. Essa vantagem vem com o custo da solução dos problemas locais que também de acordo com \citet{thomashou} são caros. Estimativas do custo desse cálculos são encontradas em \citet{msparalelo} e \citet{mbuck}.
 
-Dessa forma, desconsiderando as condições de contorno, dado um elemento quadrilátero $\coarseelement$, este possui oito funções $\basefunctioncoarse$ que são não nulas nesse domínio (duas para cada um dos vértices). Considerando uma numeração local do elemento e representando as funções como $\basefunctionelemcoarse$ para $i=1,2,\dots, 8$. A Figura \ref{fig:coarsefunctionslocalnum} apresenta as funções associadas a cada um dos nós na numeração local.
+Dessa forma, dado um elemento quadrilátero $\coarseelement$, este possui oito funções $\basefunctioncoarse$ que são não nulas nesse domínio (duas para cada um dos vértices). Considerando uma numeração local do elemento e representando as funções como $\basefunctionelemcoarse$ para $i=1,2,\dots, 8$. A Figura \ref{fig:coarsefunctionslocalnum} apresenta as funções associadas a cada um dos nós na numeração local.
 
 
 \begin{figure}[!htbp]
@@ -88,7 +87,7 @@ Dessa forma, desconsiderando as condições de contorno, dado um elemento quadri
 \label{fig:coarsefunctionslocalnum}
 \end{figure}
 
-Para cada uma das funções é necessário resolver \eqref{eq:problemaslocais}, a solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ na fronteira do elemento $\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, podem ser encontrados no apêndice de \cite{casteletto}. 
+Para cada uma das funções é necessário resolver \eqref{eq:problemaslocais}, a solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ na fronteira do elemento $\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, pode ser encontrada no apêndice de \cite{casteletto}. 
 
 
 Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados como condição de contorno de Dirichlet para \eqref{eq:operadorlocal}. Esse problema também é resolvido com elementos finitos onde os resultados encontrados serão chamados de coeficientes $p_{ij}$ que descrevem $\basefunctioncoarse$ como combinação linear de $\basefunctionfine$ conforme mostrado em \eqref{eq:linearbasecoarse}. 
@@ -99,7 +98,7 @@ Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados
 \end{equation}
 
 
-É importante perceber que os coeficientes $p_{ji}$ fazem uma associação entre o espaço grosso e fino. A matriz $\mathbf{P}$ que será o operador de prolongamento terá justamente esses coeficientes como entradas. De forma que, $[\mathbf{P}]_{i,j} = p_{ij}$ e $\mathbf{P}$ tem dimensão $\qtdfreedomcoarse \times \qtdfreedomcoarse$. A Figura \ref{fig:funcaodebasegrossa} mostra um exemplo de função de base relativa a um grau de liberdade x de um grid grosso construído a partir de um grid $16\times16$ transformado em  $2\times2$. Dois casos são mostrados, um em que as propriedades são constantes e outro em que existe variação no módulo de Young. No caso homogêneo a função tem forma parecida com uma função bilinear padrão de elementos finitos, já no outro caso pode-se perceber alteração na função de base afim de tentar representar as heterogeneidades das propriedades. Além disso, as Figuras \ref{fig:funcaodebasegrossahomy} \ref{fig:funcaodebasegrossahety} mostram a influência dos graus de liberdade x na interpolação do deslocamento em y, lembrando que essas parcela são zeradas. 
+É importante perceber que os coeficientes $p_{ji}$ fazem uma associação entre o espaço grosso e fino. A matriz $\mathbf{P}$ que será o operador de prolongamento terá justamente esses coeficientes como entradas. De forma que, $[\mathbf{P}]_{i,j} = p_{ij}$ e $\mathbf{P}$ tem dimensão $\qtdfreedomfine \times \qtdfreedomcoarse$. A Figura \ref{fig:funcaodebasegrossa} mostra um exemplo de função de base relativa a um grau de liberdade x de um grid grosso construído a partir de um grid $16\times16$ transformado em  $2\times2$. Dois casos são mostrados, um em que as propriedades são constantes e outro em que existe variação no módulo de Young. No caso homogêneo a função tem forma parecida com uma função bilinear padrão de elementos finitos, já no outro caso pode-se perceber alteração na função de base afim de tentar representar as heterogeneidades das propriedades. Além disso, as Figuras \ref{fig:funcaodebasegrossahomy} \ref{fig:funcaodebasegrossahety} mostram a influência dos graus de liberdade x na interpolação do deslocamento em y.
 
 
 
@@ -109,13 +108,13 @@ Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados
 \qquad
 \subfigure[ Logaritmo do Módulo de Young ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_young.png}}
 
-\subfigure[ $\mathbf{N}_{ix}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_x.png}}
+\subfigure[ $\mathbf{N}_{i_x}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_x.png}}
 \qquad
-\subfigure[ $ \mathbf{N}_{ix}^H  $ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_x.png}}
+\subfigure[ $ \mathbf{N}_{i_x}^H  $ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_x.png}}
 
-\subfigure[ $\mathbf{N}_{iy}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_y.png}\label{fig:funcaodebasegrossahety}}
+\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_y.png}\label{fig:funcaodebasegrossahety}}
 \qquad
-\subfigure[ $\mathbf{N}_{iy}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_y.png} \label{fig:funcaodebasegrossahomy}} 
+\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_y.png} \label{fig:funcaodebasegrossahomy}} 
 
 \caption{Exemplo de função de base gerada para módulo de Young homogêneo (lado esquerdo) e para módulo de Young heterogêneo (lado direito). Coeficiente de Poisson considerado constante e igual a 0.2. }\label{fig:funcaodebasegrossa}
 \end{figure}
@@ -128,27 +127,27 @@ Com \eqref{eq:linearbasecoarse} as funções de base do grid grosso estão deter
 \begin{empheq}[box=\mymath]{equation}\label{eq:weakcoarseformaprox}
 \begin{split}
 \text{Encontrar  }  \mathbf{u} \in \testcoarseaprox \text{ tal que} \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \\
-\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w} \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T m P_p \quad \forall \mathbf{w} \in \trialcoarseaprox
+\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w}^T \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T m P_p \quad \forall \mathbf{w} \in \trialcoarseaprox
 \end{split}
 \end{empheq}
 
-onde $\trialcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomcoarse] \}$ e $\testcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomfine + \qtdfreedomcoarse] \}$. Portanto, a matriz de rigidez relativa ao grid grosso é dada por tem entradas conforme \eqref{eq:entradamatrizgrossa}.
+onde $\trialcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomcoarse] \}$ e $\testcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomfine + \qtdfreedomcoarse] \}$. Portanto, analogamente ao grid fino,  a matriz de rigidez relativa ao grid grosso tem entradas dadas por \eqref{eq:entradamatrizgrossa}.
 
 \begin{equation} \label{eq:entradamatrizgrossa}
-    \rigidmatrixcoarse_{i,j} =\omeint{(\sopnabla \basefunctioncoarse[i])^T D \sopnabla \basefunctioncoarse[j]}
+    \rigidmatrixcoarse_{i,j} =\omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]}
 \end{equation}
 
 Substituindo \eqref{eq:linearbasecoarse} em \eqref{eq:entradamatrizgrossa}.
 
 
 \begin{align}
-     K^H_{i,j}  & =   \omeint{(\sopnabla \basefunctioncoarse[i])^T D \sopnabla \basefunctioncoarse[j]} \nonumber \\
-                & =   \omeint{(\sopnabla  \sum_{k=1}^{\qtdfreedomfine} p_{ki} \basefunctionfine[k])^T D \sopnabla( \sum_{l=1}^{\qtdfreedomfine} p_{lj} \basefunctionfine[l] )}  \nonumber \\
-                & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{p_{ki} ( \sopnabla \basefunctionfine[k])^T D \sopnabla \basefunctionfine[l] p_{lj}  }                  \nonumber \\
-                & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} p_{ki} \left( \omeint{ ( \sopnabla \basefunctionfine[k])^T D \sopnabla \basefunctionfine[l]   } \right)p_{lj}                            \nonumber \\
-                & = \omeint{     p_{ki} \rigidmatrix_{kl} p_{lj}}  \nonumber \\
-                & = \omeint{   [P]_{ki} \rigidmatrix_{kl} [P]_{lj}}                                         \nonumber \\
-                & = \omeint{   [P^T]_{ik} \rigidmatrix_{kl} [P]_{lj}     }   \label{eq:ptapeinstein}  
+     K^H_{i,j}  & =   \omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]} \nonumber \\
+                & =   \omeint{(\sopnabla  \sum_{k=1}^{\qtdfreedomfine} p_{ki} \basefunctionfine[k])^T \mathbf{D} \sopnabla( \sum_{l=1}^{\qtdfreedomfine} p_{lj} \basefunctionfine[l] )}  \nonumber \\
+                & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{p_{ki} ( \sopnabla \basefunctionfine[k])^T \mathbf{D} \sopnabla \basefunctionfine[l] p_{lj}  }                  \nonumber \\
+                & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} p_{ki} \left( \omeint{ ( \sopnabla \basefunctionfine[k])^T \mathbf{D} \sopnabla \basefunctionfine[l]   } \right)p_{lj}                            \nonumber \\
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{     p_{ki} \rigidmatrix_{kl} p_{lj}}  \nonumber \\
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [P]_{ki} \rigidmatrix_{kl} [P]_{lj}}                                         \nonumber \\
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [P^T]_{ik} \rigidmatrix_{kl} [P]_{lj}     }   \label{eq:ptapeinstein}  
 \end{align}
 
 
@@ -158,7 +157,7 @@ Portanto, a \eqref{eq:ptapeinstein} mostra que o operador grosseiro pode ser con
     \mathbf{K}^H = \mathbf{P}^T  \mathbf{K}^h \mathbf{P}
 \end{equation}
 
-De forma análoga pode ser encontrar que a relação entre os lados direito dos dois operador é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar  \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
+De forma análoga, pode ser encontrar que a relação entre os lados direito dos dois operador é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
 
 \begin{equation} \label{eq:aproximacaogrossa2}
     d^h \approx d^h_{ms} = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T} \mathbf{f}^h
@@ -173,7 +172,7 @@ Essa aproximação consiste de três passos que são descritas abaixo:
 \end{itemize}
 
 
-Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}  essa solução foi utilizada como solver através iterações de Richardson junto com um pré-condicionador do espaço fino, pois mostra que esse pré-condicionador não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que a matriz $\rigidmatrixcoarse$ é deficiente de rank e portanto a matriz de  iteração tem autovalores iguais a um. No caso, o pré-condicionador utilizado para solução foi um pré-condicionador  multiplicativo $\precon=\preconmult$ onde $\preconfine$ foi utilizado o BILU. Visando reproduzir os resultados para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para uma iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)). Ainda sobre o fato do operador ser utilizado conjuntamente com um pré-condicionador fino, essa é a abordagem típica e também é utilizada em \cite{casteletto} e \cite{msparalelo}.
+Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}  essa solução foi utilizada como solver através iterações de Richardson junto com um pré-condicionador do espaço fino, pois mostra que esse pré-condicionador não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que a matriz $\rigidmatrixcoarse$ é deficiente de rank e portanto a matriz de  iteração tem autovalores iguais a um.  Visando reproduzir os resultados para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para uma iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)). Ainda sobre o fato do operador ser utilizado conjuntamente com um pré-condicionador fino, essa é a abordagem típica e também é utilizada em \cite{casteletto} e \cite{msparalelo}.
 
 
 \begin{figure}[h]
@@ -190,9 +189,11 @@ Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada 
 
 
 
-Pode-se verificar que o pré-condicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. Esses costumam funcionar melhor quanto menor a razão entre o menor e o maior autovalor. A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rigidez pré-condicionada ($\precon \rigidmatrix$) para o mesmo grid de $40 \times 40$, os gráficos apresentam  resultados para engrossamento 2x2, 4x4 e 8x8, todas as figuras são apresentadas com os mesmos eixos para ser possível se observar as espalhamento dos autovalores.
+Pode-se verificar que o pré-condicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto utilizando o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. 
 
-É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que com isso sejam necessárias mais iterações para a convergência do solver. Além disso, o pré-condicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor.
+A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rigidez pré-condicionada ($\precon \rigidmatrix$) para o mesmo grid de $40 \times 40$, os gráficos apresentam  resultados para engrossamento 2x2, 4x4 e 8x8, todas as figuras são apresentadas com os mesmos eixos para ser possível se observar as espalhamento dos autovalores.
+
+É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que sejam necessárias mais iterações para a convergência do solver. Além disso, o pré-condicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor.
 
 
 
@@ -208,25 +209,33 @@ Pode-se verificar que o pré-condicionador multiescala não tem convergência ga
 
 \section{Construção do Operador de Prolongamento}
 
-A solução dos problemas locais descritos na seção anterior tem como resultado as entradas $p_{ij}$ do operador em cada um dos elemento de $\coarseelementset$. Para encontrar esses valores é necessário primeiro construir a matriz de rigidez relativa ao elemento em questão que denominaremos de $\rigidmatrixelementms$. Essa matriz será utilizada para a solução de todas as oito funções de base relacionadas com esse elemento, uma maneira de adicionar mais facilmente as condições de contorno nesse caso é utilizar o método de condição de contorno apresentado em \eqref{eq:diagident}, dessa forma, o lado direito do sistema conterá apenas os valores da condição de contorno de Dirichlet.
+A solução dos problemas locais descritos na seção anterior tem como resultado as entradas $p_{ij}$ do operador em cada um dos elemento de $\coarseelementset$. Para encontrar esses valores é necessário primeiro construir a matriz de rigidez relativa ao elemento em questão que denominaremos de $\rigidmatrixelementms$. Essa matriz será utilizada para a solução de todas as oito funções de base relacionadas com esse elemento, uma maneira de adicionar mais facilmente as condições de contorno nesse caso é utilizar o método de condição de contorno apresentado em \eqref{eq:diagident}, dessa forma, o lado direito do sistema conterá apenas os valores da condição de contorno de Dirichlet que é justamente a solução de \eqref{eq:operadoraresta}.
 
 \vspace{1cm}
-\noindent\fbox{%
-    \parbox{\textwidth}{%
-        \begin{algorithmic}
-        \STATE Inicialize $\mathbf{P}$ com zeros
-        \FORALL{elemento $\coarseelement \in \tau^H$}
-        \STATE Calcular Matriz de Rigidez $\rigidmatrixelementms$ do Problema Local de $\coarseelement$ 
-        \FOR{$i=1,\hdots,8$}
-        \STATE Resolver \eqref{eq:operadoraresta} em  $\partial \coarseelement$ com condição de contorno \eqref{eq:valorvertice}
-        \STATE Construa $\mathbf{f}^{\coarseelement}$ com valores do problema na fronteira.
-        \STATE $\mathbf{P_{\text{local}}} \leftarrow  (\rigidmatrixelementms)^{-1} \mathbf{f}^{\coarseelement} $
-        \STATE Atribua em $\mathbf{P}$ o valores $\mathbf{P_{\text{local}}}$ nas posições correspondentes
-        \ENDFOR
-        \ENDFOR
-        \end{algorithmic}
-    }%
+\begin{algorithm}[H]
+\caption{Cálculo do Prolongamento}
+\Inicio{
+$\mathbf{P} \leftarrow \mathbf{0}$
+
+\ParaCada{elemento $\coarseelement \in \tau^H$}{
+    
+    Calcular Matriz de Rigidez $\rigidmatrixelementms$ do Problema Local de $\coarseelement$ 
+    
+    \Para{$i=1,\hdots,8$}{
+    
+        Resolver \eqref{eq:operadoraresta} em  $\partial \coarseelement$ com condição de contorno \eqref{eq:valorvertice}
+        
+        Construa $\mathbf{f}^{\coarseelement}$ com valores da solução do problema de fronteira.
+        
+        $\mathbf{P_{\text{local}}} \leftarrow  (\rigidmatrixelementms)^{-1} \mathbf{f}^{\coarseelement} $
+        
+        Atribua em $\mathbf{P}$ o valores $\mathbf{P_{\text{local}}}$ nas posições correspondentes
+        
+    }
 }
+
+}
+\end{algorithm}
 \vspace{1cm}
 
 
@@ -262,16 +271,16 @@ Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidm
 
 \section{Cálculo do NNZ do operador de prolongamento}\label{sec:complexProlong}
 
-Em um método multiescala, além da construção de um operador grosso,  precisa-se mover os vetores entre os espaços fino e grosso  Essas movimentações são realizadas através de multiplicação por operadores especiais, $P$ e $P^T$. Essa seção descreve a complexidade destas operações.
+Em um método multiescala, além da construção de um operador grosso, precisa-se realizar transformações dos vetores entre os espaços fino e grosso  Essas transformações são realizadas através de multiplicação pelos operadores $\mathbf{P}$ e $\mathbf{P}^T$. Essa seção descreve a complexidade destas operações.
 
-As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o valor de $n_u^H$,  não necessariamente ocorre  uma redução de elementos não nulos de $P$. Uma motivação para esse fato é que apesar da quantidade de colunas do operador de prolongamento diminuir quando há um engrossamento maior, cada coluna precisa ter uma quantidade maior de não zeros pois o alcance das funções de base aumenta.
+As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o valor de $n_u^H$,  não necessariamente ocorre  uma redução de elementos não nulos de $P$. Uma motivação para esse fato é que apesar da quantidade de colunas do operador de prolongamento diminuir quando há um engrossamento maior, cada coluna precisa ter uma quantidade maior de não zeros, pois o alcance das funções de base aumenta.
 
 Considerando um grid fino com $\numelementsxfine \times \numelementsyfine$, um grid grosso onde cada elemento tem dimensões $q_x \times q_y$ e, ainda, que mesmo os nós de fronteira com condição de contorno de Dirichlet não são removidos da matriz de rigidez, pode-se encontrar um limite inferior para a não zeros do operador de prolongamento ($\nnzp$) considerando apenas os nós que estão no interior de um elemento grosso. Por exemplo, a Figura \ref{fig:nosinteriores}, mostra os nós interiores das células grossas para um grid $16\times16$ transformado em um grid de $2\times2$. 
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=8cm]{chap06/figs/nosinteriores.png}
-\caption{Nós interiores para um grid .}
+\caption{Nós interiores dos elementos grossos para um grid fino 8x8 transformado em um grid grosso 2x2.}
 \label{fig:nosinteriores}
 \end{figure}
 
@@ -289,7 +298,7 @@ Desenvolvendo,
                 & \ge  16   (\numelementsxfine - 1)  (\numelementsyfine - 1) \label{eq:nnzp}
 \end{align}
 
-Assim, \eqref{eq:nnzp} mostra que $\nnzp$ é no mínimo na ordem do número de elementos do grid fino $\numelementsxfine\times\numelementsyfine$. Um argumento análogo pode ser feito para mostrar que a quantidade de não zeros não é maior que ordem da quantidade de elementos finos, basta considerar majorar $\nnzp$ considerando que todos os nós são interiores visto que são eles que tem a maior quantidade de funções de base grossas com valor diferente zero em comparação com os nós em arestas e os nós vértice. Dessa forma, pode-se escrever \eqref{eq:nnzprawj}.
+Assim, \eqref{eq:nnzp} mostra que $\nnzp$ é no mínimo na ordem do número de elementos do grid fino $\numelementsxfine\times\numelementsyfine$. Um argumento análogo pode ser feito para mostrar que a quantidade de não zeros não é maior que a ordem da quantidade de elementos finos, basta considerar majorar $\nnzp$ considerando que todos os nós são interiores, visto que são eles que tem a maior quantidade de funções de base grossas com valor diferente zero, em comparação com os nós pertencentes as arestas e vértices dos elementos grossos. Dessa forma, pode-se escrever \eqref{eq:nnzprawj}.
 
 \begin{equation}\label{eq:nnzprawj}
     \nnzp \le 8 \times 2 \times \underbrace{(\numelementsxfine + 1)(\numelementsyfine + 1)}_{\text{qtd. nós finos}}

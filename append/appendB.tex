@@ -1,4 +1,73 @@
 \chapter{Configurações de solver utilizadas pelo Pyamg} \label{ch:pyamgSolver}
 
 
-to be continued...
+Seguem abaixo as chamadas com os parâmetros para construção dos solvers multigrid  utilizados pelo PyAMG para os resultados apresentados no Capítulo \ref{ch:resultados}. Esses foram retornados pelo script \textbf{solver\_diagnostics.py}. Em todos os casos a chamada do solver multigrid foi sugerida com o ciclo W e como pré-condicionador para o Gradiente Conjugado. 
+
+
+\subsubsection{Caso A e Caso B}
+
+\begin{lstlisting}[
+    basicstyle=\small, %or \small or \footnotesize etc.
+]
+smoothed_aggregation_solver(A, B=B, BH=BH,
+  strength=('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0}),
+  smooth=('energy', {'krylov': 'cg', 'maxiter': 2, 
+          'degree': 1, 'weighting': 'local'}),
+  improve_candidates=[('block_gauss_seidel', 
+                      {'sweep': 'symmetric', 'iterations': 4}), 
+                      None, None, None, None, None, None,
+                      None, None, None, None, None,
+                      None, None, None],
+  aggregate="standard",
+  presmoother=('block_gauss_seidel', 
+               {'sweep': 'symmetric', 'iterations': 1}),
+  postsmoother=('block_gauss_seidel', 
+                {'sweep': 'symmetric', 'iterations': 1}),
+  max_levels=15,
+  max_coarse=300,
+  coarse_solver="pinv")
+\end{lstlisting}
+
+\subsubsection{Caso C}
+
+\begin{lstlisting}[
+    basicstyle=\small, %or \small or \footnotesize etc.
+]
+smoothed_aggregation_solver(A, B=B, BH=BH,
+  strength=('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0}),
+  smooth=('energy', {'krylov': 'cg', 'maxiter': 2, 
+                     'degree': 1, 'weighting': 'local'}),
+  improve_candidates=[('block_gauss_seidel', 
+                      {'sweep': 'symmetric', 'iterations': 4}), 
+                      None, None, None, None, None, None, None, 
+                      None, None, None, None, None, None, None],
+  aggregate="standard",
+  presmoother=('block_gauss_seidel', 
+               {'sweep': 'symmetric', 'iterations': 1}),
+  postsmoother=('block_gauss_seidel', 
+                {'sweep': 'symmetric', 'iterations': 1}),
+  max_levels=15,
+  max_coarse=300,
+  coarse_solver="pinv")
+\end{lstlisting}
+
+
+\subsubsection{Caso D e Caso E}
+
+\begin{lstlisting}[
+    basicstyle=\small, %or \small or \footnotesize etc.
+]
+smoothed_aggregation_solver(A, B=B, BH=BH,
+  strength=('evolution', {'k': 2, 'proj_type': 'l2', 'epsilon': 2.0}),
+  smooth=('energy', {'krylov': 'cg', 'maxiter': 2, 
+                     'degree': 1, 'weighting': 'local'}),
+  improve_candidates=None,
+  aggregate="standard",
+  presmoother=('block_gauss_seidel', 
+               {'sweep': 'symmetric', 'iterations': 1}),
+  postsmoother=('block_gauss_seidel', 
+                {'sweep': 'symmetric', 'iterations': 1}),
+  max_levels=15,
+  max_coarse=300,
+  coarse_solver="pinv")
+\end{lstlisting}
