@@ -50,13 +50,13 @@ Para a matriz acima, tem-se:
     \item A linha 4 começa a partir do elemento 7 do vetor AA e, portanto, IA(4) = 8
 \end{itemize}
 
-É adicionado ainda um valor a mais ao vetor IA que guarda a quantidade de nnz+1. No exemplo acima, esse valor é  IA(5) = 10, com isso é possível saber as entradas de determinada linha $i$ olhando para as posições $IA(i)$ a $IA(i+1)-1$ do vetor AA e as respectivas colunas em JC. Os valores dos vetores CSR da matriz então ficam:
+É adicionado ainda um valor a mais ao vetor IA que guarda a quantidade de nnz+1, no exemplo acima, esse valor é IA(5) = 10. Com isso é possível saber as entradas de determinada linha $i$ olhando para as posições IA(i) a IA(i+1)-1 do vetor AA e as respectivas colunas em JC. Os valores dos vetores CSR da matriz então ficam:
 
 %TODO deixar valores one-based
 \begin{center}
     \begin{itemize}
         \item IA = 1 3 7 8 10
-        \item JA = 1 3 1 2 4 2 3 3 4
+        \item JC = 1 3 1 2 4 2 3 3 4
         \item AA = 1 2 3 4 5 6 7 8 9
     \end{itemize}
 \end{center}
@@ -64,12 +64,12 @@ Para a matriz acima, tem-se:
 
 De acordo com \citet{solverlinear}, o formato CSR é provavelmente o mais comum mais popular para guardar matrizes esparsas e costuma ser a porta de entrada de estrutura de dados para matrizes esparsas. Nesse trabalho, a implementação é feita utilizando esse tipo de estrutura de dados conforme será mostrado no Capítulo \ref{ch:implementacao}.
 
-Uma operação particularmente importante com as matrizes é a multiplicação matriz vetor $y = Ax$. No contexto dessa dissertação, ela é importante para aplicar o operadores de prolongamento e restrição apresentados no Capítulo \ref{ch:multiescala} e também nos métodos de solução de sistemas lineares Gradiente Conjugado (CG) e Bicgstab. O Algoritmo \ref{alg:algoritmomatmult} apresenta a multiplicação matriz vetor utilizando uma matriz CSR representada pelos vetores IA, JA, AA pelo vetor x.
+Uma operação particularmente importante com matrizes é a multiplicação matriz vetor $\mathbf{y} = \mathbf{A}\mathbf{x}$. No contexto dessa dissertação, ela é importante para aplicar o operadores de prolongamento e restrição apresentados no Capítulo \ref{ch:multiescala} e também nos métodos de solução de sistemas lineares Gradiente Conjugado (CG) e Bicgstab. O Algoritmo \ref{alg:algoritmomatmult} apresenta a multiplicação matriz vetor utilizando uma matriz CSR representada pelos vetores IA, JC, AA pelo vetor x.
 
 
 \vspace{1cm}
 \begin{algorithm}[H]
-\caption{y = MultMatrizVetor(IA(n+1), JA(nnz), AA(nnz), x(n))}
+\caption{y = MultMatrizVetor(IA(n+1), JC(nnz), AA(nnz), x(n))}
 \label{alg:algoritmomatmult}
 \Inicio{
 
@@ -77,7 +77,7 @@ Uma operação particularmente importante com as matrizes é a multiplicação m
  
 \Para{row $\in$ \{1, 2, 3, ..., n\}}{
     \Para{j $\in$ \{IA(\text{row}), ..., IA(\text{row}+1)-1\}}{
-        col $\leftarrow$ JA(j)
+        col $\leftarrow$ JC(j)
         
         y(row) $\leftarrow$ y(row) + AA(j) $\times$ x(col)
     }
@@ -89,13 +89,12 @@ Uma operação particularmente importante com as matrizes é a multiplicação m
 \vspace{1cm}
 
 
-Nesse algoritmo, é importante perceber que a variável j irá assumir valores de 1 a IA(n+1)-1 e ,como IA(n+1)=$nnz + 1$, esse algoritmo tem que complexidade $O(nnz)$. 
-O CSR então além de necessitar de menos memória para armazenar a matriz também tem a vantagem de fazer operações de multiplicação mais eficientemente visto que a complexidade seria $O(n^2)$ caso a matriz fosse armazenada densa.
+Nesse algoritmo, é importante perceber que a variável j irá assumir valores de 1 a IA(n+1)-1 e ,como IA(n+1)=$\text{nnz} + 1$, a multiplicação tem que complexidade $O(\text{nnz})$. O CSR então além de necessitar de menos memória para armazenar a matriz também tem a vantagem de fazer operações de multiplicação mais eficientemente visto que a complexidade seria $O(n^2)$ caso a matriz fosse armazenada densa.
 
 
 \section{Solução de Sistemas Esparsos} \label{sec:cg}
 
-Nessa seção serão apresentados alguma métodos para solução de sistemas lineares, em especial o gradiente conjugado que será utilizado para as comparações entre o método multiescala e multigrid apresentados no Capítulo \ref{ch:resultados}. Será considerado o sistema linear apresentado em \eqref{eq:sistemalinear4}.
+Nessa seção serão apresentados alguns métodos para solução de sistemas lineares, em especial o Gradiente Conjugado que será utilizado para as comparações entre o método multiescala e multigrid apresentados no Capítulo \ref{ch:resultados}. Será considerado o sistema linear apresentado em \eqref{eq:sistemalinear4}.
 
 \begin{equation} \label{eq:sistemalinear4}
     \mathbf{Ax = b}
@@ -103,14 +102,14 @@ Nessa seção serão apresentados alguma métodos para solução de sistemas lin
 
 \subsection{Pré-condicionadores}
 
-Define-se como número de condicionamento da matriz a Equação apresentada em \eqref{eq:condicionamento}, quanto maior o número de condicionamento mais próximo da matriz ser singular. As matrizes advindas de sistemas gerados pelas Equações \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
+Define-se como número de condicionamento da matriz a Equação apresentada em \eqref{eq:condicionamento}, quanto maior o número de condicionamento mais próximo da matriz ser singular. As matrizes advindas de sistemas gerados por \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
 
 \begin{equation} \label{eq:condicionamento}
 1+1=2
 \end{equation}
 
 
-Uma estratégia importante para a solução desses sistemas lineares é a utilização de pré-condicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de pré-condicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de pré-condicionamento  \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o pré-condicionamento pela esquerda e pela direita respectivamente. A matriz de pré-condicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$ eles não efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
+Uma estratégia importante para a solução desses sistemas lineares é a utilização de pré-condicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de pré-condicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de pré-condicionamento, \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o pré-condicionamento pela esquerda e pela direita respectivamente. A matriz de pré-condicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que, apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$, eles não efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
 
 
 \begin{equation} \label{eq:preconesq}
@@ -127,7 +126,7 @@ Um pré-condicionador popular são os baseados em fatorações incompletas (ILU)
 
 \subsection{Iteração de Richardson}
 
-Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizado em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz A e um pré-condicionador M uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
+Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizado em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz $\mathbf{A}$ e um pré-condicionador $\mathbf{M}$ uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
 
 \begin{align} \label{eq:iteracaorichardson}
 \mathbf{I}_m = (\mathbf{I} - \precon \mathbf{A})    \\
@@ -139,7 +138,7 @@ A partir de \eqref{eq:iteracaorichardson} é possível encontrar a equação do 
 
 \subsection{Método do Gradiente Conjugado}
 
-O método dos Gradiente Conjugado pode ser utilizado na solução de sistemas lineares da forma \eqref{eq:sistemalinear4} onde $A$ é uma matriz simétrica positiva definida (SPD). Nesse caso, pode-se encontrar um problema de minimização equivalente através da definição da forma quadrática apresentada em \eqref{eq:quadratica}. 
+O método dos Gradiente Conjugado pode ser utilizado na solução de sistemas lineares da forma \eqref{eq:sistemalinear4} onde $\mathbf{A}$ é uma matriz simétrica positiva definida (SPD). Nesse caso, pode-se encontrar um problema de minimização equivalente através da definição da forma quadrática apresentada em \eqref{eq:quadratica}. 
 
 \begin{equation} \label{eq:quadratica}
     f(\mathbf{x}) = \frac{1}{2}  \mathbf{x}^T \mathbf{A} \mathbf{x} - \mathbf{b}^T \mathbf{x} + c, \quad f:\mathbb{R}^n \rightarrow \mathbb{R}
@@ -264,8 +263,7 @@ $\delta_{0} \leftarrow \delta_{new}$
 
 \subsubsection{Gradiente Conjugado Pré-Condicionado}
 
-
-Uma dificuldade em se utilizar pré-condicionamento com o Gradiente Conjugado é que o método necessita que a matriz seja simétrica para garantir a convergência para a solução do sistema linear. Porém, se aplicarmos um pré-condicionador $\precon$ esquerda ou pela direita perde-se que a simetria da matriz. Para solucionar essa questão, o pré-condicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}. É importante notar que para que tal decomposição exista é necessário que a matriz seja simétrica, visto que, $\mathbf{M}^T = (\mathbf{E}\mathbf{E}^T)^T = (\mathbf{E}^T)^T \mathbf{E}^T = \mathbf{E}\mathbf{E}^T = \mathbf{M}$. Em \citet{Shewchuk94anintroduction} é mostrado que apesar  dessa decomposição, o método não precisa calcular explicitamente a matriz $\mathbf{E}$ conforme apresentado no Algoritmo \ref{alg:algoritmocgprecon}.
+Uma dificuldade em se utilizar um pré-condicionador com o Gradiente Conjugado é que a garantia de convergência tem como condição necessária que a matriz seja simétrica. Porém, se aplicarmos um pré-condicionador $\precon$ pela esquerda ou pela direita perde-se que a simetria da matriz. Para solucionar essa questão, o pré-condicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}.
 
 
 \begin{align} \label{eq:esqdirpreconcg}
@@ -274,7 +272,7 @@ Uma dificuldade em se utilizar pré-condicionamento com o Gradiente Conjugado é
 \end{align}
 
 
-
+É importante notar que para que tal decomposição exista é necessário que a matriz seja simétrica, visto que, $\mathbf{M}^T = (\mathbf{E}\mathbf{E}^T)^T = (\mathbf{E}^T)^T \mathbf{E}^T = \mathbf{E}\mathbf{E}^T = \mathbf{M}$. Em \citet{Shewchuk94anintroduction} é mostrado que apesar  dessa decomposição, o método não precisa calcular explicitamente a matriz $\mathbf{E}$ conforme apresentado no Algoritmo \ref{alg:algoritmocgprecon}.
 
 
 \vspace{1cm}
@@ -323,25 +321,25 @@ $\delta_{0} \leftarrow \delta_{new}$
 
 \subsection{Método Multigrid}
 
-O método multigrid tem como ideia principal a resolução do solver linear utilizando um conjunto de operadores que representam versões mais grosseiras do operador inicial onde os níveis mais finos são responsáveis a reduzir os erros de alta frequência enquanto os níveis mais grosseiros reduzem as frequências mais baixas do erro conforme mostrado em \citet{multigridtutorial}. O nível mais grosso geralmente é resolvido com solver direito, pois a quantidade de variáveis é pequena. 
+O método multigrid tem como ideia principal a resolução do solver linear utilizando um conjunto de operadores que representam versões mais grosseiras do operador inicial, onde os níveis mais finos são responsáveis a reduzir os erros de alta frequência enquanto os níveis mais grosseiros reduzem as frequências baixas do erro, conforme mostrado em \citet{multigridtutorial}. O nível mais grosso geralmente é resolvido com solver direito, pois a quantidade de variáveis é pequena. 
 
 Apesar de inicialmente ter sido concebido com ideias geométricas onde o operador é calculado com base no grid, poucas fontes mostram implementações dessa versão, e o método ficou mais reconhecido por sua versão algébrica onde os operadores são montados apenas a partir das entradas da matriz. Em especial, nesse trabalho será realizada a comparação com a biblioteca PyAmg (\citet{OlSc2018}).
 
 
-Entre os níveis são necessários operadores que levam os vetores de uma escala mais fina para uma escala mais grossa e vice-versa. O operador que leva um vetor de um grid fino para o grid grosso é chamado de restrição, enquanto um que leva de um nível mais grosso para um nível mais fino é chamado de pronlongamento. 
+Entre os níveis são necessários operadores que levam os vetores de uma escala mais fina para uma escala mais grossa e vice-versa. O operador que leva um vetor de um grid fino para o grid grosso é chamado de restrição, enquanto um que leva de um nível mais grosso para um nível mais fino é chamado de prolongamento. 
 
 
 Iniciando com um exemplo de solver multigrid apenas com dois níveis, chamemos de $\mathbf{A^1}$ como sendo o operador do nível fino e $\mathbf{A}^2$ o operador do grid grosso. Nesse caso, só existe um operador de prolongamento ($\mathbf{P}_2^1$) e um operador de restrição ($\mathbf{R}^2_1$). Uma iteração de um solver multigrid com dois níveis é apresentado no Algoritmo \ref{alg:ciclomg2niveis}. A cada ciclo multigrid, $\upsilon_1$ relaxações são aplicadas no grid fino antes de descer para o nível mais grosso e $\upsilon_2$ são aplicadas após o retorno do grid grosso para o grid fino. Esse ciclo é semelhante ao apresentado para o método multiescala no Capítulo \ref{ch:multiescala} com a diferença que apenas uma relaxação é aplicada no método multiescala.
 
 
-Quando mais que dois níveis são utilizados com o Multigrid, existem mais opções de ciclos possíveis. O ciclo mais simples é o ciclo V apresentado na Figura \ref{fig:ciclov}, onde se desce até o nível mais grosso e retorna para o nível mais fino formando uma figura de V. Uma variação desse ciclo é apresentada na Figura \ref{fig:ciclow}. Esses dois ciclos podem ser descritos de acordo com o Algoritmo \ref{alg:ciclomu}, onde para o ciclo V o temos de $\mu = 1$ enquanto para o ciclo W $\mu = 2$. É fácil perceber que o ciclo W possui mais relaxações e mais aplicações de operadores de restrição e prologamento e, portanto, possui um maior custo computacional.
+Quando mais que dois níveis são utilizados com o Multigrid, existem mais opções de ciclos possíveis. O ciclo mais simples é o ciclo V apresentado na Figura \ref{fig:ciclov}, onde se desce até o nível mais grosso e retorna para o nível mais fino formando uma figura de V. Uma variação é o ciclo W apresentado na Figura \ref{fig:ciclow}. Esses dois ciclos podem ser descritos de acordo com o ciclo $\mu$ descrito no Algoritmo \ref{alg:ciclomu}, onde para o ciclo V tem-se $\mu = 1$ enquanto para o ciclo W $\mu = 2$. É fácil perceber que o ciclo W possui mais relaxações e mais aplicações de operadores de restrição e prologamento e, portanto, possui um maior custo computacional.
 
 \begin{figure}[h]
 \center
 \subfigure[ Ciclo V ]{\includegraphics[width=0.5\textwidth]{chap04/figs/cicloV.png} \label{fig:ciclov}}
 \qquad
 \subfigure[Ciclo W ]{\includegraphics[width=0.8\textwidth]{chap04/figs/cicloW.png} \label{fig:ciclow}}
-\caption{Aplicação de um ciclo V com dois níveis. Os círculos $A_1$, $A_2$, $A_3$ representam relaxações com esses operadores, enquanto o círculo relacionado a $A_4$ representa a solução direta de um sistema linear. }\label{fig:exemplomultigrid}
+\caption{Aplicação de um ciclo V e W com quatro níveis. Os círculos $A_1$, $A_2$, $A_3$ representam relaxações com esses operadores, enquanto o círculo relacionado a $A_4$ representa a solução direta de um sistema linear. }\label{fig:exemplomultigrid}
 \end{figure}
 
 
@@ -401,7 +399,7 @@ $\text{relaxação}(A_i, x)$, $\upsilon_2$ vezes
 \subsubsection{Relaxações}
 
 
-Em relação as relaxações utilizadas pelo método multigrid, duas relaxações bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel}. É importante notar que, nesse caso a quantidade de operaçãoes feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n.
+Em relação as relaxações utilizadas pelo método multigrid, duas bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel}. É importante notar que, nesse caso a quantidade de operações feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n.
 
 \vspace{1cm}
 
@@ -441,13 +439,13 @@ $n \leftarrow \text{Tamanho de } A$
 
 \subsubsection{Complexidade do Grid}
  
-A implementação PyAmg nos seus solvers multigrid possui a medida de Complexidade do Grid, esse valor tenta representar o quão mais custoso é a utilização de um determinado solver multigrid em relação ao operador original. A definição desse valor é mostrado em \eqref{eq:complexidadegrid}. Como pode-se ver, ele conta quantos não zeros o somatório de todos os níveis possui a mais que o nível fino. Assim, por exemplo, considerando $\upsilon_1=1$ e $\upsilon_2=1$ cada nível irá realizar duas relaxações, com exceção do nível mais grosso, tornando o  custo de um ciclo aproximadamente $2\times\text{Complexidade Grid}$. 
+O PyAmg possui um método para os seus solver para cálculo da  Complexidade do Grid, esse valor tenta representar o quão mais custoso é a utilização de um determinado solver multigrid em relação ao operador original. A definição é mostrada em \eqref{eq:complexidadegrid}. Como pode-se ver, ele conta quantos não zeros o somatório de todos os níveis possui a mais que o nível fino. Assim, por exemplo, considerando $\upsilon_1=1$ e $\upsilon_2=1$ cada nível irá realizar duas relaxações, com exceção do nível mais grosso, tornando o  custo de um ciclo aproximadamente $2\times\text{Complexidade Grid}$. 
 
 \begin{equation}\label{eq:complexidadegrid}
     \text{Complexidade Grid} = \frac{\sum_{i=1}^n \text{nnz}(A_i)}{\text{nnz}(A_1)}
 \end{equation}
 
-Para saber o custo de um ciclo W se torna mais complicado devido a recursão associada a esse tipo de ciclo. No caso do ciclo apresentado na Figura \ref{fig:ciclow}, o operador $A_1$ são feitas duas relaxações o operador $A_2$ são feitas quatro relaxações (o vértice $A_2$ do meio em que chega e sai uma seta acontecem duas relaxações) e $A_3$ são feitas oito relaxações. O PyAmg também tem uma medida de complexidade do ciclo que é medida através de recursão e foi utilizada para as comparações que são apresentadas no Capítulo \ref{ch:implementacao}. 
+Para saber o custo de um ciclo W se torna mais complicado devido a recursão associada a esse tipo de ciclo. No caso do ciclo apresentado na Figura \ref{fig:ciclow}, são feitas duas relaxações com $A_1$ e quatro com $A_2$ (o vértice $A_2$ do meio em que chega e sai uma seta acontecem duas relaxações) e oito relaxações com $A_3$. O PyAmg também tem um método que cálcula a complexidade do ciclo através de recursão e foi utilizado para as comparaç~oes apresentadas no Capítulo \ref{ch:implementacao}. 
 
 %Primeiramente, é possível encontrar o ponto de mínimo ao de caminhar a partir ponto inicial $x_0$ e uma direção $d_0$. Dessa forma, sendo $x_1 = x_0 + \alpha d_0$ para encontrar o ponto que minimiza o $f(x_1)$ deve-se ter $\frac{d f(x_1)}{d\alpha} = 0$.
 
