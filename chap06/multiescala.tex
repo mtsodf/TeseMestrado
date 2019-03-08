@@ -112,9 +112,9 @@ Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados
 \qquad
 \subfigure[ $ \mathbf{N}_{i_x}^H  $ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_x.png}}
 
-\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_y.png}\label{fig:funcaodebasegrossahety}}
+\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_homogeneo_base_y.png}\label{fig:funcaodebasegrossahomy}}
 \qquad
-\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_y.png} \label{fig:funcaodebasegrossahomy}} 
+\subfigure[ $\mathbf{N}_{i_y}^H$ ]{\includegraphics[width=0.45\textwidth]{chap06/figs/CastelettoBases_heterogeneo_base_y.png} \label{fig:funcaodebasegrossahety}} 
 
 \caption{Exemplo de função de base gerada para módulo de Young homogêneo (lado esquerdo) e para módulo de Young heterogêneo (lado direito). Coeficiente de Poisson considerado constante e igual a 0.2. }\label{fig:funcaodebasegrossa}
 \end{figure}
@@ -127,27 +127,27 @@ Com \eqref{eq:linearbasecoarse} as funções de base do grid grosso estão deter
 \begin{empheq}[box=\mymath]{equation}\label{eq:weakcoarseformaprox}
 \begin{split}
 \text{Encontrar  }  \mathbf{u} \in \testcoarseaprox \text{ tal que} \qquad \qquad \qquad \qquad \qquad \qquad \qquad \qquad \\
-\omeint{ (\sopnabla \mathbf{w})^T D \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w}^T \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T m P_p \quad \forall \mathbf{w} \in \trialcoarseaprox
+\omeint{ (\sopnabla \mathbf{w})^T \mathbf{D} \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w}^T \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T \mathbf{m} P_p \quad \forall \mathbf{w} \in \trialcoarseaprox
 \end{split}
 \end{empheq}
 
 onde $\trialcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomcoarse] \}$ e $\testcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomfine + \qtdfreedomcoarse] \}$. Portanto, analogamente ao grid fino,  a matriz de rigidez relativa ao grid grosso tem entradas dadas por \eqref{eq:entradamatrizgrossa}.
 
 \begin{equation} \label{eq:entradamatrizgrossa}
-    \rigidmatrixcoarse_{i,j} =\omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]}
+    \rigidmatrixcoarseentry = \omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]}
 \end{equation}
 
 Substituindo \eqref{eq:linearbasecoarse} em \eqref{eq:entradamatrizgrossa}.
 
 
 \begin{align}
-     K^H_{i,j}  & =   \omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]} \nonumber \\
+     \rigidmatrixcoarseentry  & =   \omeint{(\sopnabla \basefunctioncoarse[i])^T \mathbf{D} \sopnabla \basefunctioncoarse[j]} \nonumber \\
                 & =   \omeint{(\sopnabla  \sum_{k=1}^{\qtdfreedomfine} p_{ki} \basefunctionfine[k])^T \mathbf{D} \sopnabla( \sum_{l=1}^{\qtdfreedomfine} p_{lj} \basefunctionfine[l] )}  \nonumber \\
                 & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{p_{ki} ( \sopnabla \basefunctionfine[k])^T \mathbf{D} \sopnabla \basefunctionfine[l] p_{lj}  }                  \nonumber \\
                 & =    \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} p_{ki} \left( \omeint{ ( \sopnabla \basefunctionfine[k])^T \mathbf{D} \sopnabla \basefunctionfine[l]   } \right)p_{lj}                            \nonumber \\
-                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{     p_{ki} \rigidmatrix_{kl} p_{lj}}  \nonumber \\
-                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [P]_{ki} \rigidmatrix_{kl} [P]_{lj}}                                         \nonumber \\
-                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [P^T]_{ik} \rigidmatrix_{kl} [P]_{lj}     }   \label{eq:ptapeinstein}  
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{     p_{ki} [\rigidmatrix]_{k,l} p_{lj}}  \nonumber \\
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [\mathbf{P}]_{k,i} [\rigidmatrix]_{k,l} [\mathbf{P}]_{l,j}}                                         \nonumber \\
+                & = \sum_{k=1}^{\qtdfreedomfine}  \sum_{l=1}^{\qtdfreedomfine} \omeint{   [\mathbf{P}^T]_{i,k} [\rigidmatrix]_{k,l} [\mathbf{P}]_{l,j}     }   \label{eq:ptapeinstein}  
 \end{align}
 
 
@@ -157,7 +157,7 @@ Portanto, a \eqref{eq:ptapeinstein} mostra que o operador grosseiro pode ser con
     \mathbf{K}^H = \mathbf{P}^T  \mathbf{K}^h \mathbf{P}
 \end{equation}
 
-De forma análoga, pode ser encontrar que a relação entre os lados direito dos dois operador é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
+De forma análoga, pode ser encontrar que a relação entre os lados direito dos dois operador é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Assim, o operador de restrição aqui será $\mathbf{R} = \mathbf{P}^T$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
 
 \begin{equation} \label{eq:aproximacaogrossa2}
     d^h \approx d^h_{ms} = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T} \mathbf{f}^h
@@ -172,7 +172,9 @@ Essa aproximação consiste de três passos que são descritas abaixo:
 \end{itemize}
 
 
-Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}  essa solução foi utilizada como solver através iterações de Richardson junto com um pré-condicionador do espaço fino, pois mostra que esse pré-condicionador não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que a matriz $\rigidmatrixcoarse$ é deficiente de rank e portanto a matriz de  iteração tem autovalores iguais a um.  Visando reproduzir os resultados para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para uma iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)). Ainda sobre o fato do operador ser utilizado conjuntamente com um pré-condicionador fino, essa é a abordagem típica e também é utilizada em \cite{casteletto} e \cite{msparalelo}.
+Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}, a solução do sistema é encontrado através de iterações de Richardson junto com um pré-condicionador do espaço fino, pois o artigo mostra que $\preconms$ não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que  é deficiente de rank e, portanto, a matriz de iteração tem autovalores iguais a um. 
+
+Visando reproduzir os resultados de \cite{zhouiterativo} para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para a matriz de iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)).
 
 
 \begin{figure}[h]
@@ -189,13 +191,11 @@ Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada 
 
 
 
-Pode-se verificar que o pré-condicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto utilizando o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. 
+Pode-se verificar que o pré-condicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado, pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto utilizando o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. 
 
 A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rigidez pré-condicionada ($\precon \rigidmatrix$) para o mesmo grid de $40 \times 40$, os gráficos apresentam  resultados para engrossamento 2x2, 4x4 e 8x8, todas as figuras são apresentadas com os mesmos eixos para ser possível se observar as espalhamento dos autovalores.
 
-É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que sejam necessárias mais iterações para a convergência do solver. Além disso, o pré-condicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor.
-
-
+É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que sejam necessárias mais iterações para a convergência do solver. Além disso, o pré-condicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor que não é realizada pelo pré-condicionador aditivo.
 
 
 \begin{figure}[!htbp]
@@ -205,15 +205,18 @@ A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rig
 \label{fig:autovaloresMatrizPrecon}
 \end{figure}
 
-
-
 \section{Construção do Operador de Prolongamento}
 
 A solução dos problemas locais descritos na seção anterior tem como resultado as entradas $p_{ij}$ do operador em cada um dos elemento de $\coarseelementset$. Para encontrar esses valores é necessário primeiro construir a matriz de rigidez relativa ao elemento em questão que denominaremos de $\rigidmatrixelementms$. Essa matriz será utilizada para a solução de todas as oito funções de base relacionadas com esse elemento, uma maneira de adicionar mais facilmente as condições de contorno nesse caso é utilizar o método de condição de contorno apresentado em \eqref{eq:diagident}, dessa forma, o lado direito do sistema conterá apenas os valores da condição de contorno de Dirichlet que é justamente a solução de \eqref{eq:operadoraresta}.
 
+
+Com o Algoritmo \ref{alg:calculoprolongamento} é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do pré-condicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. Uma representação matricial do prolongamento é mostrada em \eqref{eq:pronlogamento}, onde cada coluna representa uma função de base (essa representação possui um abuso de notação visto que $\basefunctioncoarse$ representa uma função e não entradas da matriz $\mathbf{P}$).
+
+
+
 \vspace{1cm}
 \begin{algorithm}[H]
-\caption{Cálculo do Prolongamento}
+\caption{Cálculo do Prolongamento}\label{alg:calculoprolongamento}
 \Inicio{
 $\mathbf{P} \leftarrow \mathbf{0}$
 
@@ -240,7 +243,6 @@ $\mathbf{P} \leftarrow \mathbf{0}$
 
 
 
-Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do pré-condicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. \eqref{eq:pronlogamento} uma representação do prolongamento onde cada coluna representa uma função de base (essa representação possui um abuso de notação visto que $\basefunctioncoarse$ representa uma função e não entradas da matriz P).
 
 
 
@@ -264,18 +266,13 @@ Com o algoritmo acima é possível obter $\mathbf{P}$ e, com ele, obter $\rigidm
 %Ele consiste basicamente em construir um operador grosso através do cálculo de funções de base em um grid gerado pelo acoplamento de elementos do grid fino. Pode ser utilizado como pré-condicionador \cite{casteletto}, como solver multinível semelhante aos solver multigrid ou ainda como aproximação para a solução original do problema. Os métodos multiescala tem sido aplicados com sucesso para problemas elípticos que é o caso do problema da elasticidade linear apresentado aqui. As vantagens do método discutido em \cite{thomashou} são que as funções de base multiescala tentam se adaptar às propriedades locais do operador, de forma que o operador grosso as conserve. As funções de base podem ser construídas através da solução de problemas independentes e, portanto, em paralelo.
 
 
-
-
-
-
-
 \section{Cálculo do NNZ do operador de prolongamento}\label{sec:complexProlong}
 
-Em um método multiescala, além da construção de um operador grosso, precisa-se realizar transformações dos vetores entre os espaços fino e grosso  Essas transformações são realizadas através de multiplicação pelos operadores $\mathbf{P}$ e $\mathbf{P}^T$. Essa seção descreve a complexidade destas operações.
+Em um método multiescala, além da construção de um operador grosso, precisa-se realizar transformações dos vetores entre os espaços fino e grosso. Essas transformações são realizadas através de multiplicação pelos operadores $\mathbf{P}$ e $\mathbf{P}^T$ e, essa seção, descreve uma estimativa para a quantidade de não zeros desses operadores.
 
-As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o valor de $n_u^H$,  não necessariamente ocorre  uma redução de elementos não nulos de $P$. Uma motivação para esse fato é que apesar da quantidade de colunas do operador de prolongamento diminuir quando há um engrossamento maior, cada coluna precisa ter uma quantidade maior de não zeros, pois o alcance das funções de base aumenta.
+As dimensões do operador de prolongamento dependem dos graus de liberdade do operador fino e do  grosso, valendo $\qtdfreedomfine \times \qtdfreedomcoarse$. Isso e importante pois, conforme visto no Capítulo \ref{ch:sistemas}, a multiplicação de uma matriz esparsa por um vetor é da ordem do número de elementos  não nulos da matriz, assim, apesar de um maior engrossamento do grid reduzir o número de colunas de $\mathbf{P}$, não necessariamente ocorre uma redução dos elementos não nulos. Uma motivação para esse fato é que apesar da quantidade de colunas do operador de prolongamento diminuir quando há um engrossamento maior, cada coluna precisa ter uma quantidade maior de não zeros, pois o alcance das funções de base aumenta.
 
-Considerando um grid fino com $\numelementsxfine \times \numelementsyfine$, um grid grosso onde cada elemento tem dimensões $q_x \times q_y$ e, ainda, que mesmo os nós de fronteira com condição de contorno de Dirichlet não são removidos da matriz de rigidez, pode-se encontrar um limite inferior para a não zeros do operador de prolongamento ($\nnzp$) considerando apenas os nós que estão no interior de um elemento grosso. Por exemplo, a Figura \ref{fig:nosinteriores}, mostra os nós interiores das células grossas para um grid $16\times16$ transformado em um grid de $2\times2$. 
+Considerando um grid fino com $\numelementsxfine \times \numelementsyfine$ elementos, um grid grosso onde cada elemento tem dimensões $q_x \times q_y$ e, ainda, que mesmo os nós de fronteira com condição de contorno de Dirichlet não são removidos da matriz de rigidez, pode-se encontrar um limite inferior para a não zeros do operador de prolongamento ($\nnzp$) considerando apenas os nós que estão no interior de um elemento grosso. Por exemplo, a Figura \ref{fig:nosinteriores}, mostra os nós interiores das células grossas para um grid $16\times16$ transformado em um grid de $2\times2$. 
 
 \begin{figure}[!htbp]
 \centering
