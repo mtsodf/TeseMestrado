@@ -123,7 +123,7 @@ Para obter um sistema linear, pode-se substituir $\mathbf{w}^h$ por cada uma das
 Definindo,
 
 \begin{equation}\label{eq:entradamatriz}
-    [\rigidmatrix]_{i,j} = \omeint{\kij{i}{j}} 
+    \rigidmatrixentry = \omeint{\kij{i}{j}} 
 \end{equation}
 
 e
@@ -161,7 +161,7 @@ onde as entradas de $\rigidmatrix $ são definidas por \eqref{eq:entradamatriz}.
     \item A matriz é simétrica, pois:
 
     \begin{eqnarray}
-    [\rigidmatrix]_{i,j} & = & ([\rigidmatrix]_{i,j})^T \\
+    \rigidmatrixentry & = & (\rigidmatrixentry)^T \\
             & = & \omeint{((\sopnabla \basefunctionfine)^T D \sopnabla \basefunctionfine[j])^T} \\
             & = & \omeint{ ( \sopnabla \basefunctionfine[j])^T D^T  ((\sopnabla \basefunctionfine)^T)^T}\\
             & = & \omeint{ ( \sopnabla \basefunctionfine[j])^T D  (\sopnabla \basefunctionfine)} \\
