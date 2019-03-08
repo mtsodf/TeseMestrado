@@ -7,10 +7,10 @@ O método \textit{Multiscale Finite Element Method} (MSFEM) foi introduzido por 
 
 Apesar do método MSFVM garantir a conservação da massa, as soluções do grid grosso prolongadas para o grid fino não se mostravam adequadas para todas as situações, assim, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
 
-A despeito de todos esses estudos,  o método multiescala continuava sendo aplicado em problemas nos quais informações do grid eram conhecidas para a construção do operador grosso, o que era uma desvantagem em relação ao multigrid algébrico. Essa desvantagem é parcialmente resolvida através do Multiescala algébrico (apresentado em \citet{msalgebrico}) que, de certa forma semelhante aos métodos multigrid algébricos, montam o operador grosso através das entradas da matriz do grid fino utilizando uma ordenação de Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis também já foram desenvolvidos como os \citet{multilevel}. \suge{problema nesta citação}
 
+Os estudos citados acima precisam do grid do problema para que seja possível aplicar o método multiescala o que é uma desvantagem quando é necessário utilizar o método como um solver "caixa-preta". Essa desvantagem é parcialmente resolvida através do multiescala algébrico, apresentado em \citet{msalgebrico}, que constroem o operador fino utilizando uma ordenação Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis, semelhantes ao multigrid também já foram desenvolvidos como em \citet{multilevel}. \suge{problema nesta citação}
 
-Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para  problemas de fluxo que, historicamente, na indústria do petróleo têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, podemos encontrar trabalhos utéis com aplicações do método de multiescala neste domínio, por exemplo \citet{mbuck}. 
+Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para problemas de fluxo que, historicamente, na indústria do petróleo têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, pode-se encontrar trabalhos úteis com aplicações do método de multiescala neste domínio, por exemplo \citet{mbuck}. 
 
 Implementações em paralelo do método multiescala também podem ser encontradas, por exemplo em \citet{msparalelo} que faz comparação com o método multigrid mostrando que o multiescala é uma opção competitiva e tem escalabilidade similar ao multigrid.
 
@@ -55,7 +55,7 @@ Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combi
 \label{eq:valorvertice}
 \end{align}
 \end{subequations}
-onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenadas $\hat{x}$ e $\hat{y}$ que representam a direção paralela e perpendicular a $\partial \coarseelement$ como mostrada na Figura \ref{fig:direcoesoperadorfronteira}, $\mathbf{x}_j$ representa as coordenadas do vértice relacionado ao grau de liberdade $\freedomcoarse[j]$ e  $\mathbf{e} = [1\quad0]^T $ se $\basefunctioncoarse$ é relacionada a um grau de liberdade x caso contrário,  $\mathbf{e}=[0\quad1]^T$.
+onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenadas $\hat{x}$ e $\hat{y}$ que representam a direção paralela e perpendicular a $\partial \coarseelement$ como mostrada na Figura \ref{fig:direcoesoperadorfronteira}, $\mathbf{x}_j$ representa as coordenadas do vértice relacionado ao grau de liberdade $\freedomcoarse[j]$ e  $\mathbf{e} = [1\quad0]^T $ se $\basefunctioncoarse$ é relacionada a um grau de liberdade x, caso contrário,  $\mathbf{e}=[0\quad1]^T$.
 
 \begin{equation}\label{eq:sopnabladef}
 \sopnablafront = \begin{bmatrix}
@@ -87,7 +87,7 @@ Dessa forma, dado um elemento quadrilátero $\coarseelement$, este possui oito f
 \label{fig:coarsefunctionslocalnum}
 \end{figure}
 
-Para cada uma das funções é necessário resolver \eqref{eq:problemaslocais}, a solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ na fronteira do elemento $\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, pode ser encontrada no apêndice de \cite{casteletto}. 
+Para cada uma das funções $\basefunctionelemcoarse$ é necessário resolver \eqref{eq:problemaslocais}. A solução é dividida em duas etapas, primeiro é resolvido \eqref{eq:operadoraresta} utilizando como condição de contorno \eqref{eq:valorvertice}, a resposta representa os valores de $\basefunctionelemcoarse$ em $\partial\coarseelement$. Essa etapa pode ser realizada utilizando o  método dos elementos finitos onde a matriz relativa a cada elemento, que nesse caso são segmentos de reta, pode ser encontrada no apêndice de \cite{casteletto}. 
 
 
 Com os valores para  fronteira $\coarseelement$  definidos, eles são utilizados como condição de contorno de Dirichlet para \eqref{eq:operadorlocal}. Esse problema também é resolvido com elementos finitos onde os resultados encontrados serão chamados de coeficientes $p_{ij}$ que descrevem $\basefunctioncoarse$ como combinação linear de $\basefunctionfine$ conforme mostrado em \eqref{eq:linearbasecoarse}. 
@@ -298,11 +298,11 @@ Desenvolvendo,
                 & \ge  16   (\numelementsxfine - 1)  (\numelementsyfine - 1) \label{eq:nnzp}
 \end{align}
 
-Assim, \eqref{eq:nnzp} mostra que $\nnzp$ é no mínimo na ordem do número de elementos do grid fino $\numelementsxfine\times\numelementsyfine$. Um argumento análogo pode ser feito para mostrar que a quantidade de não zeros não é maior que a ordem da quantidade de elementos finos, basta considerar majorar $\nnzp$ considerando que todos os nós são interiores, visto que são eles que tem a maior quantidade de funções de base grossas com valor diferente zero, em comparação com os nós pertencentes as arestas e vértices dos elementos grossos. Dessa forma, pode-se escrever \eqref{eq:nnzprawj}.
+Assim, \eqref{eq:nnzp} mostra que $\nnzp$ é no mínimo na ordem do número de elementos do grid fino $\numelementsxfine\times\numelementsyfine$. Um argumento análogo pode ser feito para mostrar que a quantidade de não zeros não é maior que a ordem da quantidade de elementos finos, basta majorar $\nnzp$ considerando que todos os nós contribuem com o mesmo número de não zeros de um nó interior, visto que são eles que tem a maior quantidade de funções de base com valor diferente zero, em comparação com os nós pertencentes as arestas e vértices dos elementos grossos. Dessa forma, pode-se escrever \eqref{eq:nnzprawj}.
 
 \begin{equation}\label{eq:nnzprawj}
     \nnzp \le 8 \times 2 \times \underbrace{(\numelementsxfine + 1)(\numelementsyfine + 1)}_{\text{qtd. nós finos}}
 \end{equation}
 
 
-Portanto, independente do nível engrossamento, a quantidade de não zeros do prolongamento terá não zeros da ordem da dimensão do grid fino. Esse fato é importante, pois, a partir de um certo ponto, não será mais vantajoso engrossar mais o grid por conta do preço dessa multiplicação  que terá sempre que ser pago.
+Portanto, independente do nível engrossamento, a quantidade de não zeros do prolongamento terá não zeros da ordem da dimensão do grid fino. Esse fato é importante, pois, a partir de um certo ponto, não será vantajoso engrossar mais o grid por conta do preço da multiplicação matriz vetor pelo prolongamento.

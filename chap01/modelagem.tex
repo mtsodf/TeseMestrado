@@ -98,7 +98,7 @@ As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que a
 \label{fig:rochaComFluido}
 \end{figure}
 
-Para isso pode-se utilizar a teoria de consolidação de poroelasticidade desenvolvida por Biot para três dimensões que mostra que a tensão efetiva na rocha ($\stef$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva} conforme mostrado em \citet{ResGeomec}.
+Conforme mostrado pela teoria consolidação de poroelasticidade desenvolvida por Biot para três dimensões, a tensão efetiva na rocha ($\stef$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva} conforme mostrado em \citet{ResGeomec}.
 
 
 \begin{equation}
@@ -111,18 +111,18 @@ Para isso pode-se utilizar a teoria de consolidação de poroelasticidade desenv
 \end{equation}
 
 
-Onde $\sxx$, $syy$  e $szz$ são as tensões efetivas, $\alpha$ é o coeficiente de Biot e $P_p$ a pressão de poros. O coeficiente de Biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha e está no intervalo $\alpha \in [0,1]$.
+Onde $\sxx$, $\syy$  e $\szz$ são as tensões efetivas, $\alpha$ é o coeficiente de Biot e $P_p$ a pressão de poros. O coeficiente de Biot representa o quanto a pressão de poros do fluído suporta a tensão total na rocha e está no intervalo $\alpha \in [0,1]$.
 
 As equações \eqref{eq:equilibrio1} podem ser reescritas como \eqref{eq:equilibrio} substituindo as tensões totais ($\st$) pela tensões efetivas na rocha ($\stef$).
 
 \begin{equation}
 \label{eq:equilibrio}
 \left\{\begin{matrix}
-\dx[\sxx]  + \dy[\syx] + \dz[\szx] - \dx[\alpha P_p] + f_x   = 0
+\dx[\sxx]  + \dy[\syx] + \dz[\szx] - \dx[\alpha P_p] - f_x   = 0
 \\
-\dx[\sxy]  + \dy[\syy] + \dz[\szy] - \dy[\alpha P_p]  + f_y   = 0
+\dx[\sxy]  + \dy[\syy] + \dz[\szy] - \dy[\alpha P_p] - f_y   = 0
 \\
-\dx[\sxz]  + \dy[\syz] + \dz[\szz] - \dz[\alpha P_p] + f_z   = 0
+\dx[\sxz]  + \dy[\syz] + \dz[\szz] - \dz[\alpha P_p] - f_z   = 0
 \end{matrix}\right.
 \end{equation}
 
@@ -131,7 +131,7 @@ Ou ainda, escrevendo \eqref{eq:equilibrio} utilizando os operadores divergente, 
 
 \begin{equation}
 \label{eq:equilibrio_matriz}
-\nabla \cdot \stef - \nabla \alpha \mathbf{m} P_p + \mathbf{f} = 0
+\nabla \cdot \stef - \nabla \alpha \mathbf{m} P_p - \mathbf{f} = 0
 \end{equation}
 
 Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt considerando as definições conforme \eqref{eq:definicoesvoigt}.
@@ -188,7 +188,7 @@ f_{z}
 
 \subsection{Relações Constitutivas}
 
-A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação, seis tensões não determinadas, é necessário colocar em função das variáveis de deslocamento para que seja possível resolve-la. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. 
+A Equação \eqref{eq:equilibrio_final} apresenta o equilíbrio em função das tensões, porém, pelo grande número de variáveis dessa equação, é necessário colocar em função das variáveis de deslocamento para que seja possível resolve-la. O Campo de deslocamentos será representado pela variável $\deslocamento = [u_x \quad u_y \quad u_z]^T$. A deformação ($\deformacao$) se relaciona com o deslocamento de acordo com \eqref{eq:defor_desloc}. 
 
 \begin{equation}
 \label{eq:defor_desloc}
@@ -238,7 +238,7 @@ A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em funç�
 \sopnabla^T \mathbf{D} \sopnabla \deslocamento - \sopnabla^T\alpha \mathbf{m} P_p - \mathbf{f} = 0
 \end{equation}
 
- Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar de três dimensões para duas dimensões existem duas abordagens possíveis: tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
+ Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar \eqref{eq:edp_geomec} de três dimensões para duas dimensões existem duas abordagens possíveis: tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
 
 \begin{equation} \label{eq:elasticplanestress}
 \mathbf{D}_{stress} = \frac{E}{1-\upsilon^2}
@@ -307,7 +307,7 @@ u_y
 \end{matrix}
 \end{equation}
 
-Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno a de Dirichlet, onde o deslocamento da fronteira é prescrito e condição de contorno de Neumann, onde a tensão normal a fronteira é preescrita. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$ a fronteira do domínio e dividindo a fronteira em duas partes $\Gamma_u$ e $\Gamma_{\sigma}$ onde $\Gamma_u \cup \Gamma_{\sigma} = \Gamma$, $\Gamma_u \cap \Gamma_{\sigma} = \emptyset $ e possuem condição de Dirichlet e Neumann respectivamente. O problema fica então totalmente definido em \eqref{eq:edp_geomec_contorno}.
+Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno a de Dirichlet, onde o deslocamento da fronteira é prescrito e condição de contorno de Neumann, onde a tensão normal a fronteira é preescrita. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$ a fronteira do domínio, pode-se dividi-la em duas partes $\Gamma_u$ e $\Gamma_{\sigma}$ onde $\Gamma_u \cup \Gamma_{\sigma} = \Gamma$, $\Gamma_u \cap \Gamma_{\sigma} = \emptyset $ que possuem condição de Dirichlet e Neumann respectivamente. O problema fica então totalmente definido em \eqref{eq:edp_geomec_contorno}.
 
 
 \begin{equation} \label{eq:edp_geomec_contorno}
@@ -322,4 +322,4 @@ Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno par
 \end{aligned}  
 \end{equation}
 
-onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$,  $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{t} = [ \bar{t}_x \quad \bar{t}_y ]$  . O problema \eqref{eq:edp_geomec_contorno} pode ser descrita mais genericamente com regiões da fronteira onde uma condição de contorno de Dirichlet é aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.
+onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$, $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{t} = [ \bar{t}_x \quad \bar{t}_y ]$. O problema \eqref{eq:edp_geomec_contorno} pode ser descrito mais genericamente com regiões da fronteira onde uma condição de contorno de Dirichlet é aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.

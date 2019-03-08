@@ -307,13 +307,13 @@ u_x \\ u_y \\ u_z
 \newcommand{\nnzp}{ \text{nnz}_p }
 
 
-\newcommand{\numelementsfine} {n^h}
-\newcommand{\numelementsxfine}{n^h_x}
-\newcommand{\numelementsyfine}{n^h_y}
+\newcommand{\numelementsfine} {n_{\text{e}}^h}
+\newcommand{\numelementsxfine}{n_{\text{e}_x}^h}
+\newcommand{\numelementsyfine}{n_{\text{e}_y}^h}
 
-\newcommand{\numelementscoarse} {n^H}
-\newcommand{\numelementsxcoarse}{n^H_x}
-\newcommand{\numelementsycoarse}{n^H_y}
+\newcommand{\numelementscoarse} {n_{\text{e}}^H}
+\newcommand{\numelementsxcoarse}{n_{\text{e}_x}^H}
+\newcommand{\numelementsycoarse}{n_{\text{e}_y}^H}
 
 \newcommand{\coarsefactor}{C_r}
 \newcommand{\coarsefactorx}{C_{r_x}}
@@ -345,9 +345,13 @@ u_x \\ u_y \\ u_z
 
 \newcommand{\intbase}[1]{\int_{-1}^{1}\int_{-1}^{1} #1 d\xi d\eta }
 
-
-
 \newcommand{\st}{\pmb{\sigma}}
+
+\newcommand{\neumann}{\int_{\Gamma_\sigma} \basefunctionfine \bar{\mathbf{t}}  d\Gamma}
+
+\newcommand{\poroload}{\omeint{(\sopnabla \basefunctionfine)^T \mathbf{m} P_p}}
+
+
 %TENSAO EFETIVA
 \newcommand{\stef}{\st^{\prime\prime}}
 
@@ -365,4 +369,6 @@ u_x \\ u_y \\ u_z
 \newcommand{\qcg}[1][0]{\mathbf{q}^{(#1)}}
 \newcommand{\zcg}[1][0]{\mathbf{z}^{(#1)}}
 \newcommand{\xcg}[1][0]{\mathbf{x}^{(#1)}}
+
+
 
