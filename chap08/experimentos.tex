@@ -2,7 +2,7 @@ Nesse capítulo, serão apresentados os resultados obtidos utilizando o método 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. Para tanto, foi montado um teste semelhante ao proposto em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada em \eqref{eq:irinasol} em um domínio  $L \times W$.
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. Para tanto, foi montado um teste semelhante ao proposto em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada em \eqref{eq:irinasol} em um domínio  $[0,L] \times [0, W]$.
 
 
 \begin{equation} \label{eq:irinasol}
@@ -33,7 +33,7 @@ O erro entre a solução calculada pelo método dos elementos finitos pode entã
 com a solução analítica através do erro relativo mostrado em \eqref{eq:erroAnalitico}.
 
 \begin{equation} \label{eq:erroAnalitico}
-    \epsilon_{\infty} =\frac{|u_{fem} - u_{ref}|_{\infty}}{|u_{ref}|_{\infty}}
+    \epsilon_{\infty} =\frac{|\deslocamento_{fem} - \deslocamento_{ref}|_{\infty}}{|\deslocamento_{ref}|_{\infty}}
 \end{equation}
 onde $u_{ref} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})]^T$ e $u_{fem}$ é a solução obtida com o método dos elementos finitos. A variação do erro com o tamanho da discretização do domínio é mostrado na Figura  \ref{fig:SecondErrorTest} onde no eixo x o logaritmo do tamanho de cada elemento ($\Delta x$) de cada elemento e no eixo y o logaritmo de $\epsilon_{\infty}$. Também como referência é mostrada uma reta de coeficiente angular dois para comprovar o decaimento quadrático do erro.
 
@@ -47,7 +47,7 @@ onde $u_{ref} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})]^T$ e 
 \end{figure}
     
     
-Um segundo caso com resultado analítico é o cisalhamento puro (Simple Shear). Nesse caso, o problema é definido na forma apresentada em \eqref{eq:simpleshear}  e solução é dada por $u(x,y) = [y, 0]^T$. Como a solução é um polinômio do primeiro grau, essa pode ser representada exatamente no espaço gerado pelas funções de base bilineares e, então, os erros de truncamento, nesse caso, não existem, restando apenas  erros de arredondamento. \suge{Talvez seja o caso de definir, nos capítulos anteriores, o que são os \textit{erros de truncamento e de arredondamento}, apenas para o texto ser autocontido}
+Um segundo caso com resultado analítico é o cisalhamento puro (\textit{Simple Shear}). Nesse caso, o problema é definido na forma apresentada em \eqref{eq:simpleshear}  e solução é dada por $u(x,y) = [y, 0]^T$. Como a solução é um polinômio do primeiro grau, essa pode ser representada exatamente no espaço gerado pelas funções de base bilineares e, então, os erros de truncamento, nesse caso, não existem, restando apenas  erros de arredondamento. \suge{Talvez seja o caso de definir, nos capítulos anteriores, o que são os \textit{erros de truncamento e de arredondamento}, apenas para o texto ser autocontido}
 
 \begin{equation}\label{eq:simpleshear}
     \begin{aligned}
@@ -72,7 +72,7 @@ Atestado o bom funcionamento do método dos elementos finitos, os resultados das
     \centering
     \begin{tabular}{ccccl}
     \cline{1-4}
-    \multicolumn{1}{|c|}{\textbf{Nome}} & \multicolumn{1}{c|}{\textbf{Nx}} & \multicolumn{1}{c|}{\textbf{Ny}} & \multicolumn{1}{c|}{\textbf{Caso Real}} &  \\ \cline{1-4}
+    \multicolumn{1}{|c|}{\textbf{Nome}} & \multicolumn{1}{c|}{$\numelementsxfine$} & \multicolumn{1}{c|}{$\numelementsyfine$ } & \multicolumn{1}{c|}{\textbf{Caso Real}} &  \\ \cline{1-4}
     \multicolumn{1}{|c|}{caso A}        & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{100}         & \multicolumn{1}{c|}{Não}                   &  \\ \cline{1-4}
     \multicolumn{1}{|c|}{caso B}        & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{320}         & \multicolumn{1}{c|}{Não}                   &  \\ \cline{1-4}
     \multicolumn{1}{|c|}{caso C}        & \multicolumn{1}{c|}{103}         & \multicolumn{1}{c|}{56}          & \multicolumn{1}{c|}{Não}                   &  \\ \cline{1-4}
@@ -108,7 +108,7 @@ Atestado o bom funcionamento do método dos elementos finitos, os resultados das
 \end{equation}
 
 \begin{equation} \label{eq:correlacaoTensao}
-\sigma_y^{\prime\prime} = \sigma_y - p = 0.12218|y| - 0.1 |y|
+\syy = \styy - P_p = 0.12218|y| - 0.1 |y|
 \end{equation}
 
 \begin{equation} \label{eq:correlacaoYoung}
@@ -128,7 +128,7 @@ O grid utilizado é apresentado na Figura \ref{fig:gridBase10x10} com as dimens�
 \end{figure}
 
 
-O caso C é um caso de reservatório sintético com grid de geometria mais próxima aos reservatórios reais e,  diferentemente dos casos A e B, os valores de poisson não são constantes ao longo do domínio. A Figura \ref{fig:casoCgrid} no anexo \ref{ch:figurasReservatorios} apresenta o grid e os valores do módulo de Young e módulo de Poisson. São apresentados também no apêndice figuras dos casos D e E que tiveram as escalas omitidas por se tratarem de modelos de campos reais.
+O caso C é um caso de reservatório sintético com grid de geometria mais próxima aos reservatórios reais e, diferentemente dos casos A e B, os valores de poisson não são constantes ao longo do domínio. A Figura \ref{fig:casoCgrid} no Apêndice \ref{ch:figurasReservatorios} apresenta o grid e os valores do módulo de Young e módulo de Poisson. São apresentados também no apêndice figuras dos casos D e E.
 
 
 As condições de contorno utilizadas para todos os modelos são representadas na Figura \ref{fig:CondicoesContorno}, a base do modelo é considerada fixa ($\deslocamento=0$), as bordas laterais tem movimento possível apenas na direção y e topo do modelo é livre de tração.
@@ -152,8 +152,8 @@ Dada que o operador multiescala gera um operador grosso com solução que tenta 
 \end{equation}
 
 
-As Figuras \ref{fig:comparacaoFinoGrosso} apresentam a comparação entre a solução do grid fino e do grosso. Pode-se notar que a solução é distorcida mas mesmo assim guarda similaridades com a solução original. Para uma avaliação quantitativa é apresentada a \ref{table:erroRelativoEngrossamento}, a primeira coluna apresenta quantos elementos finos foram utilizados para gerar um grosso. Fica claro que quanto maior o nível de engrossamento mais distante da solução original da malha fina com o engrossamento de 64x64 já mostrando uma solução bem afastada da original. 
-Para o caso de engrossamento 32x32 a Figura \ref{fig:subsidence} mostra a subsidência do topo do reservatório para a solução fina e solução grossa e, pode-se constatar, uma boa aproximação da subsidência pelo grid grosso.
+As Figuras \ref{fig:comparacaoFinoGrosso} apresentam a comparação entre a solução do grid fino e grosso com fator de engrossamento $32\times32$. Pode-se notar que a solução é distorcida mas mesmo assim guarda similaridades com a solução original. Para uma avaliação quantitativa é apresentada na Tabela \ref{table:erroRelativoEngrossamento}, a primeira coluna apresenta o fator de engrossamento e a segunda o erro relativo. Fica claro que quanto maior o nível de engrossamento mais distante da solução original da malha fina com o engrossamento de 64x64 já mostrando uma solução bem afastada da original. 
+A Figura \ref{fig:subsidence} mostra a subsidência do topo do domínio para a solução fina e grossa e, pode-se constatar, uma boa aproximação da subsidência pelo grid grosso.
 
 
 \begin{table}[]
@@ -178,7 +178,7 @@ Para o caso de engrossamento 32x32 a Figura \ref{fig:subsidence} mostra a subsid
 \subfigure[ Solução do grid fino. À esquerda, o deslocamento em x e, à direita, o deslocamento em y]{\includegraphics[width=\textwidth]{chap08/figs/Reservoir320x320_10x10_permanent.png}\label{fig:casoB_10x10_fine}}
 \qquad
 \subfigure[Solução do grid grosso. À esquerda, o deslocamento em x e, à direita, o deslocamento em y ]{\includegraphics[width=\textwidth]{chap08/figs/Reservoir320x320_10x10_permanent_multiscale_total.png}\label{fig:casoB_10x10_fine_coarse}}
-\caption{Comparação da solução do grid fino com a solução do grid grosso.  }
+\caption{Comparação da solução do grid fino com a solução do grid grosso para engrossamento $32\times32$.  }
 \label{fig:comparacaoFinoGrosso}
 \end{figure}
 
@@ -199,7 +199,7 @@ e, portanto, o número de iterações tem que ser reduzido o suficiente para com
 dos pré-condicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador aditivo é que caso os $\preconfine$ e $\preconms$ sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente com o Gradiente Conjugado.
 
 
-As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{table:precondcasoDcomp} e \ref{table:precondcasoEcomp} mostram a quantidade de iterações e o tempo utilizando utilizando o pré-condicionador aditivo e o multiplicativo junto com o solver Bicgstab. Nesses testes o pré-condicionador $\preconfine$ foi o ILU(0). É importante perceber que para menores níveis de engrossamento a quantidade de iterações feitas pelo aditivo é bem maior chegando a 120\% para o caso E. Porém, ao aumentar o nível de engrossamento, em geral a quantidade de iterações fica entre 10\% e 20\% maior. Além disso, nos casos B e D os tempos de solução ótimo foram obtidos com o pré-condicionador aditivo, tornando-o uma alternativa competitiva ao multiplicativo com melhorias de em torno de 15\%.
+As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{table:precondcasoDcomp} e \ref{table:precondcasoEcomp} mostram a quantidade de iterações e o tempo utilizando utilizando o pré-condicionador aditivo e o multiplicativo com o solver Bicgstab. Nesses testes o pré-condicionador $\preconfine$ foi o ILU(0). É importante perceber que para menores níveis de engrossamento a quantidade de iterações feitas pelo aditivo é bem maior chegando a 120\% para o caso E. Porém, ao aumentar o nível de engrossamento, em geral a quantidade de iterações fica entre 10\% e 20\% maior. Isso deve ocorrer pelo fato da solução grossa estar mais distante da fina e o acoplamento aditivo ou multiplicativo começam a ficar com número de iterações semelhantes .Além disso, nos casos B e D os tempos de solução ótimo foram obtidos com o pré-condicionador aditivo, tornando-o uma alternativa competitiva ao multiplicativo com melhorias de em torno de 15\%.
 
 \input{chap08/tabelaA.tex}
 \input{chap08/tabelaB.tex}
@@ -209,7 +209,7 @@ As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{tabl
 
 \subsection{Comparação com Multigrid e ILU}
 
-Nessa seção, são apresentadas comparações entre o pré-condicionadores multiescala aditivo, multigrid e ILU. Para esse comparação foi utilizado o solver multigrid Pyamg, que é um solver multigrid  descrito em \cite{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid, como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script \textbf{solver\_diagnotics.py} disponibilizado pela equipe do Pyamg no repositório ( https://github.com/pyamg/pyamg-examples ). Esse script testa diferentes configurações de solver multigrid para uma dada matriz e seleciona aquele mais eficiente para o problema proposto. Todos os resultados do script estão presentes no Anexo \ref{ch:pyamgSolver}. Para o caso B e caso E, o script não convergiu, dessa forma, para o caso B foi utilizado a mesma configuração de solver que o caso A, por terem sido montados com as mesmas correlações , enquanto para o caso E foi utilizada a mesma escolha que o caso D, por ser o único outro reservatório real. Abaixo seguem algumas características importantes das configurações encontradas:
+Nessa seção, são apresentadas comparações entre o pré-condicionadores multiescala aditivo, multigrid e ILU. Para esse comparação foi utilizado o Pyamg, que é um solver multigrid  descrito em \citet{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid, como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script \textbf{solver\_diagnotics.py} disponibilizado pela equipe do Pyamg no repositório (https://github.com/pyamg/pyamg-examples). Esse script testa diferentes configurações de solver multigrid para uma dada matriz e seleciona aquele mais eficiente para o problema proposto. A configurações geradas pelo script estão no Anexo \ref{ch:pyamgSolver}. Para o caso B e caso E, o script não convergiu e, para o caso B foi utilizado a mesma configuração de solver que o caso A, por terem sido montados com as mesmas correlações. Para o caso E foi utilizada a mesma escolha que o caso D, por ser o único outro reservatório real. Abaixo seguem algumas características importantes das configurações encontradas:
 
 \begin{itemize}
     \item máximo de quinze níveis multigrid
@@ -221,8 +221,15 @@ Nessa seção, são apresentadas comparações entre o pré-condicionadores mult
 
 A figura \ref{fig:reservatorio320x320_1} apresenta o tempo de solução do sistema utilizando o método multiescala e multigrid (Pyamg) como precondicionador para o gradiente conjugado para o caso B. São apresentados o resíduo ao longo das iterações, o tempo de execução do solver, a quantidade de iterações do solver linear e o tempo da iteração.
 
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_1.png}
+\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações e tempo do solver por iteração. }
+\label{fig:reservatorio320x320_1} 
+\end{figure}
 
-Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre, pois a solução do problema grosso se torna cada vez mais distante da solução da malha fina fazendo com que o pré-condicionador funcione pior. Entretanto, quanto mais grossa a malha, mais fácil a solução sistema linear grosso e então existe uma solução de compromisso entre o engrossamento da malha e o tempo de execução. É importante lembrar também que sempre é necessário pagar o custo da multiplicação pelo operador de prolongamento e de restrição que é da ordem do grid fino. Uma constatação desse fato aparece na Figura \ref{fig:proporcaoPrecondicionador} que mostra a proporção do tempo gasto do pré-condicionador aditivo entre a aplicação de um ILU(1) e de um multiescala com diferentes níveis de engrossamento.
+
+Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre, pois a solução do problema grosso se torna cada vez mais distante da solução da malha fina fazendo com que o pré-condicionador funcione pior. Entretanto, quanto mais grossa a malha, mais fácil a solução sistema linear grosso e então existe uma solução de compromisso entre o engrossamento da malha e o tempo de execução. É importante lembrar também que sempre é necessário pagar o custo da multiplicação pelo operador de prolongamento e de restrição que é da ordem do grid fino. Uma constatação desse fato aparece na Figura \ref{fig:proporcaoPrecondicionador} que mostra a proporção do tempo gasto do pré-condicionador aditivo entre a aplicação de um ILU(1) e de um multiescala com diferentes níveis de engrossamento, pode-se perceber que quanto maior o engrossamento a fração de tempo utilizada pelo pré-condicionador multiescala fica menor, pois quanto maior o engrossamento mais desprezível fica o tempo de solução do grid grosso sendo o tempo do pré-condicionador multiescala dominado pelo prolongamento e restrição.
 
 
 \begin{figure}[h]
@@ -238,16 +245,11 @@ Um primeiro ponto a se observar é o aumento do número de iterações a cada ve
 \end{figure}
 
 
-No caso B, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos grossos utilizando 8x8 elementos finos. Ainda sobre o número de iterações, quando utilizado um elemento grosso de 2x2 o número de iterações é o menor encontrado, porém o custo de solução do sistema grosso impossibilita a utilização desse nível de engrossamento, uma maneira de aproveitar essa redução do número de iterações seria utilizar um pré-condicionador multiescala multinível conforme apresentado em \cite{multilevel} para volumes finitos, desse modo, não seria necessário resolver o sistema linear na malha 2x2 sendo necessário apenas aplicar uma relaxação nesse nível similarmente ao multigrid.
+No caso B, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos utilizando 8x8 elementos finos. Ainda sobre o número de iterações, quando utilizado um elemento grosso de 2x2 o número de iterações é o menor encontrado, porém o custo de solução do sistema grosso impossibilita a utilização desse nível de engrossamento. Uma maneira de aproveitar essa redução do número de iterações seria utilizar um pré-condicionador multiescala multinível conforme apresentado em \cite{multilevel} para volumes finitos, desse modo, não seria necessário resolver o sistema linear na malha 2x2 sendo necessário apenas aplicar uma relaxação nesse nível similarmente ao multigrid.
 
 Na figura \ref{fig:reservatorio320x320_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. É importante notar que há uma redução expressiva no número de iterações do Pyamg, e multiescala em relação aos ILU (redução em torno de 83\%) nos dois casos. Essa redução vem com o preço de um pré-condicionador com um custo computacional mais caro. Já uma comparação de tempo mostra uma redução de 72\% com MS(8,8)+ILU(1) em relação a execução com o pré-condicionador ILU(1). A comparação com o tempo do Pyamg pode não condizer com a realidade por se tratarem de implementações diferentes, posteriormente serão mostradas outros tipos de comparação com o Pyamg.
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth]{chap08/figs/reservatorio320x320_1.png}
-\caption{Resultados para caso B. Histórico do resíduo relativo ao longo das iterações, tempo do solver em segundos, número de iterações e tempo do solver por iteração. }
-\label{fig:reservatorio320x320_1} 
-\end{figure}
+
 
 
 \begin{figure}[!htbp]
@@ -281,12 +283,12 @@ Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que ob
 Nos casos C e D novamente a quantidade de iterações do Pyamg e multiescala foram semelhantes, mostrando um bom desempenho dos dois métodos, porém, no caso E o pré-condicionador multigrid começa decrescendo rapidamente mas passa por um ponto de resíduo $10^{-6}$ que a inclinação da queda muda rapidamente fazendo com que o solver multigrid tenha um número de iterações próxima ao do ILU(1). 
 
 
-A Tabela $\ref{tab:comparacaoILU}$ apresenta a quantidade de iterações do solver, tempo e speed-up de cada caso do pré condicionador multiescala em relação ao ILU(1). Pode-se notar que os maiores speed-ups ocorreram nos casos com maiores dimensões (caso B e caso E) pois foram esses que obtiveram, proporcionalmente, as maiores reduções no número de iterações.
+A Tabela $\ref{tab:comparacaoILU}$ apresenta a quantidade de iterações do solver, tempo e speed-up de cada caso do pré-condicionador multiescala em relação ao ILU(1). Pode-se notar que os maiores speed-ups ocorreram nos casos com maiores dimensões (caso B e caso E) pois foram esses que obtiveram, proporcionalmente, as maiores reduções no número de iterações.
 
 Em relação ao Pyamg, a Tabela \ref{tab:comparacaoMsxMgProlongamento} apresenta a quantidade de não zeros somando todos os níveis dos operadores de prolongamento do multigrid, o número de não zeros de todas as operações de prolongamento de um ciclo W e o número de não zeros do operador de prolongamento do multiescala. Nesse caso, pode-se constatar que a quantidade de não zeros dos operador de prolongamento do multiescala tem em torno de 2 a 2,2 vezes a quantidade de não zeros das multiplicações matriz vetor de um ciclo W do método multigrid sendo então uma vantagem do método multigrid.
 
 Por outro lado, a Tabela \ref{tab:comparacaoMsxMgComplexidade} apresenta a complexidade dos operadores multigrid gerados para cada um dos casos. Além disso, possui a complexidade do ciclo W que considera as relaxações feitas em cada nível. Portanto, em relação as relaxações o multiescala necessita de bem menos capacidade computacional que fica em torno de 4,8 e 5,7 vezes menor que no multigrid que o torna mais eficiente nesse quesito. 
-Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o número de iterações realizadas foram 23 enquanto no multiescala foram 160 fazendo com o problema do prolongamento seja superado por ter feito menos que duas vezes a quantidade de iterações. Para os outros casos, há indícios de que o multiescala tenha se saído melhor dado que as operações de relaxação são bem mais custosas no multigrid. Um outro ponto que pesa a favor do multiescala é que a multiplicação matriz vetor é mais facilmente paralelizável que as relaxações.
+Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o número de iterações realizadas foram 23 enquanto no multiescala foram 160 fazendo com o problema do prolongamento seja superado por ter feito menos que duas vezes a quantidade de iterações. Para os outros casos, o multiescala se saiu melhor dado que, apesar do prolongamento serem mais caras (entre 1.99 e 2.18), as operações de relaxação são bem mais custosas no multigrid (entre 4,8 e 5,18 vezes mais custosas). Um outro ponto que pesa a favor do multiescala é que a multiplicação matriz vetor é mais facilmente paralelizável que as relaxações.
 
 \begin{table}[]
 
@@ -303,19 +305,33 @@ Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o n�
 \end{tabular}
 \end{table}
 
-%TODO fazer normalizado pelos não zeros da matriz
+% \begin{table}[]
+% \centering
+% \caption{Tabela com comparação entre número de não zeros das multiplicações matriz vetor de cada ciclo multigrid.} \label{tab:comparacaoMsxMgProlongamento}
+% \begin{tabular}{|c|c|c|c|c|}
+% \hline
+% \textbf{Caso} & \textbf{NNZ Mg} & \textbf{NNZ W} & \textbf{NNZ Ms} & \textbf{NNZ Ms/NNZ W} \\ \hline
+% Caso B        & 556916                       & 877595                   & 1799622                  & 2.05                                     \\ \hline
+% Caso C        & 29096                        & 42398                    & 92400                    & 2.18                                     \\ \hline
+% Caso D        & 205683                       & 355014                   & 705888                   & 1.99                                     \\ \hline
+% Caso E        & 1037150                      & 1718665                  & 3464370                  & 2.02                                     \\ \hline
+% \end{tabular}
+% \end{table}
+
 \begin{table}[]
 \centering
-\caption{Tabela com comparação entre número de não zeros das multiplicações matriz vetor de cada ciclo multigrid.} \label{tab:comparacaoMsxMgProlongamento}
+\caption{Tabela com comparação entre número de não zeros das multiplicações pelos prolongamentos de cada ciclo. Valores normalizados pela quantidade de não zeros da matriz.} \label{tab:comparacaoMsxMgProlongamento}
 \begin{tabular}{|c|c|c|c|c|}
 \hline
 \textbf{Caso} & \textbf{NNZ Mg} & \textbf{NNZ W} & \textbf{NNZ Ms} & \textbf{NNZ Ms/NNZ W} \\ \hline
-Caso B        & 556916                       & 877595                   & 1799622                  & 2.05                                     \\ \hline
-Caso C        & 29096                        & 42398                    & 92400                    & 2.18                                     \\ \hline
-Caso D        & 205683                       & 355014                   & 705888                   & 1.99                                     \\ \hline
-Caso E        & 1037150                      & 1718665                  & 3464370                  & 2.02                                     \\ \hline
+Caso B & 0.15 & 0.24 & 0.49 & 2.05 \\ \hline
+Caso C & 0.14 & 0.21 & 0.45 & 2.18 \\ \hline
+Caso D & 0.14 & 0.24 & 0.48 & 1.99 \\ \hline
+Caso E & 0.15 & 0.24 & 0.49 & 2.02 \\ \hline
 \end{tabular}
 \end{table}
+
+
 
 
 \begin{table}[]
@@ -323,7 +339,7 @@ Caso E        & 1037150                      & 1718665                  & 346437
 \caption{Tabela entre complexidade dos operadores multigrid e multiescala.} \label{tab:comparacaoMsxMgComplexidade}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\textbf{Caso} & \textbf{Complex. do Grid} & \textbf{Complex. do Ciclo} & \textbf{Complex. Multiescala} \\ \hline
+\textbf{Caso} & \textbf{Complex. do Grid} & \textbf{Complex. do Ciclo W} & \textbf{Complex. Multiescala} \\ \hline
 Caso B        & 1.53                          & 5.18                           & 1.041                             \\ \hline
 Caso C        & 1.57                          & 4.83                           & 1.033                             \\ \hline
 Caso D        & 1.63                          & 6.53                           & 1.040                             \\ \hline
@@ -333,9 +349,9 @@ Caso E        & 1.55                          & 5.65                           &
 
 \subsection{Acurácia da solução grossa}
 
-Nos resultados mostrados na seção anterior, era utilizado um solver direto para resolver o sistema grosso. Em casos que a malha foi suficientemente reduzida esse tempo de solução é desprezível, porém, para casos o fator de engrossamento é pequeno resolver exatamente o nível grosso aumenta o tempo de execução (por exemplo, o caso ILU(1) + MS(2, 2) em \ref{fig:reservatorio320x320_1}). Além disso, modelos muito refinados podem ter espaço grosseiro grande o suficiente para resolver com métodos iterativos, como, por exemplo, para soluções de casos com centenas de milhões de elementos como os modelos mostrados em \cite{geomecrio}.
+Nos resultados mostrados na seção anterior, era utilizado um solver direto para resolver o sistema grosso. Em casos que a malha foi suficientemente reduzida esse tempo de solução é desprezível, porém, para casos o fator de engrossamento é pequeno resolver exatamente o nível grosso aumenta o tempo de execução (por exemplo, o caso ILU(1) + MS(2, 2) em \ref{fig:reservatorio320x320_1}). Além disso, modelos muito refinados podem ter espaço grosseiro grande o suficiente para necessitarem de com métodos iterativos, como, por exemplo, para soluções de casos com centenas de milhões de elementos como os modelos mostrados em \cite{geomecrio}.
 
-A Figura \ref{fig:toleranciaGrossa} apresenta a quantidade de iterações realizadas pelo gradiente conjugado com tolerância $10^{-10}$ no eixo y e a tolerância do solver do grid grosso no eixo. Para solução do grid grosso foi utilizado um gradiente conjugado pré-condicionador ILU(0). Pode-se constatar um aumento do número de iterações com o aumento da tolerância do solver grosso que era esperado. Mesmo com esse aumento o tempo de convergência total melhora para o caso 2x2.l
+A Figura \ref{fig:toleranciaGrossa} apresenta a quantidade de iterações realizadas pelo gradiente conjugado com tolerância $10^{-10}$ no eixo y e a tolerância do solver do grid grosso no eixo. Para solução do grid grosso foi utilizado um gradiente conjugado pré-condicionador ILU(0). Pode-se constatar um aumento do número de iterações com o aumento da tolerância do solver grosso que era esperado. Mesmo com esse aumento o tempo de convergência total melhora para o caso 2x2.
 
 
 
