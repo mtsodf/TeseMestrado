@@ -1,13 +1,13 @@
 
 \section{Modelagem pelo Método dos Elementos Finitos}
 
-Em posse de \eqref{eq:edp_geomec_contorno}, é necessário um método numérico para encontrar sua solução. O método utilizado nesse trabalho é o dos Elementos Finitos que irá transformar  \eqref{eq:edp_geomec_contorno} em um sistema linear. De acordo com \cite{jacob}, o método dos Elementos finitos é bastante difundido, ele é utilizado em análise de tensões, transferência de calor, escoamento de fluido e eletromagnetismo. Em particular, a parte de análise de tensões e escoamento de fluído são importantes para a Engenharia de Reservatório.
+Em posse de \eqref{eq:edp_geomec_contorno}, é necessário um método numérico para encontrar sua solução. O método utilizado nesse trabalho é o dos Elementos Finitos que irá transformar  \eqref{eq:edp_geomec_contorno} em um sistema linear. De acordo com \cite{jacob}, o método dos Elementos finitos é bastante difundido, ele é utilizado em análise de tensões, transferência de calor, escoamento de fluido e eletromagnetismo. Em particular, a parte de análise de tensões e escoamento de fluído são importantes para a Engenharia de Reservatórios.
 
 
 
 \subsection{Formulação Fraca}
 
-O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca de \eqref{eq:edp_geomec_contorno}. As referências \cite{hughes} e \cite{jacob} mostram a dedução para chegar em \eqref{eq:weakform} e provam também a equivalência dela para a forma original (chamada de forma forte) com exceção do termo relacionado a pressão de poros, pois tratam do problema clássico de elasticidade linear. A forma fraca com esse termo pode ser encontrado em \citet{femgeomec}. A notação utilizada aqui é baseada em \cite{casteletto} para manter a coerência com o Capítulo \ref{ch:multiescala}.
+O primeiro passo para utilizar o método dos elementos finitos é chegar na formulação fraca de \eqref{eq:edp_geomec_contorno}. As referências \cite{hughes} e \cite{jacob} mostram a dedução para chegar em \eqref{eq:weakform} e provam também a equivalência dela para a forma original (chamada de forma forte) com exceção do termo relacionado à pressão de poros, pois tratam do problema clássico de elasticidade linear. A forma fraca com esse termo pode ser encontrado em \citet{femgeomec}. A notação utilizada aqui é baseada em \cite{casteletto}, para manter a coerência com o Capítulo \ref{ch:multiescala}.
 
 
 \begin{empheq}[box=\mymath]{equation}\label{eq:weakform}
@@ -34,19 +34,21 @@ O domínio do problema será dividido em uma quantidade finita de elementos, o c
 \end{figure}
 
 
-Dado a forma fraca definida em \eqref{eq:weakform} e funções de forma $\basefunctionfine$ para $i = 1, 2, 3, ..., \qtdfreedomfine + \qtdessentialfine$ pode-se encontrar uma solução aproximada pelo método de elementos finitos de Galerkin. Onde $\qtdfreedomfine$ representa a quantidade de graus de liberdade e $\qtdessentialfine$ está relacionado com os graus de liberdade que caíram em condições de contorno de Dirichlet. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada onde  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \qtdfreedomfine  \}$ e $\mathbf{u}$ é  da forma aproximada mostrada em \eqref{eq:udiscret}. 
+Dadas a forma fraca definida em \eqref{eq:weakform} e funções de forma $\basefunctionfine$ para $i = 1, 2, 3, ..., \qtdfreedomfine + \qtdessentialfine$, pode-se encontrar uma solução aproximada pelo método de elementos finitos de Galerkin. Onde $\qtdfreedomfine$ representa a quantidade de graus de liberdade e $\qtdessentialfine$ está relacionado com os graus de liberdade que caíram em condições de contorno de Dirichlet. O método consiste em procurar solução não mais para $\mathbf{w} \in \trial$ e $\mathbf{u} \in \test$, mas em encontrar uma solução aproximada onde  $\mathbf{w^h} \in \trialaprox = \text{span}\{ \basefunctionfine | i = 1,2, ..., \qtdfreedomfine  \}$ e $\mathbf{u}$ é  da forma aproximada mostrada em \eqref{eq:udiscret}. 
 
 \begin{equation}\label{eq:udiscret}
 \mathbf{u}(\mathbf{x}) = \sum_{i=1}^{\qtdfreedomfine} \basefunctionfine  d_i^h + {\sum_{i=1}^ {n^h_{\bar{u}}}}  \basefunctionfineessential \bar{d}_i^h
 \end{equation}
 
-Onde cada $d_i^h$ representa um grau de liberdade associado a um nó que, a princípio,  tem dois graus de liberdade, um para a direção x e outro para a direção y, a menos dos nós que estão em fronteiras com condição de contorno de Dirichlet. Nesse caso, os nós terão associados valores $\bar{d}_i^h$  iguais ao valor especificado pela condição para garantir que elas sejam satisfeitas.
 
 
-Com isso pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}. Caso a solução do problema original pertença a $\trialaprox$ a solução exata ainda será encontrada pelo método
+Onde cada $d_i^h$ representa um grau de liberdade associado a um nó que, a princípio, tem dois graus de liberdade, um para a direção x e outro para a direção y, a menos dos nós que estão em fronteiras com condição de contorno de Dirichlet. Nesse caso, os nós terão associados valores $\bar{d}_i^h$  iguais ao valor especificado pela condição para garantir que elas sejam satisfeitas. É importante perceber que, com essas aproximações, a busca da solução está sendo realizada em espaços de dimensão finita, diferentemente da forma fraca original onde os espaços $\trial$ e $\test$ são infinitos.
+
+
+Com isso pode-se chegar na forma fraca aproximada \eqref{eq:weakformaprox}. Caso a solução do problema original pertença a $\trialaprox$ a solução exata ainda será encontrada pelo método.
 
 \begin{equation}\label{eq:weakformaprox}
-\omeint{ (\sopnabla \mathbf{w}^h)^T D \sopnabla  \mathbf{u}^h}  =  \int_{\Gamma_\sigma} \mathbf{w}^{h^T} \bar{\mathbf{t}} d\Gamma  +  \omeint{(\sopnabla\mathbf{w}^h)^T m P_p}  \quad \forall \mathbf{w}^{h^T} \in \trialaprox
+\omeint{ (\sopnabla \mathbf{w}^h)^T \mathbf{D} \sopnabla  \mathbf{u}^h}  =  \int_{\Gamma_\sigma} \mathbf{w}^{h^T} \bar{\mathbf{t}} d\Gamma  +  \omeint{(\sopnabla\mathbf{w}^h)^T \mathbf{m} P_p}  \quad \forall \mathbf{w}^{h^T} \in \trialaprox
 \end{equation}
 
 
@@ -68,10 +70,10 @@ onde
 \bar{\mathbf{d}} = [\bar{d}_1^h, \bar{d}_2^h, ... , \bar{d}_{\qtdessentialfine}^h]^T
 \end{eqnarray*}
 
+\suge{explicar o que significam os índices em  $\qtdfreedomfine$}
 
-
-As funções $\basefunctionfine: \Omega \rightarrow \mathbb{R}^2$ em uma abordagem clássica de elementos finitos, são da forma $[N^h_{i_x} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{i_y}]^T$  para um grau de liberdade y, portanto, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. Além disso, para um nó com  graus de liberdade $d^h_i$ para x e $d^h_j$ para y tem-se $N^h_{i_x} = N^h_{j_y}$ que, de acordo com \cite{jacob} é a forma mais usual.
-As funções $N^h_{i_x}$  e $N^h_{j_y}$ são tais que assumem valor um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice e são bilineares em cada um desses elementos (bilineares por parte). A Figura \ref{fig:grid3x3ver} mostra a numeração dos nós em uma malha 3x3 enquanto a Figura \ref{fig:numeracaofuncoes} apresenta a numeração das funções $\basefunctionfine$ considerando condições de Dirichlet na borda inferior.
+As funções $\basefunctionfine: \Omega \rightarrow \mathbb{R}^2$, em uma abordagem clássica de elementos finitos, são da forma $[N^h_{i_x} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{i_y}]^T$  para um grau de liberdade y, portanto, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. Além disso, para um nó com  graus de liberdade $d^h_i$ para x e $d^h_j$ para y, tem-se $N^h_{i_x} = N^h_{j_y}$ que, de acordo com \cite{jacob} é a forma mais usual. \suge{explicar o que significam os índices em  $N^h_{j_y}$}
+As funções $N^h_{i_x}$  e $N^h_{j_y}$ são tais que assumem valor um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice e são bilineares em cada um desses elementos (bilineares por partes). A Figura \ref{fig:grid3x3ver} mostra a numeração dos nós em uma malha 3x3 enquanto a Figura \ref{fig:numeracaofuncoes} apresenta a numeração das funções $\basefunctionfine$ considerando condições de Dirichlet na borda inferior.
 Exemplos das funções são apresentadas na Figura \ref{fig:shapefunctions}.
 Um detalhe importante é que as funções de forma que serão utilizadas no método multiescala, apresentadas no Capítulo \ref{ch:multiescala}, não possuem a propriedade de uma de suas componentes ser nula.
 
@@ -102,7 +104,7 @@ Um detalhe importante é que as funções de forma que serão utilizadas no mét
 
 \subsection{Construção do sistema linear}
 
-É importante perceber que as variáveis a serem descobertas são as do vetor $\mathbf{d}^h$, dado que $\mathbf{\bar{d}}^h$ já estão definidas pelos valores da fronteira. Os valores de $\mathbf{d}^h$ são encontrados a partir da solução de um sistema linear.
+É importante perceber que as variáveis a serem descobertas são as do vetor $\mathbf{d}^h$, dado que as entradas de $\mathbf{\bar{d}}^h$ já estão definidas pelos valores da fronteira. Os valores de $\mathbf{d}^h$ são encontrados a partir da solução de um sistema linear.
 
 Para obter um sistema linear, pode-se substituir $\mathbf{w}^h$ por cada uma das funções $\basefunctionfine$ para $i = 1, 2, 3, ..., \qtdfreedomfine$ em \eqref{eq:weakformaprox}. Seguem abaixo os cálculos substituindo $\mathbf{w}^h$ por $\basefunctionfine$ e $\mathbf{u}^h$ por \eqref{eq:udiscretvetor}.
 
@@ -151,9 +153,6 @@ Finalmente, substituindo  $i = 1, 2, ..., \qtdfreedomfine$ pode-se encontrar o s
 \begin{equation}\label{eq:sistemalinear}
     \rigidmatrix \mathbf{d}^h = \mathbf{f}^h
 \end{equation}
-
-
-
 onde as entradas de $\rigidmatrix $ são definidas por \eqref{eq:entradamatriz}. A solução do sistema tem como resultado os valores de cada um dos graus de liberdade $\freedomfine$ e, portanto, é possível encontrar a aproximação dos deslocamentos com \eqref{eq:udiscret}. Sobre a matriz $\rigidmatrix$, ela satisfaz as seguintes propriedades:
 
 
@@ -491,13 +490,11 @@ f^\prime_i \\
 \end{block}
 \end{blockarray}
 \end{equation}
-
-
 onde $\bar{u}_1$ representa o valor imposto pela condição de Dirichlet e $f^\prime_i$ representa o termo de \eqref{eq:entradald} sem o termo da condição de Dirichlet presente.
 
 Dessa forma, a primeira equação quando resolvida mostra $B\bar{d}_1^h = B\bar{u}_1 \rightarrow \bar{d}_1^h = \bar{u}_1$, já a equação relativa ao grau de liberdade $d_i^h$ terá o lado direito $f^\prime_i$ complementada com o valor do lado esquerdo $\bar{d}_1^h \kij{i}{1+\qtdfreedomfine}$ (marcado em vermelho) ficando equivalente a \eqref{eq:entradald} novamente.
 
-Uma variante dessa versão é zerar toda a linha relativa à $\bar{d}^h_1$ com exceção da diagonal principal que terá valor um conforme mostrado em \eqref{eq:diagident}. Esse caso tem a desvantagem de remover a simetria da matriz.
+Uma variante dessa versão é zerar toda a linha relativa à $\bar{d}^h_1$ com exceção da diagonal principal que terá valor um, conforme mostrado em \eqref{eq:diagident}. Esse caso tem a desvantagem de remover a simetria da matriz.
 
 \begin{equation} \label{eq:diagident}
 \begin{blockarray}{ccccc}

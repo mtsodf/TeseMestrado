@@ -16,7 +16,7 @@ Para representar a tensão total (ou \textit{overburden}) em um ponto da rocha, 
     \end{bmatrix}
 \end{equation}
 
-O primeiro subscrito do tensor representa a face que a tensão está sendo aplicada, enquanto o segundo representa a direção da tensão. A figura \ref{fig:tensoesx} mostra as componentes com o com primeiro subscrito x.
+O primeiro subscrito do tensor representa a face que a tensão está sendo aplicada, enquanto o segundo representa a direção da tensão. A Figura \ref{fig:tensoesx} mostra as componentes com o com primeiro subscrito x.
 
 
 \begin{figure}[!htbp]
@@ -39,7 +39,7 @@ Ao aplicar a condição de equilíbrio do momento, chega-se a conclusão que $\s
 
 \section{Teoria da Consolidação}
 
-Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as equações de equilíbrio para cada uma dessas direções. A Figura \ref{fig:equilibrio} apresenta todas as tensões relativas a direção x.
+Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as equações de equilíbrio para cada uma dessas direções. A Figura \ref{fig:equilibrio} apresenta todas as tensões relativas à direção x.
 
 \begin{figure}[!htbp]
 \centering
@@ -49,7 +49,7 @@ Para um certo elemento de volume $\Delta x\Delta y \Delta z$ pode-se escrever as
 \end{figure}
 
 
-As forças atuantes no cubo são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em \citet{xiuligai} $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$  as densidades do óleo, água e gás. Esse termo será considerado constante ao longo da simulação, fazendo com que as modificações no equilíbrio sejam apenas relativas à mudança de pressão. 
+As forças atuantes no cubo são calculadas a partir da tensão multiplicada pela área de atuação. Sobre o valor $f_x$, ele, juntamente com os termos $f_y$ e $f_z$  são termos gravitacionais e representam a força peso do volume $\Dx\Dy\Dz$. Como apresentado em \citet{xiuligai} $\mathbf{f} = [\rho_s(1-\phi) + \phi(\rho_o S_o + \rho_w S_w + \rho_g S_g )] \mathbf{g}$ onde $\phi$ é a porosidade, $S_o$, $S_w$ e $S_g$ as saturações de óleo, água e gás e $\rho_o$, $\rho_w$, $\rho_g$, $\rho_s$  as densidades do óleo, água, gás e rocha e $\mathbf{g}$ o vetor gravidade. Esse termo será considerado constante ao longo da simulação, fazendo com que as modificações no equilíbrio sejam apenas relativas à mudança de pressão. 
 
 O equilíbrio de forças na direção x pode ser escrito como apresentado em \eqref{eq:equilibrio0}. 
 
@@ -89,7 +89,7 @@ Analogamente, para as direções y e z pode-se encontrar a equação de equilíb
 \end{equation}
 
 
-As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que atuam no cubo infinitesimal, acontece que, como mostra a Figura \ref{fig:rochaComFluido}, os reservatórios de petróleo possuem fluído no volume poroso da rocha (óleo, água e gás) e, portanto, parte da tensão total será suporta pelo fluído e parte será suportado pelos grãos da rocha. Como fluído não oferece resistência ao cisalhamento, ele suporta apenas parte das tensões $\stxx$, $\styy$ e $\stzz$.
+As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que atuam no cubo infinitesimal, acontece que, como mostra a Figura \ref{fig:rochaComFluido}, os reservatórios de petróleo possuem fluído no volume poroso da rocha (óleo, água e gás) e, portanto, parte da tensão total será suportada pelo fluído e parte será suportada pelos grãos da rocha. Como o fluído não oferece resistência ao cisalhamento, ele suporta apenas a parte das tensões $\stxx$, $\styy$ e $\stzz$.
 
 \begin{figure}[!htbp]
 \centering
@@ -98,7 +98,7 @@ As tensões apresentadas em \eqref{eq:equilibrio1} são as tensões totais que a
 \label{fig:rochaComFluido}
 \end{figure}
 
-Conforme mostrado pela teoria consolidação de poroelasticidade desenvolvida por Biot para três dimensões, a tensão efetiva na rocha ($\stef$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva} conforme mostrado em \citet{ResGeomec}.
+Conforme mostrado pela teoria consolidação de poroelasticidade, desenvolvida por Biot para três dimensões, a tensão efetiva na rocha ($\stef$) e a tensão total são relacionadas por \eqref{eq:tensaoefetiva}, conforme mostrado em \citet{ResGeomec}.
 
 
 \begin{equation}
@@ -134,7 +134,7 @@ Ou ainda, escrevendo \eqref{eq:equilibrio} utilizando os operadores divergente, 
 \nabla \cdot \stef - \nabla \alpha \mathbf{m} P_p - \mathbf{f} = 0
 \end{equation}
 
-Por motivos de implementação mais eficiente menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores) a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt considerando as definições conforme \eqref{eq:definicoesvoigt}.
+Por motivos de implementação mais eficiente, menor uso de memória e utilização de operações mais simples (multiplicação de matrizes por vetores), a Equação \eqref{eq:equilibrio_matriz} pode ser escrita na notação de Voigt considerando as definições conforme \eqref{eq:definicoesvoigt}.
 
 \begin{equation}
 \label{eq:equilibrio_final}
@@ -207,7 +207,7 @@ Já a relação entre a deformação e as tensões é definida como relação co
 \end{figure}
 
 
-Para o caso de elasticidade linear, a relação entre tensões e deformação é dada por uma formas simples  que é a Lei de Hooke Generalizada apresentada em \eqref{eq:hooke}. Essa equação é a mesma que apresentada para estudos de mecânica dos sólidos tradicional.
+Para o caso de elasticidade linear, a relação entre tensões e deformação é dada por uma formas simples  que é a Lei de Hooke Generalizada apresentada em \eqref{eq:hooke}. Essa equação é a mesma que apresentada para estudos de mecânica dos sólidos clássicos.
 
 \begin{equation}{
 \label{eq:hooke}
@@ -215,9 +215,8 @@ Para o caso de elasticidade linear, a relação entre tensões e deformação é
 }
 \end{equation}
 
-onde, $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson e
 
-\begin{equation}
+\begin{equation}\label{eq:ddefinition}
     \mathbf{D} = \begin{bmatrix}
  1-\upsilon & \upsilon    &  \upsilon & 0 & 0 & 0  \\
  \upsilon   &  1-\upsilon &  \upsilon & 0 & 0 & 0  \\
@@ -229,16 +228,17 @@ onde, $E$ é o módulo de Young da rocha e $v$ o módulo de de Poisson e
 \end{bmatrix}
 \end{equation}
 
+onde, $E$ é o módulo de Young e $v$ o módulo de de Poisson da rocha.
 
 
-A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos substituindo \eqref{eq:hooke} e \eqref{eq:defor_desloc}.
+A EDP da equação \eqref{eq:equilibrio_final} pode então ser escrita em função dos deslocamentos, inserindo \eqref{eq:defor_desloc} e \eqref{eq:hooke} em  \eqref{eq:equilibrio_final}.
 
 \begin{equation}
 \label{eq:edp_geomec}
 \sopnabla^T \mathbf{D} \sopnabla \deslocamento - \sopnabla^T\alpha \mathbf{m} P_p - \mathbf{f} = 0
 \end{equation}
 
- Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar \eqref{eq:edp_geomec} de três dimensões para duas dimensões existem duas abordagens possíveis: tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
+ Essa forma será a utilizada junto dos métodos do elementos finitos para construção de um simulador para regime permanente de geomecânica em duas dimensões. Ao se passar \eqref{eq:edp_geomec} de três dimensões para duas existem duas abordagens possíveis: tensão plana ou deformação plana. As matrizes de elasticidade são apresentadas respectivamente em \eqref{eq:elasticplanestress} e \eqref{eq:elasticplanestrain}.
 
 \begin{equation} \label{eq:elasticplanestress}
 \mathbf{D}_{stress} = \frac{E}{1-\upsilon^2}
@@ -307,7 +307,7 @@ u_y
 \end{matrix}
 \end{equation}
 
-Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno a de Dirichlet, onde o deslocamento da fronteira é prescrito e condição de contorno de Neumann, onde a tensão normal a fronteira é preescrita. Considerando $\Omega$ o domínio em que está sendo resolvida o problema e $\Gamma = \partial \Omega$ a fronteira do domínio, pode-se dividi-la em duas partes $\Gamma_u$ e $\Gamma_{\sigma}$ onde $\Gamma_u \cup \Gamma_{\sigma} = \Gamma$, $\Gamma_u \cap \Gamma_{\sigma} = \emptyset $ que possuem condição de Dirichlet e Neumann respectivamente. O problema fica então totalmente definido em \eqref{eq:edp_geomec_contorno}.
+Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno para que o problema fique totalmente definido. Existem dois principais tipos de condição de contorno a de Dirichlet, onde o deslocamento da fronteira é prescrito e condição de contorno de Neumann, onde a tensão normal a fronteira é prescrita. Considerando $\Omega$ o domínio em que está sendo resolvido o problema e $\Gamma = \partial \Omega$ a fronteira do domínio, pode-se dividi-la em duas partes $\Gamma_u$ e $\Gamma_{\sigma}$, onde $\Gamma_u \cup \Gamma_{\sigma} = \Gamma$, $\Gamma_u \cap \Gamma_{\sigma} = \emptyset$, que possuem condição de Dirichlet e Neumann respectivamente. O problema fica então totalmente definido em \eqref{eq:edp_geomec_contorno}.
 
 
 \begin{equation} \label{eq:edp_geomec_contorno}
@@ -321,5 +321,4 @@ Além de \eqref{eq:edp_geomec}, são necessárias as condições de contorno par
     \end{bmatrix} \mathbf{n} = \bar{t}_y, & \text{   em } \Gamma_{\sigma} 
 \end{aligned}  
 \end{equation}
-
 onde, $\mathbf{n}$ representa o vetor normal a $\Gamma$, $\bar{\deslocamento} \in \mathbb{R}^2$ e $\bar{t} = [ \bar{t}_x \quad \bar{t}_y ]$. O problema \eqref{eq:edp_geomec_contorno} pode ser descrito mais genericamente com regiões da fronteira onde uma condição de contorno de Dirichlet é aplicada apenas ao campo $u_x$ ou $u_y$ enquanto o outro campo tem condição de Neumann. Esse exemplo mais geral pode ser encontrado em \citet{hughes}.
