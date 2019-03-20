@@ -16,7 +16,7 @@ Implementações em paralelo do método multiescala também podem ser encontrada
 
 \section{Construção de Operador Grosso Multiescala}
 
-A ideia do método consiste na construção de um operador grosso semelhante ao realizado no multigrid de forma que a solução desse operador pode ser utilizada para ajudar na solução da escala original do problema ou ainda ser utilizada como uma aproximação para a mesma. Para isso, é necessário construir o próprio operador grosso e também operadores que fazem a transferência de escala do grid fino para o grosso (restrição) e do grid grosso para o grid fino (prolongamento).
+A ideia do método consiste na construção de um operador grosso semelhante ao realizado no multigrid de forma que a solução desse operador pode ser utilizada para ajudar na solução da escala original do problema ou ainda ser utilizada como uma aproximação para a mesma. Para isso, é necessário construir o próprio operador grosso e também operadores que façam a transferência de escala do grid fino para o grosso (restrição) e do grid grosso para o grid fino (prolongamento).
 
 
 O primeiro passo para a construção do operador multiescala é gerar um novo grid com menos elementos que o grid original do problema (grid fino), mas que ainda represente o mesmo domínio $\Omega$. Esse novo grid será chamado de grid grosso e as variáveis relacionadas com ele serão assinadas com o sobrescrito $H$.
@@ -42,7 +42,7 @@ Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizaca
 \begin{equation} \label{eq:aproximacaogrossa}
     \msfinesolution = \coarsesolution = \sum_{i=1}^{\qtdfreedomcoarse} \basefunctioncoarse \freedomcoarse + {\sum_{i=1}^ {\qtdfreedomcoarse}}  \basefunctioncoarseessential \essentialcoarse
 \end{equation}
-
+\suge{acho que vale a pena explicar melhor esta igualdade \eqref{eq:aproximacaogrossa}. Em que sentido a solução no grid fino é aproximadamente igual à solução no grid grosso?  A do grid fino está definida em mais pontos. Talvez seja o caso de definir quem é $\msfinesolution$} \resp{Na verdade, os valores dos pontos no grid grosso são representados pelos $\freedomcoarse$. A equação \ref{eq:aproximacaogrossa} já é a função aproximada no domínio $\Omega$. No caso, assim como $u^h: \Omega \rightarrow R^2$ tem-se $u^H: \Omega \rightarrow R^2$ }
 
 Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  apresentados em \eqref{eq:problemaslocais}, conforme proposto em \cite{casteletto}.
 
@@ -58,13 +58,14 @@ Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combi
 onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenadas $\hat{x}$ e $\hat{y}$ que representam a direção paralela e perpendicular a $\partial \coarseelement$ como mostrada na Figura \ref{fig:direcoesoperadorfronteira}, $\mathbf{x}_j$ representa as coordenadas do vértice relacionado ao grau de liberdade $\freedomcoarse[j]$ e  $\mathbf{e} = [1\quad0]^T $ se $\basefunctioncoarse$ é relacionada a um grau de liberdade x, caso contrário,  $\mathbf{e}=[0\quad1]^T$.
 
 \begin{equation}\label{eq:sopnabladef}
-\sopnablafront = \begin{bmatrix}
+\sopnablafronthat = \begin{bmatrix}
 \dxhat  & 0 \\ 
 0 & 0 \\ 
 0 & \dxhat 
 \end{bmatrix}
 \end{equation}
 
+\perg{Aqui está sendo usada uma notação ligeiramente diferente da do Castelletto, pelo que entendi o S dele, indica o T daqui, ver eqs (A.3) e (A.5) do apêndice A do paper original. Alguma razão para essa alteração} \resp{Na verdade o Castelleto utiliza a notação tensorial enquanto que aqui a notação está toda matricial. Nesse caso o T não costuma aparecer na notação dele. Como aqui aparece acabei descendo o S para sobrescrito ao invés de ficar em cima.}
 
 %TODO fazer a minha própria figura. Por enquanto está a mesma do casteletto.
 \begin{figure}[!htbp]
@@ -130,7 +131,6 @@ Com \eqref{eq:linearbasecoarse} as funções de base do grid grosso estão deter
 \omeint{ (\sopnabla \mathbf{w})^T \mathbf{D} \sopnabla  \mathbf{u}} - \int_{\Gamma_\sigma} \mathbf{w}^T \bar{\mathbf{t}} d\Gamma = (\sopnabla\mathbf{w})^T \mathbf{m} P_p \quad \forall \mathbf{w} \in \trialcoarseaprox
 \end{split}
 \end{empheq}
-
 onde $\trialcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomcoarse] \}$ e $\testcoarseaprox =  \text{span}\{ \basefunctioncoarse[1], \basefunctioncoarse[2], \hdots, \basefunctioncoarse[\qtdfreedomfine + \qtdfreedomcoarse] \}$. Portanto, analogamente ao grid fino,  a matriz de rigidez relativa ao grid grosso tem entradas dadas por \eqref{eq:entradamatrizgrossa}.
 
 \begin{equation} \label{eq:entradamatrizgrossa}
@@ -151,13 +151,13 @@ Substituindo \eqref{eq:linearbasecoarse} em \eqref{eq:entradamatrizgrossa}.
 \end{align}
 
 
-Portanto, a \eqref{eq:ptapeinstein} mostra que o operador grosseiro pode ser construído utilizando \eqref{eq:ptap} diferentemente de realizar loop nos elementos grossos para como o realizado pelo método de elementos finitos clássico.
+Portanto, a \eqref{eq:ptapeinstein} mostra que o operador grosseiro pode ser construído utilizando \eqref{eq:ptap} diferentemente de realizar loop nos elementos grossos  como o realizado pelo método de elementos finitos clássico.
 
 \begin{equation} \label{eq:ptap}
     \mathbf{K}^H = \mathbf{P}^T  \mathbf{K}^h \mathbf{P}
 \end{equation}
 
-De forma análoga, pode ser encontrar que a relação entre os lados direito dos dois operador é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Assim, o operador de restrição aqui será $\mathbf{R} = \mathbf{P}^T$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
+De forma análoga, pode ser encontrar que a relação entre os lados direito dos dois operadores é $\mathbf{f}^H = \mathbf{P}^T \mathbf{f}^h$. Assim, o operador de restrição aqui será $\mathbf{R} = \mathbf{P}^T$. Com isso, dado um sistema linear da forma apresentada em \eqref{eq:sistemalinear} é possível encontrar \eqref{eq:aproximacaogrossa2} como aproximação para a solução do grid fino.
 
 \begin{equation} \label{eq:aproximacaogrossa2}
     d^h \approx d^h_{ms} = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T} \mathbf{f}^h
@@ -172,7 +172,7 @@ Essa aproximação consiste de três passos que são descritas abaixo:
 \end{itemize}
 
 
-Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}, a solução do sistema é encontrado através de iterações de Richardson junto com um pré-condicionador do espaço fino, pois o artigo mostra que $\preconms$ não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que  é deficiente de rank e, portanto, a matriz de iteração tem autovalores iguais a um. 
+Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}, a solução do sistema é encontrado através de iterações de Richardson junto com um pré-condicionador do espaço fino, pois o artigo mostra que $\preconms$ não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que  é deficiente de posto e, portanto, a matriz de iteração tem autovalores iguais a um. \perg{Que resultado é esse, matriz com deficiência de posto tem autovalor 1} \suge{a matriz a=[0.5 0;0 0] tem posto 1 e autovalores 0.5 e 0} \resp{Na verdade estou dizendo que a matriz de iteração do Richardson tem autovalor 1 pois ela é $I-M^{-1}A$ e a matriz $M^{-1}A$ que tem deficiencia de posto.}
 
 Visando reproduzir os resultados de \cite{zhouiterativo} para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para a matriz de iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)).
 

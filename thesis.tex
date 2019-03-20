@@ -21,6 +21,7 @@
 \usepackage[draft]{todonotes}   
 \newcommand{\suge}[1]{{\bfseries\color{blue}{(sugestão: #1.)\hspace*{5mm}(lmc)}}}
 \newcommand{\perg}[1]{{\bfseries\color{magenta}{(dúvida: #1?)\hspace*{5mm}(lmc)}}}
+\newcommand{\resp}[1]{{\bfseries\color{orange}{(resposta: #1)\hspace*{5mm}(lmc)}}}
 \newcommand{\comen}[1]
 {\par {\bfseries \color{gray} (comentário: #1.) \hspace*{5mm}(lmc)\par}}
 \usepackage{fancyvrb}
@@ -35,8 +36,10 @@
   \advisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
   \examiner{Prof.}{Nelson Maculan Filho}{D.Sc.}
   \examiner{Prof.}{Luiz Mariano Paes de Carvalho Filho}{D.Sc.}
-  \examiner{Prof.}{Examinador 2}{Ph.D.}
-  \examiner{Prof.}{Examinador 3}{D.Sc.}
+  \examiner{Prof.}{José Roberto Pereira Rodrigues}{Ph.D.}
+  \examiner{Prof.}{Paulo Goldfeld}{D.Sc.}
+  \examiner{Prof.}{Rafael Jesus de Moraes}{D.Sc.}
+
 
   \department{PESC}
   \date{04}{2019}
@@ -45,7 +48,6 @@
   \keyword{Geomecânica}
   \keyword{Precondicionador}
   
-
   \maketitle
 
   \frontmatter
@@ -61,8 +63,6 @@
 
   \mainmatter
   
-
-
 
 \newtcbox{\mymath}[1][]{%
     nobeforeafter, math upper, tcbox raise base,
@@ -103,4 +103,5 @@
   \appendix
   \include{append/appendA}
   \include{append/appendB}
+  \include{append/duvidas}
 \end{document}
