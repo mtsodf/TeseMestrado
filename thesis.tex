@@ -13,6 +13,10 @@
 \usepackage{empheq}
 \usepackage[most]{tcolorbox}
 
+%Definicao de qual texto será utilizado
+\def\realreservoir{0}
+
+
 \makelosymbols
 \makeloabbreviations
 \input{utils}
@@ -31,14 +35,14 @@
 \begin{document}
   \title{Precondicionador Multiescala aplicado à Geomecânica}
   \foreigntitle{Multiscale preconditioner applied to Geomechanics}
-  \author{Mateus}{Oliveira de Figueiredo}
+  \author{Mateus Oliveira de}{Figueiredo}
   \advisor{Prof.}{Nelson}{Maculan Filho}{D.Sc.}
   \advisor{Prof.}{Luiz Mariano}{Paes de Carvalho Filho}{D.Sc.}
   \examiner{Prof.}{Nelson Maculan Filho}{D.Sc.}
   \examiner{Prof.}{Luiz Mariano Paes de Carvalho Filho}{D.Sc.}
-  \examiner{Prof.}{José Roberto Pereira Rodrigues}{Ph.D.}
+  \examiner{Dr.}{José Roberto Pereira Rodrigues}{D.Sc.}
   \examiner{Prof.}{Paulo Goldfeld}{D.Sc.}
-  \examiner{Prof.}{Rafael Jesus de Moraes}{D.Sc.}
+  \examiner{Dr.}{Rafael Jesus de Moraes}{D.Sc.}
 
 
   \department{PESC}
@@ -101,7 +105,16 @@
   \bibliography{thesis}
 
   \appendix
+  
+  
+\if\realreservoir1
   \include{append/appendA}
+\fi
+
+
   \include{append/appendB}
-  \include{append/duvidas}
+  
+
+
+
 \end{document}

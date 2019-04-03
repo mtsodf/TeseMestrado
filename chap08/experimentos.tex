@@ -1,8 +1,8 @@
-Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado no Capítulo \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida, visualização das soluções do espaço grosseiro, comparação entre pré-condicionador aditivo e multiplicativo, comparações do pré-condicionador multiescala, multigrid e ILU e estudo do número de iterações do solver linear com variação da tolerância do solver grosso. \suge{Acho que faltou um comentário sobre o método utilizado para resolver o sistema completo, apenas com a troca do lado direito, vale uma breve descrição e as referências devidas}
+Nesse capítulo, serão apresentados os resultados obtidos utilizando o método multiescala para solução dos sistemas lineares decorrentes do operador apresentado no Capítulo \ref{ch:modelagem}. Os resultados são apresentados na seguinte ordem: resultados em casos que a solução analítica é conhecida, visualização das soluções do espaço grosseiro, comparação entre precondicionador aditivo e multiplicativo, comparações do precondicionador multiescala, multigrid e ILU e estudo do número de iterações do solver linear com variação da tolerância do solver grosso. As comparações serão realizadas apenas para a solução dos sistemas lineares e não serão consideradas os tempos de construção dos precondicionadores. Apesar desse tempo ser relevante, ele pode ser diluído se o precondicionador for reutilizado para a solução de diferentes sistemas. 
 
 \section{Soluções Analíticas}
 
-Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. Para tanto, foi montado um teste semelhante ao proposto em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada em \eqref{eq:irinasol} em um domínio  $[0,L] \times [0, W]$.
+Inicialmente, é necessário atestar que o código de elementos finitos está resolvendo corretamente o operador descrito em \eqref{eq:edp_geomec}. Para tanto, foi montado um teste semelhante ao proposto em \cite{irina}, que consiste em resolver o problema que possui como solução analítica apresentada em \eqref{eq:irinasol} em um domínio  $[0, L] \times [0, W]$.
 
 
 \begin{equation} \label{eq:irinasol}
@@ -47,7 +47,8 @@ onde $u_{ref} = [u_x(x_0, y_0), u_y(x_1, y_1), ..., u_x(x_{n_n}, y_{n_n})]^T$ é
 \end{figure}
     
     
-Um segundo caso com resultado analítico é o cisalhamento puro (\textit{Simple Shear}). Nesse caso, o problema é definido na forma apresentada em \eqref{eq:simpleshear}  e solução é dada por $u(x,y) = [y, 0]^T$. Como a solução é um polinômio do primeiro grau, essa pode ser representada exatamente no espaço gerado pelas funções de base bilineares e, então, os erros de truncamento, nesse caso, não existem, restando apenas  erros de arredondamento. \suge{Talvez seja o caso de definir, nos capítulos anteriores, o que são os \textit{erros de truncamento e de arredondamento}, apenas para o texto ser autocontido}
+Um segundo caso com resultado analítico é o cisalhamento puro (\textit{Simple Shear}). Nesse caso, o problema é definido na forma apresentada em \eqref{eq:simpleshear}  e solução é dada por $u(x,y) = [y, 0]^T$. Como a solução é um polinômio do primeiro grau, essa pode ser representada exatamente no espaço gerado pelas funções de base bilineares e, então, os erros de truncamento, nesse caso, não existem, restando apenas  erros de arredondamento. Os erros de truncamento estão relacionados com a aproximação realizada pelo método dos elementos finitos enquanto que os erros de arredondamento estão relacionados as aproximações feitas pela aritmética de ponto flutuante.
+
 
 \begin{equation}\label{eq:simpleshear}
     \begin{aligned}
@@ -128,8 +129,21 @@ O grid utilizado é apresentado na Figura \ref{fig:gridBase10x10} com as dimens�
 \end{figure}
 
 
+\if\realreservoir1
 O caso C é um caso de reservatório sintético com grid de geometria mais próxima aos reservatórios reais e, diferentemente dos casos A e B, os valores de Poisson não são constantes ao longo do domínio. A Figura \ref{fig:casoCgrid} no Apêndice \ref{ch:figurasReservatorios} apresenta o grid e os valores do módulo de Young e módulo de Poisson. São apresentados também no apêndice Figuras dos casos D e E.
+\else
 
+\begin{figure}[ht]
+\center
+\subfigure[ ]{\includegraphics[width=0.45\textwidth]{append/figs/pituba_young.png}}
+\qquad
+\subfigure[ ]{\includegraphics[width=0.45\textwidth]{append/figs/pituba_poisson.png}}
+\caption{Propriedades módulo de Young (a) e coeficiente de Poisson (b) para caso C. } \label{fig:casoCgrid}
+\end{figure}
+
+O caso C é um caso de reservatório sintético com grid de geometria mais próxima aos reservatórios reais e, diferentemente dos casos A e B, os valores de Poisson não são constantes ao longo do domínio. A Figura \ref{fig:casoCgrid} apresenta o grid e os valores do módulo de Young e módulo de Poisson. Os casos D e E são simulações de casos reais e possuem geometria mais complexa que os outros, além também de apresentar heterogeneidade no coeficiente de Poisson.
+
+\fi
 
 As condições de contorno utilizadas para todos os modelos são representadas na Figura \ref{fig:CondicoesContorno}, a base do modelo é considerada fixa ($\deslocamento=0$), as bordas laterais tem movimento possível apenas na direção y e topo do modelo é livre de tração.
 
@@ -190,16 +204,16 @@ A Figura \ref{fig:subsidence} mostra a subsidência do topo do domínio para a s
 \end{figure}
 
 
-\subsection{Comparação entre pré-condicionadores aditivos e multiplicativos}
+\subsection{Comparação entre precondicionadores aditivos e multiplicativos}
 
-O trabalho \cite{casteletto} apresenta a utilização do pré-condicionador multiescala ($\mathbf{M}_{ms}$) em conjunto com o um pré-condicionador ($\mathbf{M}_h$) no grid fino de forma multiplicativa. 
-Essa combinação visa reduzir os erros de alta frequência através do $\mathbf{M}_h$ enquanto os erros de baixa frequência são eliminados pelo pré-condicionador multiescala. 
-O acoplamento multiplicativo tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos pré-condicionadores
+O trabalho \cite{casteletto} apresenta a utilização do precondicionador multiescala ($\mathbf{M}_{ms}$) em conjunto com o um precondicionador ($\mathbf{M}_h$) no grid fino de forma multiplicativa. 
+Essa combinação visa reduzir os erros de alta frequência através do $\mathbf{M}_h$ enquanto os erros de baixa frequência são eliminados pelo precondicionador multiescala. 
+O acoplamento multiplicativo tem a desvantagem de precisar de uma multiplicação matriz vetor além da aplicação dos precondicionadores
 e, portanto, o número de iterações tem que ser reduzido o suficiente para compensar todas essas operações. Um alternativa é aplicação
-dos pré-condicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador aditivo é que caso os $\preconfine$ e $\preconms$ sejam simétricos o pré-condicionador conjunto também é simétrico e pode ser utilizado juntamente com o Gradiente Conjugado.
+dos precondicionadores de forma aditiva, pois, nesse caso, não é necessária a multiplicação matriz vetor adicional. Outra vantagem do operador aditivo é que caso os $\preconfine$ e $\preconms$ sejam simétricos o precondicionador conjunto também é simétrico e pode ser utilizado juntamente com o Gradiente Conjugado.
 
 
-As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{table:precondcasoDcomp} e \ref{table:precondcasoEcomp} mostram a quantidade de iterações e o tempo utilizando utilizando o pré-condicionador aditivo e o multiplicativo com o solver Bicgstab. Nesses testes o pré-condicionador $\preconfine$ foi o ILU(0). É importante perceber que para menores níveis de engrossamento a quantidade de iterações feitas pelo aditivo é bem maior chegando a 120\% para o caso E. Porém, ao aumentar o nível de engrossamento, em geral a quantidade de iterações fica entre 10\% e 20\% maior. Isso deve ocorrer pelo fato da solução grossa estar mais distante da fina e o acoplamento aditivo ou multiplicativo começam a ficar com número de iterações semelhantes. Além disso, nos casos B e D os tempos de solução ótimo foram obtidos com o pré-condicionador aditivo, tornando-o uma alternativa competitiva ao multiplicativo com melhorias de em torno de 15\%.
+As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{table:precondcasoDcomp} e \ref{table:precondcasoEcomp} mostram a quantidade de iterações e o tempo utilizando utilizando o precondicionador aditivo e o multiplicativo com o solver Bicgstab. Nesses testes o precondicionador $\preconfine$ foi o ILU(0). É importante perceber que para menores níveis de engrossamento a quantidade de iterações feitas pelo aditivo é bem maior chegando a 120\% para o caso E. Porém, ao aumentar o nível de engrossamento, em geral a quantidade de iterações fica entre 10\% e 20\% maior. Isso deve ocorrer pelo fato da solução grossa estar mais distante da fina e o acoplamento aditivo ou multiplicativo começam a ficar com número de iterações semelhantes. Além disso, nos casos B e D os tempos de solução ótimo foram obtidos com o precondicionador aditivo, tornando-o uma alternativa competitiva ao multiplicativo com melhorias de em torno de 15\%.
 
 \input{chap08/tabelaA.tex}
 \input{chap08/tabelaB.tex}
@@ -209,13 +223,13 @@ As Tabelas \ref{table:precondcasoAcomp}, \ref{table:precondcasoBcomp}, \ref{tabl
 
 \subsection{Comparação com Multigrid e ILU}
 
-Nessa seção, são apresentadas comparações entre os pré-condicionadores multiescala aditivo, multigrid e ILU. Para esse comparação foi utilizado o Pyamg, que é um solver multigrid  descrito em \citet{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid, como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script \textbf{solver\_diagnotics.py} disponibilizado pela equipe do Pyamg no repositório (https://github.com/pyamg/pyamg-examples). Esse script testa diferentes configurações de solver multigrid para uma dada matriz e seleciona aquele mais eficiente para o problema proposto. A configurações geradas pelo script estão no Anexo \ref{ch:pyamgSolver}. Para o caso B e caso E, o script não convergiu e, para o caso B foi utilizado a mesma configuração de solver que o caso A, por terem sido montados com as mesmas correlações. Para o caso E foi utilizada a mesma escolha que o caso D, por ser o único outro reservatório real. Abaixo seguem algumas características importantes das configurações encontradas:
+Nessa seção, são apresentadas comparações entre os precondicionadores multiescala aditivo, multigrid e ILU. Para esse comparação foi utilizado o Pyamg, que é um solver multigrid  descrito em \citet{OlSc2018}. Dado a grande quantidade de parâmetros necessários para a configuração dos solver multigrid, como: a quantidade de níveis devem ser utilizados, quantidade de relaxações em cada nível, qual o tipo de relaxação será utilizada, dentre outras variáveis, foi utilizado o script \textbf{solver\_diagnotics.py} disponibilizado pela equipe do Pyamg no repositório (https://github.com/pyamg/pyamg-examples). Esse script testa diferentes configurações de solver multigrid para uma dada matriz e seleciona aquele mais eficiente para o problema proposto. A configurações geradas pelo script estão no Anexo \ref{ch:pyamgSolver}. Para o caso B e caso E, o script não convergiu e, para o caso B foi utilizado a mesma configuração de solver que o caso A, por terem sido montados com as mesmas correlações. Para o caso E foi utilizada a mesma escolha que o caso D, por ser o único outro reservatório real. Abaixo seguem algumas características importantes das configurações encontradas:
 
 \begin{itemize}
     \item máximo de quinze níveis multigrid
     \item relaxação "Gauss Seidel Symmetric" 
     \item ciclos W
-    \item multigrid como pré-condicionador para o Gradiente Conjugado
+    \item multigrid como precondicionador para o Gradiente Conjugado
 \end{itemize}
 
 
@@ -229,7 +243,7 @@ A Figura \ref{fig:reservatorio320x320_1} apresenta o tempo de solução do siste
 \end{figure}
 
 
-Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre, pois a solução do problema grosso se torna cada vez mais distante da solução da malha fina fazendo com que o pré-condicionador funcione pior. Entretanto, quanto mais grossa a malha, mais fácil a solução sistema linear grosso e então existe uma solução de compromisso entre o engrossamento da malha e o tempo de execução. É importante lembrar também que sempre é necessário pagar o custo da multiplicação pelo operador de prolongamento e de restrição que é da ordem do grid fino. Uma constatação desse fato aparece na Figura \ref{fig:proporcaoPrecondicionador} que mostra a proporção do tempo gasto do pré-condicionador aditivo entre a aplicação de um ILU(1) e de um multiescala com diferentes níveis de engrossamento, pode-se perceber que quanto maior o engrossamento a fração de tempo utilizada pelo pré-condicionador multiescala fica menor, pois quanto maior o engrossamento mais desprezível fica o tempo de solução do grid grosso sendo o tempo do pré-condicionador multiescala dominado pelo prolongamento e restrição.
+Um primeiro ponto a se observar é o aumento do número de iterações a cada vez que se aumenta o fator de engrossamento da malha. Isso ocorre, pois a solução do problema grosso se torna cada vez mais distante da solução da malha fina fazendo com que o precondicionador funcione pior. Entretanto, quanto mais grossa a malha, mais fácil a solução sistema linear grosso e então existe uma solução de compromisso entre o engrossamento da malha e o tempo de execução. É importante lembrar também que sempre é necessário pagar o custo da multiplicação pelo operador de prolongamento e de restrição que é da ordem do grid fino. Uma constatação desse fato aparece na Figura \ref{fig:proporcaoPrecondicionador} que mostra a proporção do tempo gasto do precondicionador aditivo entre a aplicação de um ILU(1) e de um multiescala com diferentes níveis de engrossamento, pode-se perceber que quanto maior o engrossamento a fração de tempo utilizada pelo precondicionador multiescala fica menor, pois quanto maior o engrossamento mais desprezível fica o tempo de solução do grid grosso sendo o tempo do precondicionador multiescala dominado pelo prolongamento e restrição.
 
 
 \begin{figure}[h]
@@ -240,14 +254,14 @@ Um primeiro ponto a se observar é o aumento do número de iterações a cada ve
 \subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap08/figs/casoD_div.png}\label{fig:casoD_div}}
 \qquad
 \subfigure[ ]{\includegraphics[width=0.45\textwidth]{chap08/figs/casoE_div.png}\label{fig:casoE_div}}
-\caption{Proporção do tempo gasto entre ILU(1) e multiescala em pré-condicionador aditivo para o casos B, C, D e E.  }
+\caption{Proporção do tempo gasto entre ILU(1) e multiescala em precondicionador aditivo para o casos B, C, D e E.  }
 \label{fig:proporcaoPrecondicionador}
 \end{figure}
 
 
-No caso B, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos utilizando 8x8 elementos finos. Ainda sobre o número de iterações, quando utilizado um elemento grosso de 2x2 o número de iterações é o menor encontrado, porém o custo de solução do sistema grosso impossibilita a utilização desse nível de engrossamento. Uma maneira de aproveitar essa redução do número de iterações seria utilizar um pré-condicionador multiescala multinível conforme apresentado em \cite{multilevel} para volumes finitos, desse modo, não seria necessário resolver o sistema linear na malha 2x2 sendo necessário apenas aplicar uma relaxação nesse nível similarmente ao multigrid.
+No caso B, a solução de menor tempo é quando o nível grosso é construído ao se montar elementos utilizando 8x8 elementos finos. Ainda sobre o número de iterações, quando utilizado um elemento grosso de 2x2 o número de iterações é o menor encontrado, porém o custo de solução do sistema grosso impossibilita a utilização desse nível de engrossamento. Uma maneira de aproveitar essa redução do número de iterações seria utilizar um precondicionador multiescala multinível conforme apresentado em \cite{multilevel} para volumes finitos, desse modo, não seria necessário resolver o sistema linear na malha 2x2 sendo necessário apenas aplicar uma relaxação nesse nível similarmente ao multigrid.
 
-Na Figura \ref{fig:reservatorio320x320_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. É importante notar que há uma redução expressiva no número de iterações do Pyamg, e multiescala em relação aos ILU (redução em torno de 83\%) nos dois casos. Essa redução vem com o preço de um pré-condicionador com um custo computacional mais caro. Já uma comparação de tempo mostra uma redução de 72\% com MS(8,8)+ILU(1) em relação a execução com o pré-condicionador ILU(1). A comparação com o tempo do Pyamg pode não condizer com a realidade por se tratarem de implementações diferentes, posteriormente serão mostradas outros tipos de comparação com o Pyamg.
+Na Figura \ref{fig:reservatorio320x320_2} é apresentado a comparação da solução do sistema utilizando o melhor método multiescala com o gradiente conjugado utilizando como precondicionador o ILU(0), ILU(1) e solver multigrid Pyamg. É importante notar que há uma redução expressiva no número de iterações do Pyamg, e multiescala em relação aos ILU (redução em torno de 83\%) nos dois casos. Essa redução vem com o preço de um precondicionador com um custo computacional mais caro. Já uma comparação de tempo mostra uma redução de 72\% com MS(8,8)+ILU(1) em relação a execução com o precondicionador ILU(1). A comparação com o tempo do Pyamg pode não condizer com a realidade por se tratarem de implementações diferentes, posteriormente serão mostradas outros tipos de comparação com o Pyamg.
 
 
 
@@ -261,7 +275,7 @@ Na Figura \ref{fig:reservatorio320x320_2} é apresentado a comparação da solu�
 
 
 A seguir, as Figuras \ref{fig:casoC_2}, \ref{fig:casoD_2} e \ref{fig:casoE_2} apresentam os resultados para os casos C, D e E. 
-Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32,  junto com os resultados do ILU(0), ILU(1) e Pyamg.
+Em todos os gráficos é mostrado apenas o precondicionador multiescala que obteve o melhor desempenho entre os fatores de engrossamento de 2x2, 4x4, 8x8, 16x16, 32x32,  junto com os resultados do ILU(0), ILU(1) e Pyamg.
 
 
 
@@ -280,19 +294,20 @@ Em todos os gráficos é mostrado apenas o pré-condicionador multiescala que ob
 \label{fig:resultadosCDE}
 \end{figure}
 
-Nos casos C e D novamente a quantidade de iterações do Pyamg e multiescala foram semelhantes, mostrando um bom desempenho dos dois métodos, porém, no caso E o pré-condicionador multigrid começa decrescendo rapidamente mas passa por um ponto de resíduo $10^{-6}$ que a inclinação da queda muda rapidamente fazendo com que o solver multigrid tenha um número de iterações próxima ao do ILU(1). 
+Nos casos C e D novamente a quantidade de iterações do Pyamg e multiescala foram semelhantes, mostrando um bom desempenho dos dois métodos, porém, no caso E o precondicionador multigrid começa decrescendo rapidamente mas passa por um ponto de resíduo $10^{-6}$ que a inclinação da queda muda rapidamente fazendo com que o solver multigrid tenha um número de iterações próxima ao do ILU(1). 
 
 
-A Tabela $\ref{tab:comparacaoILU}$ apresenta a quantidade de iterações do solver, tempo e speed-up de cada caso do pré-condicionador multiescala em relação ao ILU(1). Pode-se notar que os maiores speed-ups ocorreram nos casos com maiores dimensões (caso B e caso E) pois foram esses que obtiveram, proporcionalmente, as maiores reduções no número de iterações.
+A Tabela $\ref{tab:comparacaoILU}$ apresenta a quantidade de iterações do solver, tempo e speed-up de cada caso do precondicionador multiescala em relação ao ILU(1). Pode-se notar que os maiores speed-ups ocorreram nos casos com maiores dimensões (caso B e caso E) pois foram esses que obtiveram, proporcionalmente, as maiores reduções no número de iterações.
 
 Em relação ao Pyamg, a Tabela \ref{tab:comparacaoMsxMgProlongamento} apresenta a quantidade de não zeros somando todos os níveis dos operadores de prolongamento do multigrid, o número de não zeros de todas as operações de prolongamento de um ciclo W e o número de não zeros do operador de prolongamento do multiescala. Nesse caso, pode-se constatar que a quantidade de não zeros dos operador de prolongamento do multiescala tem em torno de 2 a 2,2 vezes a quantidade de não zeros das multiplicações matriz vetor de um ciclo W do método multigrid sendo então uma vantagem do método multigrid.
 
 Por outro lado, a Tabela \ref{tab:comparacaoMsxMgComplexidade} apresenta a complexidade dos operadores multigrid gerados para cada um dos casos. Além disso, possui a complexidade do ciclo W que considera as relaxações feitas em cada nível. Portanto, em relação as relaxações o multiescala necessita de bem menos capacidade computacional que fica em torno de 4,8 e 5,7 vezes menor que no multigrid que o torna mais eficiente nesse quesito. 
-Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o número de iterações realizadas foram 23 enquanto no multiescala foram 160 fazendo com o problema do prolongamento seja superado por ter feito menos que duas vezes a quantidade de iterações. Para os outros casos, o multiescala se saiu melhor dado que, apesar do prolongamento serem mais caras (entre 1.99 e 2.18), as operações de relaxação são bem mais custosas no multigrid (entre 4,8 e 5,18 vezes mais custosas). Um outro ponto que pesa a favor do multiescala é que a multiplicação matriz vetor é mais facilmente paralelizável que as relaxações. \perg{As relaxações são essencialmente sequenciais, afora algum processo de uso de  níveis, que o Douglas está trabalhando. Talvez você pudesse ser mais enfático aqui}
+Assim, em relação ao caso E fica clara a vantagem do multiescala dado que o número de iterações realizadas foram 23 enquanto no multiescala foram 160 fazendo com o problema do prolongamento seja superado por ter feito menos que duas vezes a quantidade de iterações. Para os outros casos, o multiescala se saiu melhor dado que, apesar do prolongamento serem mais caras (entre 1.99 e 2.18), as operações de relaxação são bem mais custosas no multigrid (entre 4,8 e 5,18 vezes mais custosas). Um outro ponto que pesa a favor do multiescala é que a multiplicação matriz vetor é mais facilmente paralelizável que as relaxações. Por exemplo, para paralelização dos Gauss-Seidel e ILU é necessário reordenamento de equações através de colorações que podem afetar a convergência do método.
+
 
 \begin{table}[]
 
-\caption{Tabela com comparação entre gradiente conjugado com pré-condicionador ILU(1) e pré-condicionador aditivo multiescala} \label{tab:comparacaoILU}
+\caption{Tabela com comparação entre gradiente conjugado com precondicionador ILU(1) e precondicionador aditivo multiescala} \label{tab:comparacaoILU}
 
 \begin{tabular}{c|c|c|c|c|c}
 \cline{2-5}
@@ -351,9 +366,8 @@ Caso E        & 1.55                          & 5.65                           &
 
 Nos resultados mostrados na seção anterior, era utilizado um solver direto para resolver o sistema grosso. Em casos que a malha foi suficientemente reduzida esse tempo de solução é desprezível, porém, para casos o fator de engrossamento é pequeno resolver exatamente o nível grosso aumenta o tempo de execução (por exemplo, o caso ILU(1) + MS(2, 2) em \ref{fig:reservatorio320x320_1}). Além disso, modelos muito refinados podem ter espaço grosseiro grande o suficiente para necessitarem de  métodos iterativos, como, por exemplo, para soluções de casos com centenas de milhões de elementos como os modelos mostrados em \cite{geomecrio}.
 
-A Figura \ref{fig:toleranciaGrossa} apresenta a quantidade de iterações realizadas pelo gradiente conjugado com tolerância $10^{-10}$ no eixo y e a tolerância do solver do grid grosso no eixo. Para solução do grid grosso foi utilizado um gradiente conjugado pré-condicionador ILU(0). Pode-se constatar um aumento do número de iterações com o aumento da tolerância do solver grosso que era esperado. Mesmo com esse aumento o tempo de convergência total melhora para o caso 2x2.
+A Figura \ref{fig:toleranciaGrossa} apresenta a quantidade de iterações realizadas pelo gradiente conjugado com tolerância $10^{-10}$ no eixo y e a tolerância do solver do grid grosso no eixo. Para solução do grid grosso foi utilizado um gradiente conjugado precondicionador ILU(0). Pode-se constatar um aumento do número de iterações com o aumento da tolerância do solver grosso que era esperado. Mesmo com esse aumento o tempo de convergência total melhora para o caso 2x2.
 
-\suge{Não há referência aos tempos de construção dos precondicionadores, apesar de no método utilizado o precondicionador ser construído apenas uma vez, este tempo é relevante.}
 
 
 \begin{figure}[!htbp]

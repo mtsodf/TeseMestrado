@@ -70,9 +70,8 @@ onde
 \bar{\mathbf{d}} = [\bar{d}_1^h, \bar{d}_2^h, ... , \bar{d}_{\qtdessentialfine}^h]^T
 \end{eqnarray*}
 
-\suge{explicar o que significam os índices em  $\qtdfreedomfine$}
 
-As funções $\basefunctionfine: \Omega \rightarrow \mathbb{R}^2$, em uma abordagem clássica de elementos finitos, são da forma $[N^h_{i_x} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{i_y}]^T$  para um grau de liberdade y, portanto, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. Além disso, para um nó com  graus de liberdade $d^h_i$ para x e $d^h_j$ para y, tem-se $N^h_{i_x} = N^h_{j_y}$ que, de acordo com \cite{jacob} é a forma mais usual. \suge{explicar o que significam os índices em  $N^h_{j_y}$}
+As funções $\basefunctionfine: \Omega \rightarrow \mathbb{R}^2$, em uma abordagem clássica de elementos finitos, são da forma $[N^h_{i_x} \quad 0]^T$ para um grau de liberdade x e  $[0 \quad N^h_{i_y}]^T$  para um grau de liberdade y, portanto, um grau de liberdade x não é utilizado para interpolar o valor do campo $u_y(x, y)$ e vice-versa. Além disso, para um nó com  graus de liberdade $d^h_i$ para x e $d^h_j$ para y, tem-se $N^h_{i_x} = N^h_{j_y}$ que, de acordo com \cite{jacob} é a forma mais usual. 
 As funções $N^h_{i_x}$  e $N^h_{j_y}$ são tais que assumem valor um no seu nó correspondente e possuem valor zero em todos os outros nós, mais especificamente, o suporte dessas funções são apenas os elementos que possuem o nó correspondente como vértice e são bilineares em cada um desses elementos (bilineares por partes). A Figura \ref{fig:grid3x3ver} mostra a numeração dos nós em uma malha 3x3 enquanto a Figura \ref{fig:numeracaofuncoes} apresenta a numeração das funções $\basefunctionfine$ considerando condições de Dirichlet na borda inferior.
 Exemplos das funções são apresentadas na Figura \ref{fig:shapefunctions}.
 Um detalhe importante é que as funções de forma que serão utilizadas no método multiescala, apresentadas no Capítulo \ref{ch:multiescala}, não possuem a propriedade de uma de suas componentes ser nula.

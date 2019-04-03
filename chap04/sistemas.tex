@@ -100,16 +100,16 @@ Nessa seção serão apresentados alguns métodos para solução de sistemas lin
     \mathbf{Ax = b}
 \end{equation}
 
-\subsection{Pré-condicionadores}
+\subsection{Precondicionadores}
 
-Define-se como número de condicionamento da matriz a equação apresentada em \eqref{eq:condicionamento}, quanto maior o número de condicionamento mais próximo da matriz ser singular \perg{de onde você tirou essa informação? Imagine uma matriz diagonal com elementos com várias ordens de grandeza de diferença nas entradas diagonais, terá um número de condicionamento alto mas não terá proximidade com uma matriz singular} \resp{Eu lembrava dessa informação dos slides da matéria do Álvaro. Fui consultar o \citet{heath1997scientific} que era o livro base da matéria e tem o parágrafo \ref{fig:condicionamento} dizendo isso.}. As matrizes advindas de sistemas gerados por \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
+Define-se como número de condicionamento da matriz a equação apresentada em \eqref{eq:condicionamento}, quanto maior esse valor mais difícil a convergência do sistema com métodos de Krylov. As matrizes advindas de sistemas gerados por \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
 
 \begin{equation} \label{eq:condicionamento}
 \text{cond}(\mathbf{A}) = || \mathbf{A} || \cdot || \mathbf{A}^{-1} ||
 \end{equation}
 
 
-Uma estratégia importante para a solução desses sistemas lineares é a utilização de pré-condicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de pré-condicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de pré-condicionamento, \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o pré-condicionamento pela esquerda e pela direita respectivamente \suge{Há também por ambos os lados, aliás o CG é precondicionado por ambos os lados, caso não fosse, o CG não poderia ser usado}. A matriz de pré-condicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que, apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$, eles não efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
+Uma estratégia importante para a solução desses sistemas lineares é a utilização de precondicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de precondicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de precondicionamento, \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o precondicionamento pela esquerda e pela direita respectivamente. Também é possível fazer o precondicionamento utilizando ambos os lados. A matriz de precondicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que, apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$, eles não efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
 
 
 \begin{equation} \label{eq:preconesq}
@@ -122,11 +122,11 @@ Uma estratégia importante para a solução desses sistemas lineares é a utiliz
 \end{align}
 
 
-Pré-condicionadores populares são os baseados em fatorações incompletas (ILU) apresentados em \citet{ilupaper}. Esses pré-condicionadores calculam aproximações para a fatoração LU de uma matriz e são apresentadas na seção \ref{sec:fatoracaolu}.
+Precondicionadores populares são os baseados em fatorações incompletas (ILU) apresentados em \citet{ilupaper}. Esses precondicionadores calculam aproximações para a fatoração LU de uma matriz e são apresentadas na seção \ref{sec:fatoracaolu}.
 
 \subsection{Iteração de Richardson}
 
-Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizado em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz $\mathbf{A}$ e um pré-condicionador $\mathbf{M}$ uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
+Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizado em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz $\mathbf{A}$ e um precondicionador $\mathbf{M}$ uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
 
 \begin{align} \label{eq:iteracaorichardson}
 \mathbf{I}_m = (\mathbf{I} - \precon \mathbf{A})    \\
@@ -261,9 +261,9 @@ $\delta_{0} \leftarrow \delta_{new}$
 \vspace{1cm}
 
 
-\subsubsection{Gradiente Conjugado Pré-Condicionado}
+\subsubsection{Gradiente Conjugado Precondicionado}
 
-Uma dificuldade em se utilizar um pré-condicionador com o Gradiente Conjugado é que a garantia de convergência tem como condição necessária que a matriz seja simétrica. Porém, se aplicarmos um pré-condicionador $\precon$ pela esquerda ou pela direita perde-se que a simetria da matriz. Para solucionar essa questão, o pré-condicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}.
+Uma dificuldade em se utilizar um precondicionador com o Gradiente Conjugado é que a garantia de convergência tem como condição necessária que a matriz seja simétrica. Porém, se aplicarmos um precondicionador $\precon$ pela esquerda ou pela direita perde-se que a simetria da matriz. Para solucionar essa questão, o precondicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}.
 
 
 \begin{align} \label{eq:esqdirpreconcg}
@@ -399,8 +399,7 @@ $\text{relaxação}(A_i, x)$, $\upsilon_2$ vezes
 \subsubsection{Relaxações}
 
 
-Em relação as relaxações utilizadas pelo método multigrid, duas bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss-Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel}. É importante notar que, nesse caso, a quantidade de operações feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n. \perg{Aonde você viu essa definição do Gauss-Seidel simétrico}\comen{Neste algoritmo que você mostra, em cada um dos dois loops principais, todas as entradas de A entram nas contas, enquanto que no Gauss-Seidel simétrico, no primeiro loop entram apenas as da parte triangular inferior e no segundo as da parte superior. Seja A=L+D+U, onde L é a parte triangular estritamente inferior, D a diagonal e  U a triangular estritamente superior. O método simétrico de Gauss-Seidel seria:
-$x^{k+1/2}=x^k+(L+D)^{-1}r^k$ e $x^{k+1}=x^{k+1/2}+(D+U)^{-1}r^{k+1/2}$, onde $r^k$ é o resíduo da iteração $k$. O livro do Saad, Iterative Methods, tem esse algoritmo explicado} \resp{Na verdade tinha retirado do código do pyamg. Coloquei uns prints \ref{fig:gauss1} e \ref{fig:gauss2} }
+Em relação as relaxações utilizadas pelo método multigrid, duas bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss-Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel} que foi retirado do código do Pyamg. É importante notar que, nesse caso, a quantidade de operações feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n. Uma outra maneira de implementar o Gauss-Seidel é a apresentada em \cite{solverlinear} onde as iterações são definidas pela recorrência: $x^{k+1/2}=x^k+(L+D)^{-1}r^k$ e $x^{k+1}=x^{k+1/2}+(D+U)^{-1}r^{k+1/2}$.
 
 
 \vspace{1cm}
@@ -479,6 +478,6 @@ Outra parte importante para esse trabalho é a solução direta de sistemas, em 
 A fatoração LU consiste em transformar a matriz A em o produto de outras duas $\mathbf{A}=\mathbf{L}\mathbf{U}$: $\mathbf{L}$ triangular inferior e $\mathbf{U}$ triangular superior. Assim, o sistema fica da forma $\mathbf{L} \mathbf{U} \mathbf{x} = \mathbf{b}$ e a solução é realizada através da solução de dois sistemas triangulares $\mathbf{L}\mathbf{y} = \mathbf{b}$ e $\mathbf{U}\mathbf{x} = \mathbf{y}$. O cálculo dos fatores LU pode ser feita utilizando uma eliminação gaussiana e pode ser encontrado em \citet{heath1997scientific}. Uma vantagem desse método é que se for necessário resolver sistemas para diferentes lados direito $\mathbf{b}$ a fatoração pode ser reutilizada e não precisa ser calculada novamente. Para matrizes simétricas positivas definidas, existe a fatoração de Cholesky, similar a fatoração LU, onde $\mathbf{A} = \mathbf{C}^T \mathbf{C}$, com $C$ triangular superior.
 
 
-\subsubsection{Pré-condicionador ILU}
+\subsubsection{Precondicionador ILU}
 
-Os pré-condicionadores baseados em fatoração incompletas (ILU) apresentados em \citet{ilupaper} \comen{Essa referência está errada, o paper seminal do ILU está em  doi:10.1090/S0025-5718-1977-0438681-4} calculam uma aproximação para a fatoração LU da matriz. A aproximação é realizada desconsiderando algumas entradas das matrizes $\mathbf{L}$ e $\mathbf{U}$. Um parâmetro do método é o nível do ILU que controla a quantidade de entradas que a fatoração incompleta possui; quando o nível é  zero, a fatoração possui não zeros nas mesmas posições em que a matriz $\mathbf{A}$ possui entradas não-nulas. Há várias outras alternativas baseadas em aproximações da fatoração LU, ver~\cite{solverlinear}.
+Os precondicionadores baseados em fatoração incompletas (ILU) apresentados em \citet{ilupaper} calculam uma aproximação para a fatoração LU da matriz. A aproximação é realizada desconsiderando algumas entradas das matrizes $\mathbf{L}$ e $\mathbf{U}$. Um parâmetro do método é o nível do ILU que controla a quantidade de entradas que a fatoração incompleta possui; quando o nível é  zero, a fatoração possui não zeros nas mesmas posições em que a matriz $\mathbf{A}$ possui entradas não-nulas. Há várias outras alternativas baseadas em aproximações da fatoração LU, ver \cite{solverlinear}.

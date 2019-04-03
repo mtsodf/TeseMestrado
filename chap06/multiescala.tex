@@ -8,7 +8,8 @@ O método \textit{Multiscale Finite Element Method} (MSFEM) foi introduzido por 
 Apesar do método MSFVM garantir a conservação da massa, as soluções do grid grosso prolongadas para o grid fino não se mostravam adequadas para todas as situações, assim, foi apresentado o método multiescala iterativo em \citet{iterativems} que ao invés de realizar uma aproximação para a solução fina, utiliza a solução do sistema grosso juntamente com uma relaxação do operador fino para resolver o sistema na malha fina através de iterações de Richardson. A convergência da solução depende da quantidade de vezes que uma relaxação do grid fino é aplicada e varia de problema para problema.
 
 
-Os estudos citados acima precisam do grid do problema para que seja possível aplicar o método multiescala o que é uma desvantagem quando é necessário utilizar o método como um solver "caixa-preta". Essa desvantagem é parcialmente resolvida através do multiescala algébrico, apresentado em \citet{msalgebrico}, que constroem o operador fino utilizando uma ordenação Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis, semelhantes ao multigrid também já foram desenvolvidos como em \citet{multilevel}. \suge{problema nesta citação}
+Os estudos citados acima precisam do grid do problema para que seja possível aplicar o método multiescala o que é uma desvantagem quando é necessário utilizar o método como um solver "caixa-preta". Essa desvantagem é parcialmente resolvida através do multiescala algébrico, apresentado em \citet{msalgebrico}, que constroem o operador fino utilizando uma ordenação Wire-Basket que guarda a topologia da malha em questão. Métodos com vários níveis, semelhantes ao multigrid também já foram desenvolvidos como em \citet{multilevel}.
+
 
 Os trabalhos citados nos parágrafos anteriores são de aplicações do método multiescala para problemas de fluxo que, historicamente, na indústria do petróleo têm maior apelo por conta da previsão de produção dos campos. Porém, estudos relacionados ao método multiescala para geomecânica também podem ser encontrados em \citet{casteletto}, \citet{irina} e \citet{castelettoacoplado}. É importante salientar que \cite{casteletto} e \cite{irina} apresentam acoplamento entre a simulação de fluxo com a geomecânica. Além disso, visto que \eqref{eq:edp_geomec} é similar ao problema de elasticidade linear para sólidos, pode-se encontrar trabalhos úteis com aplicações do método de multiescala neste domínio, por exemplo \citet{mbuck}. 
 
@@ -37,12 +38,11 @@ Dessa forma, o grid grosso possui um conjunto $\coarseelementset$ de elementos o
 
 
 
-Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$, para $i=1, 2,..., \qtdfreedomcoarse$, será associada a uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$, para i $i=1, 2,..., \qtdessentialcoarse$,  uma função de base $\basefunctioncoarseessential$. E então, é possível encontrar uma solução aproximada no grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
+Do mesmo modo que apresentado para o grid fino no Capítulo \ref{ch:discretizacao}, cada grau de liberdade grosso $\freedomcoarse$, para $i=1, 2,..., \qtdfreedomcoarse$, será associada a uma função de base $\basefunctioncoarse$ e cada nó associado a uma condição de contorno de Dirichlet $\essentialcoarse$, para  $i=1, 2,..., \qtdessentialcoarse$,  uma função de base $\basefunctioncoarseessential$. E então, é possível encontrar uma solução aproximada no grid fino $\finesolution \approx \msfinesolution$ através de \eqref{eq:aproximacaogrossa}.
 
 \begin{equation} \label{eq:aproximacaogrossa}
     \msfinesolution = \coarsesolution = \sum_{i=1}^{\qtdfreedomcoarse} \basefunctioncoarse \freedomcoarse + {\sum_{i=1}^ {\qtdfreedomcoarse}}  \basefunctioncoarseessential \essentialcoarse
 \end{equation}
-\suge{acho que vale a pena explicar melhor esta igualdade \eqref{eq:aproximacaogrossa}. Em que sentido a solução no grid fino é aproximadamente igual à solução no grid grosso?  A do grid fino está definida em mais pontos. Talvez seja o caso de definir quem é $\msfinesolution$} \resp{Na verdade, os valores dos pontos no grid grosso são representados pelos $\freedomcoarse$. A equação \ref{eq:aproximacaogrossa} já é a função aproximada no domínio $\Omega$. No caso, assim como $u^h: \Omega \rightarrow R^2$ tem-se $u^H: \Omega \rightarrow R^2$ }
 
 Diferentemente do caso fino, as funções $\basefunctioncoarse$ serão uma combinação linear das funções $\basefunctionfine$ calculadas a partir de problemas homogêneos locais  para cada elemento $\coarseelement \in \coarseelementset$  apresentados em \eqref{eq:problemaslocais}, conforme proposto em \cite{casteletto}.
 
@@ -64,8 +64,6 @@ onde $\sopnablafront$ está definido em \eqref{eq:sopnabladef} para as coordenad
 0 & \dxhat 
 \end{bmatrix}
 \end{equation}
-
-\perg{Aqui está sendo usada uma notação ligeiramente diferente da do Castelletto, pelo que entendi o S dele, indica o T daqui, ver eqs (A.3) e (A.5) do apêndice A do paper original. Alguma razão para essa alteração} \resp{Na verdade o Castelleto utiliza a notação tensorial enquanto que aqui a notação está toda matricial. Nesse caso o T não costuma aparecer na notação dele. Como aqui aparece acabei descendo o S para sobrescrito ao invés de ficar em cima.}
 
 %TODO fazer a minha própria figura. Por enquanto está a mesma do casteletto.
 \begin{figure}[!htbp]
@@ -172,9 +170,9 @@ Essa aproximação consiste de três passos que são descritas abaixo:
 \end{itemize}
 
 
-Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}, a solução do sistema é encontrado através de iterações de Richardson junto com um pré-condicionador do espaço fino, pois o artigo mostra que $\preconms$ não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que  é deficiente de posto e, portanto, a matriz de iteração tem autovalores iguais a um. \perg{Que resultado é esse, matriz com deficiência de posto tem autovalor 1} \suge{a matriz a=[0.5 0;0 0] tem posto 1 e autovalores 0.5 e 0} \resp{Na verdade estou dizendo que a matriz de iteração do Richardson tem autovalor 1 pois ela é $I-M^{-1}A$ e a matriz $M^{-1}A$ que tem deficiencia de posto.}
+Inicialmente, a solução aproximada \eqref{eq:aproximacaogrossa} foi utilizada como solução aproximada para o grid fino em \cite{thomashou}. No caso, tomando como base \eqref{eq:aproximacaogrossa2}, pode-se definir $\preconms = \mathbf{P} (\rigidmatrixcoarse)^{-1} \mathbf{P}^{T}$ como um precondicionador multiescala. Em \citet{zhouiterativo}, a solução do sistema é encontrado através de iterações de Richardson junto com um precondicionador do espaço fino, pois o artigo mostra que $\preconms$ não pode ser utilizado sozinho devido a sua convergência não ser garantida visto que  é deficiente de posto tendo autovalores 0 e, portanto, a matriz de iteração ($\mathbf{I}-\preconms \mathbf{A}$) tem autovalores iguais a um. 
 
-Visando reproduzir os resultados de \cite{zhouiterativo} para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para a matriz de iteração de Richardson para quatro diferentes pré-condicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)).
+Visando reproduzir os resultados de \cite{zhouiterativo} para os operadores de elasticidade linear, a Figura \ref{fig:autovaloresRichard} apresenta os autovalores relativos a um caso homogêneo de um grid $40\times40$ para a matriz de iteração de Richardson para quatro diferentes precondicionadores: multiescala, ILU(0), multiplicativo (multiescala + ILU(0)) e aditivo (multiescala + ILU(0)).
 
 
 \begin{figure}[h]
@@ -191,11 +189,11 @@ Visando reproduzir os resultados de \cite{zhouiterativo} para os operadores de e
 
 
 
-Pode-se verificar que o pré-condicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado, pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto utilizando o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. 
+Pode-se verificar que o precondicionador multiescala não tem convergência garantida, em concordância com a prova mostrada em \cite{zhouiterativo}. O combinativo multiplicativo apresenta bom resultado, pois os autovalores aparecem próximos de zero, entretanto, o combinativo aditivo não tem convergência garantida o que mostra que não é interessante utiliza-lo com iterações de Richardson. Ainda sobre isso, \cite{casteletto} mostra que o operador multiplicativo tem melhor desempenho quando utilizado junto com um método de Krylov, naquele contexto utilizando o Bicgstab, do que quando utilizado com o método de Richardson, inclusive, mostra que para várias configurações o solver não consegue convergir. Dado esse resultado, o presente trabalho vai fazer comparações entre os métodos utilizando métodos de Krylov. 
 
 A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rigidez pré-condicionada ($\precon \rigidmatrix$) para o mesmo grid de $40 \times 40$, os gráficos apresentam  resultados para engrossamento 2x2, 4x4 e 8x8, todas as figuras são apresentadas com os mesmos eixos para ser possível se observar as espalhamento dos autovalores.
 
-É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que sejam necessárias mais iterações para a convergência do solver. Além disso, o pré-condicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor que não é realizada pelo pré-condicionador aditivo.
+É fato que nos dois casos o aumento do engrossamento causa um maior espalhamento dos autovalores, desse modo é de se esperar que sejam necessárias mais iterações para a convergência do solver. Além disso, o precondicionador aditivo possui distribuição pior dos autovalores em relação ao multiplicativo e, portanto, é esperado que utilize mais iterações. Esse aumento tem que ser compensado com uma iteração mais barata por conta da multiplicação matriz vetor que não é realizada pelo precondicionador aditivo.
 
 
 \begin{figure}[!htbp]
@@ -210,7 +208,7 @@ A Figura \ref{fig:autovaloresMatrizPrecon} apresenta os valores da matriz de rig
 A solução dos problemas locais descritos na seção anterior tem como resultado as entradas $p_{ij}$ do operador em cada um dos elemento de $\coarseelementset$. Para encontrar esses valores é necessário primeiro construir a matriz de rigidez relativa ao elemento em questão que denominaremos de $\rigidmatrixelementms$. Essa matriz será utilizada para a solução de todas as oito funções de base relacionadas com esse elemento, uma maneira de adicionar mais facilmente as condições de contorno nesse caso é utilizar o método de condição de contorno apresentado em \eqref{eq:diagident}, dessa forma, o lado direito do sistema conterá apenas os valores da condição de contorno de Dirichlet que é justamente a solução de \eqref{eq:operadoraresta}.
 
 
-Com o Algoritmo \ref{alg:calculoprolongamento} é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do pré-condicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. Uma representação matricial do prolongamento é mostrada em \eqref{eq:pronlogamento}, onde cada coluna representa uma função de base (essa representação possui um abuso de notação visto que $\basefunctioncoarse$ representa uma função e não entradas da matriz $\mathbf{P}$).
+Com o Algoritmo \ref{alg:calculoprolongamento} é possível obter $\mathbf{P}$ e, com ele, obter $\rigidmatrixcoarse$ através de \eqref{eq:ptap} e a construção do precondicionador $\preconms = \mathbf{P} (\mathbf{K}^H)^{-1} \mathbf{P}^{T}$ fica completa. Uma representação matricial do prolongamento é mostrada em \eqref{eq:pronlogamento}, onde cada coluna representa uma função de base (essa representação possui um abuso de notação visto que $\basefunctioncoarse$ representa uma função e não entradas da matriz $\mathbf{P}$).
 
 
 
@@ -263,7 +261,7 @@ $\mathbf{P} \leftarrow \mathbf{0}$
 
 
 
-%Ele consiste basicamente em construir um operador grosso através do cálculo de funções de base em um grid gerado pelo acoplamento de elementos do grid fino. Pode ser utilizado como pré-condicionador \cite{casteletto}, como solver multinível semelhante aos solver multigrid ou ainda como aproximação para a solução original do problema. Os métodos multiescala tem sido aplicados com sucesso para problemas elípticos que é o caso do problema da elasticidade linear apresentado aqui. As vantagens do método discutido em \cite{thomashou} são que as funções de base multiescala tentam se adaptar às propriedades locais do operador, de forma que o operador grosso as conserve. As funções de base podem ser construídas através da solução de problemas independentes e, portanto, em paralelo.
+%Ele consiste basicamente em construir um operador grosso através do cálculo de funções de base em um grid gerado pelo acoplamento de elementos do grid fino. Pode ser utilizado como precondicionador \cite{casteletto}, como solver multinível semelhante aos solver multigrid ou ainda como aproximação para a solução original do problema. Os métodos multiescala tem sido aplicados com sucesso para problemas elípticos que é o caso do problema da elasticidade linear apresentado aqui. As vantagens do método discutido em \cite{thomashou} são que as funções de base multiescala tentam se adaptar às propriedades locais do operador, de forma que o operador grosso as conserve. As funções de base podem ser construídas através da solução de problemas independentes e, portanto, em paralelo.
 
 
 \section{Cálculo do NNZ do operador de prolongamento}\label{sec:complexProlong}
