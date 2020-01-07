@@ -1,11 +1,11 @@
 
 
-Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos sistemas lineares gerados a partir da discretização apresentada no Capítulo \ref{ch:discretizacao}. Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos são necessários para que a resolução seja possível. A Seção \ref{sec:csr} apresenta uma breve discussão sobre as estruturas de dados para armazenamento das matrizes, a Seção \ref{sec:cg} apresenta alguns métodos de solução de sistemas esparsos, enquanto que a Seção \ref{sec:fatoracaolu} apresenta a fatoração LU.
+Nesse capítulo, serão mostrados as técnicas utilizadas para a solução dos sistemas lineares gerados a partir da discretização apresentada no Capítulo \ref{ch:discretizacao}. Nas simulações reais de geomecânica, a quantidade de células pode chegar a centenas de milhões de elementos de forma que métodos efetivos de estruturas de dados e algoritmos são necessários para que a resolução seja possível. A Seção~\ref{sec:csr} apresenta uma breve discussão sobre as estruturas de dados para armazenamento das matrizes, a Seção~\ref{sec:cg} apresenta alguns métodos de solução de sistemas esparsos, enquanto que a Seção~\ref{sec:fatoracaolu} apresenta a fatoração LU.
 
 
 \section{Estruturas de Dados para Matrizes Esparsas} \label{sec:csr}
 
-Conforme mostrado no Capítulo \ref{ch:discretizacao}, a quantidade de não zeros da matriz (nnz) é $O(\qtdnos)$, enquanto a quantidade total de entradas da matriz é da ordem de $O(\qtdnos^2)$. Dessa forma, é necessário utilizar uma estrutura de dados que seja capaz de  armazenar apenas os não zeros para tornar o \textit{software} mais eficiente.  Uma ideia simples para guardar esse tipo de matriz consiste em guardar para cada elemento não zero seu valor, sua linha e sua coluna. Esse formato é chamado de \textit{Coordinate Format} (COO) mostrado em \citet{solverlinear}. Três vetores são necessários para guardar os valores:
+Conforme mostrado no Capítulo \ref{ch:discretizacao}, a quantidade de não zeros da matriz (nnz) é $O(\qtdnos)$, enquanto a quantidade total de entradas da matriz é da ordem de $O(\qtdnos^2)$. Dessa forma, é necessário utilizar uma estrutura de dados que seja capaz de  armazenar apenas os não zeros para tornar a implementação mais eficiente.  Uma ideia simples para guardar esse tipo de matriz consiste em guardar para cada elemento não zero seu valor, sua linha e sua coluna. Esse formato é chamado de \textit{Coordinate Format} (COO) mostrado em \citet{solverlinear}. Três vetores são necessários para guardar os valores:
 
 
 \begin{itemize}
@@ -15,7 +15,7 @@ Conforme mostrado no Capítulo \ref{ch:discretizacao}, a quantidade de não zero
 \end{itemize}
 
 
-Assim a matriz
+Por exemplo a matriz,
 
 
 \begin{equation}
@@ -23,11 +23,11 @@ Assim a matriz
         1 & 0 & 2 & 0\\
         3 & 4 & 0 & 5\\
         0 & 6 & 7 & 0\\
-        0 & 0 & 8 &9
+        0 & 0 & 8 & 9
     \end{bmatrix}
 \end{equation}
 
-Tem como vetores associados na sua representam COO os mostrados abaixo:
+Tem como vetores associados na sua representação COO os mostrados abaixo:
 
 
 \begin{center}
@@ -39,7 +39,7 @@ Tem como vetores associados na sua representam COO os mostrados abaixo:
 \end{center}
 
 
-É importante perceber que nesse formato, as entradas da matriz podem ser escritas em qualquer ordem. Porém, no exemplo acima, elas estão ordenadas por linha e pode-se notar que o vetor JR apresenta uma série de valores repetidos. Para tirar proveito dessa repetição, existe outro formato chamado \textit{Compressed Sparse Row Format} (CSR) onde o vetor associado as linhas JR é substituido por um vetor IA que é um ponteiro para o vetor de colunas com o início de cada uma das linhas.
+É importante perceber que nesse formato, as entradas da matriz podem ser escritas em qualquer ordem. Porém, no exemplo acima, elas estão ordenadas por linha e pode-se notar que o vetor JR apresenta uma série de valores repetidos. Para tirar proveito dessa repetição, existe outro formato chamado \textit{Compressed Sparse Row Format} (CSR) onde o vetor associado as linhas JR é substituído por um vetor IA que é um ponteiro para o vetor de colunas com o início de cada uma das linhas.
 
 Para a matriz acima, tem-se:
 
@@ -50,12 +50,12 @@ Para a matriz acima, tem-se:
     \item A linha 4 começa a partir do elemento 7 do vetor AA e, portanto, IA(4) = 8
 \end{itemize}
 
-É adicionado ainda um valor a mais ao vetor IA que guarda a quantidade de nnz+1, no exemplo acima, esse valor é IA(5) = 10. Com isso é possível saber as entradas de determinada linha $i$ olhando para as posições IA(i) a IA(i+1)-1 do vetor AA e as respectivas colunas em JC. Os valores dos vetores CSR da matriz então ficam:
+É adicionado ainda um valor a mais ao vetor IA que guarda a quantidade de nnz+1. No exemplo acima, esse valor é IA(5) = 10. Com isso é possível saber as entradas de determinada linha $i$ olhando para as posições IA(i) a IA(i+1)-1 do vetor AA e as respectivas colunas em JC. Os valores dos vetores CSR da matriz então ficam:
 
 %TODO deixar valores one-based
 \begin{center}
     \begin{itemize}
-        \item IA = 1 3 7 8 10
+        \item IA = 1 3 6 8 10
         \item JC = 1 3 1 2 4 2 3 3 4
         \item AA = 1 2 3 4 5 6 7 8 9
     \end{itemize}
@@ -89,7 +89,7 @@ Uma operação particularmente importante com matrizes é a multiplicação matr
 \vspace{1cm}
 
 
-Nesse algoritmo, é importante perceber que a variável j irá assumir valores de 1 a IA(n+1)-1 e , como IA(n+1)=$\text{nnz} + 1$, a multiplicação tem que complexidade $O(\text{nnz})$. O CSR então, além de necessitar de menos memória para armazenar a matriz, também tem a vantagem de fazer operações de multiplicação mais eficientemente visto que a complexidade seria $O(n^2)$ caso a matriz fosse armazenada densa.
+Nesse algoritmo, é importante perceber que a variável j irá assumir valores de 1 a IA(n+1)-1 e , como IA(n+1)=$\text{nnz} + 1$, a multiplicação tem complexidade $O(\text{nnz})$. O CSR então, além de necessitar de menos memória para armazenar a matriz, também tem a vantagem de fazer operações de multiplicação mais eficientemente visto que a complexidade seria $O(n^2)$ caso a matriz fosse armazenada densa.
 
 
 \section{Solução de Sistemas Esparsos} \label{sec:cg}
@@ -102,14 +102,14 @@ Nessa seção serão apresentados alguns métodos para solução de sistemas lin
 
 \subsection{Precondicionadores}
 
-Define-se como número de condicionamento da matriz a equação apresentada em \eqref{eq:condicionamento}, quanto maior esse valor mais difícil a convergência do sistema com métodos de Krylov. As matrizes advindas de sistemas gerados por \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
+Define-se como número de condicionamento da matriz a expressão apresentada em \eqref{eq:condicionamento}, quanto maior esse valor mais difícil a convergência do sistema com métodos de Krylov. As matrizes advindas de sistemas gerados por \eqref{eq:edp_geomec_contorno} costumam ter números de condicionamentos elevados fazendo com que os métodos de solução tenham dificuldade de convergir.
 
 \begin{equation} \label{eq:condicionamento}
 \text{cond}(\mathbf{A}) = || \mathbf{A} || \cdot || \mathbf{A}^{-1} ||
 \end{equation}
 
 
-Uma estratégia importante para a solução desses sistemas lineares é a utilização de precondicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de precondicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de precondicionamento, \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o precondicionamento pela esquerda e pela direita respectivamente. Também é possível fazer o precondicionamento utilizando ambos os lados. A matriz de precondicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que, apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$, eles não efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
+Uma estratégia importante para a solução desses sistemas lineares é a utilização de precondicionadores que consistem em tentar resolver um sistema equivalente a \eqref{eq:sistemalinear4} mas com um número de condicionamento menor. Há dois principais métodos de precondicionamento, pela esquerda ou pela direita. Chamando de $\mathbf{M}$ a matriz de precondicionamento, \eqref{eq:preconesq} e \eqref{eq:precondir} apresentam o precondicionamento pela esquerda e pela direita respectivamente. Também é possível fazer o precondicionamento utilizando ambos os lados. A matriz de precondicionamento geralmente aproxima a matriz original $\mathbf{A}$, de forma que $\precon \mathbf{A}$ e $\mathbf{A} \precon$ tenham número de condicionamento ordens de grandeza menores que o da matriz original. Um fato importante é que, apesar de aparecerem os produtos $\precon \mathbf{A}$ e $\mathbf{A} \precon$, eles não são efetivamente realizados, pois, muitas vezes se é conhecido apenas a matriz $\mathbf{M}$ e, mesmo que $\precon$ fosse conhecido, esses produtos podem ser densos.  
 
 
 \begin{equation} \label{eq:preconesq}
@@ -126,19 +126,19 @@ Precondicionadores populares são os baseados em fatorações incompletas (ILU) 
 
 \subsection{Iteração de Richardson}
 
-Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizado em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz $\mathbf{A}$ e um precondicionador $\mathbf{M}$ uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
+Um método simples de solução de sistemas lineares é a Iteração de Richardson, essa solução é utilizada em solvers multiescala apresentados em \citet{msparalelo}. No caso, dada a matriz uma matriz $\mathbf{A}$ e um precondicionador $\mathbf{M}$ uma iteração do método é definida conforme apresentado em \eqref{eq:iteracaorichardson}.
 
 \begin{align} \label{eq:iteracaorichardson}
 \mathbf{I}_m = (\mathbf{I} - \precon \mathbf{A})    \\
 \mathbf{x}_{i+1} = \mathbf{I}_m  \mathbf{x}_i + \precon \mathbf{b}  
 \end{align}
 
-Onde, $\mathbf{I}$ representa a matriz identidade. A partir de \eqref{eq:iteracaorichardson} é possível encontrar a equação do erro ao longo das iterações $e_{i+1} = \mathbf{I}_m e_i$, isso faz com que a convergência seja garantida apenas se $\rho(\mathbf{I}_m) < 1$, onde $\rho$ representa o raio espectral da matriz. Essa condição é necessária para que cada componente do erro relativa a cada  um dos autovetores reduza a cada iteração.
+Onde, $\mathbf{I}$ representa a matriz identidade. A partir de \eqref{eq:iteracaorichardson} é possível encontrar a equação do erro ao longo das iterações $\mathbf{e}_{i+1} = \mathbf{I}_m \mathbf{e}_i$, isso faz com que a convergência seja garantida apenas se $\rho(\mathbf{I}_m) < 1$, onde $\rho$ representa o raio espectral da matriz. Essa condição é necessária para que cada componente do erro relativa a cada  um dos autovetores reduza a cada iteração.
 
 
 \subsection{Método do Gradiente Conjugado}
 
-O método do Gradiente Conjugado pode ser utilizado na solução de sistemas lineares da forma \eqref{eq:sistemalinear4} onde $\mathbf{A}$ é uma matriz simétrica positiva definida (SPD). Nesse caso, pode-se encontrar um problema de minimização equivalente através da definição da forma quadrática apresentada em \eqref{eq:quadratica}. 
+O método do Gradiente Conjugado pode ser utilizado na solução de sistemas lineares da forma \eqref{eq:sistemalinear4} onde $\mathbf{A}$ é uma matriz simétrica positiva definida (SPD) conforme mostrado em \citet{Shewchuk94anintroduction}. Nesse caso, pode-se encontrar um problema de minimização equivalente através da definição da forma quadrática apresentada em \eqref{eq:quadratica}. 
 
 \begin{equation} \label{eq:quadratica}
     f(\mathbf{x}) = \frac{1}{2}  \mathbf{x}^T \mathbf{A} \mathbf{x} - \mathbf{b}^T \mathbf{x} + c, \quad f:\mathbb{R}^n \rightarrow \mathbb{R}
@@ -148,7 +148,7 @@ Para encontrar os pontos extremos da função \eqref{eq:quadratica} é necessár
 
 
 \begin{equation} \label{eq:quadratica_ind}
-    f(\mathbf{x}) = \frac{1}{2} x_i A_{ij} x_j - b_i x_i + c_i
+    f(\mathbf{x}) = \frac{1}{2} x_i A_{ij} x_j - b_i x_i + c
 \end{equation}
 
 
@@ -156,7 +156,7 @@ Aplicando a derivada parcial com relação a uma coordenada $x_k$.
 
 
 \begin{eqnarray}
-     \dxk[f(\mathbf{x})] & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- \dxk{b_i x_i}+ \dxk{c_i} \\
+     \dxk[f(\mathbf{x})] & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- \dxk{b_i x_i}+ \dxk{c} \\
                 & = & \frac{1}{2} \dxk[ x_i A_{ij} x_j ]- b_k \\
                 & = & \frac{1}{2} (\dxk[ x_i ]A_{ij} x_j  + x_i A_{ij} \dxk[x_j]) - b_k \\
                 & = & \frac{1}{2}(A_{kj} x_j  + x_i A_{ik})  - b_k
@@ -195,9 +195,9 @@ Portanto, $f(\mathbf{x})$ possui um único ponto extremo $\mathbf{x}_e = \mathbf
 
 
 \begin{align}
-     f(\mathbf{x}_e + \mathbf{e}) & =  \frac{1}{2} (\mathbf{x}_e + \mathbf{e})^T \mathbf{A} (\mathbf{x}_e + \mathbf{e}) - \mathbf{b}^T(\mathbf{x}_e + \mathbf{e}) + \mathbf{c}  \nonumber\\
-                & =  \frac{1}{2} (\mathbf{x}_e^T\mathbf{A}\mathbf{x}_e + \mathbf{x}_e^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{x}_e + \mathbf{e}^T\mathbf{A}\mathbf{e} )- \mathbf{b}^T(\mathbf{x}_e + \mathbf{e}) + \mathbf{c}  \nonumber\\
-                & =  \frac{1}{2} \mathbf{x}_e^T\mathbf{A}\mathbf{x}_e -\mathbf{b}^T\mathbf{x}_e + \mathbf{c} + \frac{1}{2} ( \mathbf{x}_e^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{x}_e + \mathbf{e}^T\mathbf{A}\mathbf{e} ) - \mathbf{b}^T\mathbf{e}  \nonumber\\
+     f(\mathbf{x}_e + \mathbf{e}) & =  \frac{1}{2} (\mathbf{x}_e + \mathbf{e})^T \mathbf{A} (\mathbf{x}_e + \mathbf{e}) - \mathbf{b}^T(\mathbf{x}_e + \mathbf{e}) + c  \nonumber\\
+                & =  \frac{1}{2} (\mathbf{x}_e^T\mathbf{A}\mathbf{x}_e + \mathbf{x}_e^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{x}_e + \mathbf{e}^T\mathbf{A}\mathbf{e} )- \mathbf{b}^T(\mathbf{x}_e + \mathbf{e}) + c  \nonumber\\
+                & =  \frac{1}{2} \mathbf{x}_e^T\mathbf{A}\mathbf{x}_e -\mathbf{b}^T\mathbf{x}_e + c + \frac{1}{2} ( \mathbf{x}_e^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{x}_e + \mathbf{e}^T\mathbf{A}\mathbf{e} ) - \mathbf{b}^T\mathbf{e}  \nonumber\\
                 & =  f(\mathbf{x}_e) + \frac{1}{2} ( \mathbf{x}_e^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{x}_e + \mathbf{e}^T\mathbf{A}\mathbf{e} ) - \mathbf{b}^T\mathbf{e}  \nonumber\\
                 & =  f(\mathbf{x}_e) + \frac{1}{2} ( (\mathbf{A}^{-1}\mathbf{b})^T\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{A}\mathbf{A}^{-1}\mathbf{b} + \mathbf{e}^T\mathbf{A}\mathbf{e} ) - \mathbf{b}^T\mathbf{e}  \nonumber\\
                 & =  f(\mathbf{x}_e) + \frac{1}{2} ( \mathbf{b}^T\mathbf{A}^{-1}\mathbf{A}\mathbf{e} + \mathbf{e}^T\mathbf{b} + \mathbf{e}^T\mathbf{A}\mathbf{e} ) - \mathbf{b}^T\mathbf{e}  \nonumber\\
@@ -207,10 +207,10 @@ Portanto, $f(\mathbf{x})$ possui um único ponto extremo $\mathbf{x}_e = \mathbf
 \end{align}
 
 
-Como $\mathbf{A}$ é positiva definida, por definição $\mathbf{e}^T\mathbf{A}\mathbf{e}  > 0$, quando $\mathbf{e}\neq0$, logo
+Como $\mathbf{A}$ é positiva definida, por definição $\mathbf{e}^T\mathbf{A}\mathbf{e}  > 0$, quando $\mathbf{e}\neq \mathbf{0}$, logo
 
 \begin{equation}
-    f(\mathbf{x}_e + \mathbf{e}) = f(\mathbf{x}_e) + \frac{1}{2}  \mathbf{e}^T\mathbf{A}\mathbf{e} > f(\mathbf{x}_e)\rightarrow  f(\mathbf{x}_e + \mathbf{e}) > f(\mathbf{x}_e),\; \forall \mathbf{e} \neq 0
+    f(\mathbf{x}_e + \mathbf{e}) = f(\mathbf{x}_e) + \frac{1}{2}  \mathbf{e}^T\mathbf{A}\mathbf{e} > f(\mathbf{x}_e)\rightarrow  f(\mathbf{x}_e + \mathbf{e}) > f(\mathbf{x}_e),\; \forall \mathbf{e} \neq \mathbf{0}
 \end{equation}
 
 
@@ -263,7 +263,7 @@ $\delta_{0} \leftarrow \delta_{new}$
 
 \subsubsection{Gradiente Conjugado Precondicionado}
 
-Uma dificuldade em se utilizar um precondicionador com o Gradiente Conjugado é que a garantia de convergência tem como condição necessária que a matriz seja simétrica. Porém, se aplicarmos um precondicionador $\precon$ pela esquerda ou pela direita perde-se que a simetria da matriz. Para solucionar essa questão, o precondicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}.
+Uma dificuldade em se utilizar um precondicionador com o Gradiente Conjugado é que a garantia de convergência tem como condição suficiente que a matriz seja simétrica positiva definida (SPD). Porém, se aplicarmos um precondicionador $\precon$ pela esquerda ou pela direita perde-se a simetria da matriz. Para solucionar essa questão, o precondicionador é dividido no produto $\mathbf{E}\mathbf{E}^T = \mathbf{M}$ e é aplicado simultaneamente pela esquerda e pela direita conforme mostrado em \eqref{eq:esqdirpreconcg}, que também preserva a simetria da matriz.
 
 
 \begin{align} \label{eq:esqdirpreconcg}
@@ -272,7 +272,7 @@ Uma dificuldade em se utilizar um precondicionador com o Gradiente Conjugado é 
 \end{align}
 
 
-É importante notar que para que tal decomposição exista é necessário que a matriz seja simétrica, visto que, $\mathbf{M}^T = (\mathbf{E}\mathbf{E}^T)^T = (\mathbf{E}^T)^T \mathbf{E}^T = \mathbf{E}\mathbf{E}^T = \mathbf{M}$. Em \citet{Shewchuk94anintroduction} é mostrado que apesar  dessa decomposição, o método não precisa calcular explicitamente a matriz $\mathbf{E}$ conforme apresentado no Algoritmo \ref{alg:algoritmocgprecon}.
+É importante notar que para que tal decomposição exista é necessário que a matriz seja SPD, visto que, $\mathbf{M}^T = (\mathbf{E}\mathbf{E}^T)^T = (\mathbf{E}^T)^T \mathbf{E}^T = \mathbf{E}\mathbf{E}^T = \mathbf{M}$ e que $\mathbf{x}^T \mathbf{M} \mathbf{x} = \mathbf{x}^T \mathbf{E}\mathbf{E}^T \mathbf{x} = ||\mathbf{E}^T\mathbf{x}||^2$. Em \citet{Shewchuk94anintroduction} é mostrado que apesar  dessa decomposição, o método não precisa calcular explicitamente a matriz $\mathbf{E}$ conforme apresentado no Algoritmo \ref{alg:algoritmocgprecon}.
 
 
 \vspace{1cm}
@@ -321,18 +321,18 @@ $\delta_{0} \leftarrow \delta_{new}$
 
 \subsection{Método Multigrid}
 
-O método multigrid tem como ideia principal a resolução do solver linear utilizando um conjunto de operadores que representam versões mais grosseiras do operador inicial, onde os níveis mais finos são responsáveis a reduzir os erros de alta frequência enquanto os níveis mais grosseiros reduzem as frequências baixas do erro, conforme mostrado em \citet{multigridtutorial}. O nível mais grosso geralmente é resolvido com solver direito, pois a quantidade de variáveis é pequena. 
+O método multigrid tem como ideia principal a resolução do solver linear utilizando um conjunto de operadores que representam versões mais grosseiras do operador inicial, onde os níveis mais finos são responsáveis a reduzir os erros de alta frequência enquanto os níveis mais grosseiros reduzem as frequências baixas do erro, conforme mostrado em \citet{multigridtutorial}. O nível mais grosso geralmente é resolvido com solver direto, pois a quantidade de variáveis é pequena. 
 
-Apesar de inicialmente ter sido concebido com ideias geométricas onde o operador é calculado com base no grid, poucas fontes mostram implementações dessa versão, e o método ficou mais reconhecido por sua versão algébrica onde os operadores são montados apenas a partir das entradas da matriz. Em especial, nesse trabalho será realizada a comparação com a biblioteca PyAmg (\citet{OlSc2018}).
+Apesar de inicialmente ter sido concebido com ideias geométricas onde o operador é calculado com base no grid, poucas fontes mostram implementações dessa versão, e o método ficou mais reconhecido por sua versão algébrica onde os operadores são montados apenas a partir das entradas da matriz. Em especial, nesse trabalho será realizada a comparação com a biblioteca PyAMG (\citet{OlSc2018}).
 
 
 Entre os níveis, são necessários operadores que levam os vetores de uma escala mais fina para uma escala mais grossa e vice-versa. O operador que leva um vetor de um grid fino para o grid grosso é chamado de restrição, enquanto um que leva de um nível mais grosso para um nível mais fino é chamado de prolongamento. 
 
 
-Iniciando com um exemplo de solver multigrid apenas com dois níveis, chamemos de $\mathbf{A^1}$ como sendo o operador do nível fino e $\mathbf{A}^2$ o operador do grid grosso. Nesse caso, só existe um operador de prolongamento ($\mathbf{P}_2^1$) e um operador de restrição ($\mathbf{R}^2_1$). Uma iteração de um solver multigrid com dois níveis é apresentado no Algoritmo \ref{alg:ciclomg2niveis}. A cada ciclo multigrid, $\upsilon_1$ relaxações são aplicadas no grid fino antes de descer para o nível mais grosso e $\upsilon_2$ são aplicadas após o retorno do grid grosso para o grid fino. Esse ciclo é semelhante ao apresentado para o método multiescala no Capítulo \ref{ch:multiescala} com a diferença que apenas uma relaxação é aplicada no método multiescala.
+Iniciando com um exemplo de solver multigrid apenas com dois níveis, chamemos de $\mathbf{A^1}$ como sendo o operador do nível fino e $\mathbf{A}^2$ o operador do grid grosso. Nesse caso, só existe um operador de prolongamento ($\mathbf{P}_2^1$) e um operador de restrição ($\mathbf{R}^2_1$). Uma iteração de um solver multigrid com dois níveis é apresentada no Algoritmo~\ref{alg:ciclomg2niveis}. A cada ciclo multigrid, $\upsilon_1$ relaxações são aplicadas no grid fino antes de descer para o nível mais grosso e $\upsilon_2$ são aplicadas após o retorno do grid grosso para o grid fino. As relaxações tem como intuito fazer reduzir os erros de alta frequência nos níveis mais finos e os de baixa frequência nos níveis mais grossos. Esse ciclo é semelhante ao apresentado para o método multiescala no Capítulo \ref{ch:multiescala} com a diferença que apenas uma relaxação no grid fino é aplicada no método multiescala por iteração.
 
 
-Quando mais que dois níveis são utilizados com o Multigrid, existem mais opções de ciclos possíveis. O ciclo mais simples é o ciclo V apresentado na Figura \ref{fig:ciclov}, onde se desce até o nível mais grosso e retorna para o nível mais fino formando uma figura de V. Uma variação é o ciclo W apresentado na Figura \ref{fig:ciclow}. Esses dois ciclos podem ser descritos de acordo com o ciclo $\mu$ descrito no Algoritmo \ref{alg:ciclomu}, onde para o ciclo V tem-se $\mu = 1$ enquanto para o ciclo W $\mu = 2$. É fácil perceber que o ciclo W possui mais relaxações e mais aplicações de operadores de restrição e prologamento e, portanto, possui um maior custo computacional.
+Quando mais que dois níveis são utilizados com o Multigrid, existem mais opções de ciclos possíveis. O ciclo mais simples é o ciclo V apresentado na Figura \ref{fig:ciclov}, onde se desce até o nível mais grosso e se retorna para o nível mais fino formando uma figura de V. Uma variação é o ciclo W apresentado na Figura \ref{fig:ciclow}. Esses dois ciclos podem ser descritos de acordo com o ciclo $\mu$ descrito no Algoritmo \ref{alg:ciclomu}, onde para o ciclo V tem-se $\mu = 1$, enquanto para o ciclo W $\mu = 2$. É importante perceber que o ciclo W possui mais relaxações e mais aplicações de operadores de restrição e prologamento e, portanto, possui um maior custo computacional.
 
 \begin{figure}[h]
 \center
@@ -375,16 +375,16 @@ $x_0 \leftarrow \text{relaxação}(A_1, x_0, b)$, $\upsilon_2$ vezes
 
 $\text{relaxação}(A_i, x)$, $\upsilon_1$ vezes
 
-$b_i \leftarrow R^{i+1}_i (b - A_i x)$
+$b_{i+1} \leftarrow R^{i+1}_i (b - A_i x)$
 
 
 \Se{i + 1 é o nível mais grosso}{
-    $x_{i+1} \leftarrow A_i^{-1} f$
+    $x_{i+1} \leftarrow A_{i+1}^{-1} b_{i+1}$
 }
 \Senao{
     $x_{i+1} \leftarrow \mathbf{0}$
 
-    $x_{i+1} \leftarrow x_{i+1} $ Ciclo-$\mu$($i+1$, $\mu$, $x_i$, $b_i$, $A_1$, $A_2$, ...), $\mu$ vezes
+    $x_{i+1} \leftarrow  $ Ciclo-$\mu$($i+1$, $\mu$, $x_i$, $b_i$, $A_1$, $A_2$, ...), $\mu$ vezes
 }
 
 $x \leftarrow  x + P^i_{i+1} x_{i+1}$
@@ -399,7 +399,7 @@ $\text{relaxação}(A_i, x)$, $\upsilon_2$ vezes
 \subsubsection{Relaxações}
 
 
-Em relação as relaxações utilizadas pelo método multigrid, duas bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss-Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel} que foi retirado do código do Pyamg. É importante notar que, nesse caso, a quantidade de operações feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n. Uma outra maneira de implementar o Gauss-Seidel é a apresentada em \cite{solverlinear} onde as iterações são definidas pela recorrência: $x^{k+1/2}=x^k+(L+D)^{-1}r^k$ e $x^{k+1}=x^{k+1/2}+(D+U)^{-1}r^{k+1/2}$.
+Em relação às relaxações utilizadas pelo método multigrid, duas bastante utilizadas são a Jacobi e o Gauss-Seidel. Elas tem como intuito remover os erros de alta frequência em cada um dos níveis multigrid. Em particular, a relaxação de Gauss-Seidel simétrica foi utilizada na comparação do Capítulo \ref{ch:resultados} e é mostrada no Algoritmo \ref{alg:gauss_seidel} que foi retirado do código do PyAMG. É importante notar que, nesse caso, a quantidade de operações feitas é proporcional a duas vezes o número de não zeros da matriz , pois, a relaxação é realizada começando de i=1 e depois voltando de i=n. Uma outra maneira de implementar o Gauss-Seidel é a apresentada em \cite{solverlinear} onde as iterações são definidas pela recorrência: $x^{k+1/2}=x^k+(L+D)^{-1}r^k$ e $x^{k+1}=x^{k+1/2}+(D+U)^{-1}r^{k+1/2}$.
 
 
 \vspace{1cm}
@@ -412,8 +412,9 @@ Em relação as relaxações utilizadas pelo método multigrid, duas bastante ut
 $n \leftarrow \text{Tamanho de } A$
 
 \Para{ $i \in 1,2,3,\cdots,n$}{
+    $x(i) \leftarrow b(i)$
+    
     \Para{$j \in 1,2,3,\cdots,n$}{
-        $x(i) \leftarrow b(i)$
         
         \Se{$j \ne i$}{
             $x(i) \leftarrow x(i) - A(i,j) \times x(j)$
@@ -423,8 +424,9 @@ $n \leftarrow \text{Tamanho de } A$
 }
 
 \Para{ $i \in n,n-1,n-2,\cdots,1$}{
+    $x(i) \leftarrow b(i)$
+    
     \Para{$j \in 1,2,3,\cdots,n$}{
-        $x(i) \leftarrow b(i)$
         
         \Se{$j \ne i$}{
             $x(i) \leftarrow x(i) - A(i,j) \times x(j)$
@@ -440,13 +442,13 @@ $n \leftarrow \text{Tamanho de } A$
 
 \subsubsection{Complexidade do Grid}
  
-O PyAmg possui um método para os seus solver para cálculo da  Complexidade do Grid, esse valor tenta representar o quão mais custoso é a utilização de um determinado solver multigrid em relação ao operador original. A definição é mostrada em \eqref{eq:complexidadegrid}. Como pode-se ver, ele conta quantos não zeros o somatório de todos os níveis possui a mais que o nível fino. Assim, por exemplo, considerando $\upsilon_1=1$ e $\upsilon_2=1$ cada nível irá realizar duas relaxações, com exceção do nível mais grosso, tornando o  custo de um ciclo aproximadamente $2\times\text{Complexidade Grid}$. 
+O PyAMG possui um método para os seus solvers para cálculo da  Complexidade do Grid, esse valor tenta representar o quão mais custoso é a utilização de um determinado solver multigrid em relação ao operador original. A definição é mostrada em \eqref{eq:complexidadegrid}. Como pode-se ver, ele conta quantos não zeros o somatório de todos os níveis possui a mais que o nível fino. Assim, por exemplo, considerando $\upsilon_1=1$ e $\upsilon_2=1$ cada nível irá realizar duas relaxações, com exceção do nível mais grosso, tornando o  custo de um ciclo aproximadamente $2\times\text{Complexidade Grid}$. 
 
 \begin{equation}\label{eq:complexidadegrid}
     \text{Complexidade Grid} = \frac{\sum_{i=1}^n \text{nnz}(A_i)}{\text{nnz}(A_1)}
 \end{equation}
 
-Para saber o custo de um ciclo W se torna mais complicado devido a recursão associada a esse tipo de ciclo. No caso do ciclo apresentado na Figura \ref{fig:ciclow}, são feitas duas relaxações com $A_1$ e quatro com $A_2$ (o vértice $A_2$ do meio em que chega e sai uma seta acontecem duas relaxações) e oito relaxações com $A_3$. O PyAmg também tem um método que cálcula a complexidade do ciclo através de recursão e foi utilizado para as comparações apresentadas no Capítulo \ref{ch:implementacao}. 
+Para saber o custo de um ciclo W se torna mais complicado devido a recursão associada a esse tipo de ciclo. No caso do ciclo apresentado na Figura \ref{fig:ciclow}, são feitas duas relaxações com $A_1$ e quatro com $A_2$ (o vértice $A_2$ do meio em que chega e sai uma seta acontecem duas relaxações) e oito relaxações com $A_3$. O PyAMG também tem um método que calcula a complexidade do ciclo através de recursão e foi utilizado para as comparações apresentadas no Capítulo \ref{ch:implementacao}. 
 
 %Primeiramente, é possível encontrar o ponto de mínimo ao de caminhar a partir ponto inicial $x_0$ e uma direção $d_0$. Dessa forma, sendo $x_1 = x_0 + \alpha d_0$ para encontrar o ponto que minimiza o $f(x_1)$ deve-se ter $\frac{d f(x_1)}{d\alpha} = 0$.
 
@@ -475,7 +477,7 @@ Para saber o custo de um ciclo W se torna mais complicado devido a recursão ass
 
 Outra parte importante para esse trabalho é a solução direta de sistemas, em particular por conta dos sistemas que serão resolvidos nos espaços grossos e também para cálculo das funções de base que serão apresentados no Capítulo \ref{ch:multiescala}. Esses sistemas tem um número reduzido de variáveis em comparação com os sistemas associados com o grid fino e, portanto, pode-se pensar na utilização de solvers diretos.
 
-A fatoração LU consiste em transformar a matriz A em o produto de outras duas $\mathbf{A}=\mathbf{L}\mathbf{U}$: $\mathbf{L}$ triangular inferior e $\mathbf{U}$ triangular superior. Assim, o sistema fica da forma $\mathbf{L} \mathbf{U} \mathbf{x} = \mathbf{b}$ e a solução é realizada através da solução de dois sistemas triangulares $\mathbf{L}\mathbf{y} = \mathbf{b}$ e $\mathbf{U}\mathbf{x} = \mathbf{y}$. O cálculo dos fatores LU pode ser feita utilizando uma eliminação gaussiana e pode ser encontrado em \citet{heath1997scientific}. Uma vantagem desse método é que se for necessário resolver sistemas para diferentes lados direito $\mathbf{b}$ a fatoração pode ser reutilizada e não precisa ser calculada novamente. Para matrizes simétricas positivas definidas, existe a fatoração de Cholesky, similar a fatoração LU, onde $\mathbf{A} = \mathbf{C}^T \mathbf{C}$, com $C$ triangular superior.
+A fatoração LU consiste em transformar a matriz A no produto de outras duas $\mathbf{A}=\mathbf{L}\mathbf{U}$: $\mathbf{L}$ triangular inferior e $\mathbf{U}$ triangular superior. Assim, o sistema fica da forma $\mathbf{L} \mathbf{U} \mathbf{x} = \mathbf{b}$ e a solução é realizada através da solução de dois sistemas triangulares $\mathbf{L}\mathbf{y} = \mathbf{b}$ e $\mathbf{U}\mathbf{x} = \mathbf{y}$. O cálculo dos fatores LU pode ser feita utilizando uma eliminação gaussiana e pode ser encontrado em \citet{heath1997scientific}. Uma vantagem desse método é que se for necessário resolver sistemas para diferentes lados direito $\mathbf{b}$ a fatoração pode ser reutilizada e não precisa ser calculada novamente. Para matrizes simétricas positivas definidas, existe a fatoração de Cholesky, similar a fatoração LU, onde $\mathbf{A} = \mathbf{C}^T \mathbf{C}$, com $C$ triangular superior.
 
 
 \subsubsection{Precondicionador ILU}
