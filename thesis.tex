@@ -9,12 +9,13 @@
 \usepackage{blkarray}
 \usepackage{hyperref}
 \usepackage{makecell}
+\usepackage{placeins}
 
 \usepackage{empheq}
 \usepackage[most]{tcolorbox}
 
 %Definicao de qual texto será utilizado
-\def\realreservoir{0}
+\def\realreservoir{1}
 
 
 \makelosymbols
@@ -97,7 +98,7 @@
   \chapter{Experimentos Numéricos} \label{ch:resultados}
   \input{chap08/experimentos.tex}
 
-  \chapter{Conclusão e Trabalhos Futuros}
+  \chapter{Conclusão e Trabalhos Futuros} \label{ch:conclusoes}
   \input{chap09/conclusao.tex}
   
   \backmatter
